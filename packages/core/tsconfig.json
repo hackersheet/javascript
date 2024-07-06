@@ -12,7 +12,7 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "preserve",
-    "incremental": true,
+    "incremental": false,
     "types": ["react/canary"]
   },
   "include": ["**/*.ts", "**/*.tsx"],
