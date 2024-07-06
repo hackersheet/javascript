@@ -19,21 +19,13 @@
     "import/order": [
       "error",
       {
-        "groups": [
-          "builtin",
-          "external",
-          "internal",
-          ["parent", "sibling"],
-          "object",
-          "type",
-          "index"
-        ],
+        "groups": ["builtin", "external", "internal", ["parent", "sibling"], "object", "type", "index"],
         "newlines-between": "always",
         "alphabetize": { "order": "asc", "caseInsensitive": true }
       }
     ],
     "semi": ["error", "always"],
-    "semi-spacing": ["error", {"after": true, "before": false}],
+    "semi-spacing": ["error", { "after": true, "before": false }],
     "semi-style": ["error", "last"],
     "no-extra-semi": "error",
     "no-unexpected-multiline": "error",
