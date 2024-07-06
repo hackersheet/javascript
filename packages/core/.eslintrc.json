@@ -1,0 +1,3 @@
+{
+  "extends": ["@hackersheet/eslint-config-custom/default"]
+}
