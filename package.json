@@ -11,12 +11,16 @@
   "packageManager": "pnpm@9.4.0",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "format": "prettier --write --ignore-unknown ."
+    "format": "prettier --write --ignore-unknown .",
+    "codegen": "gql-gen --config codegen.ts"
   },
   "author": "",
   "license": "MIT",
   "devDependencies": {
+    "@graphql-codegen/cli": "5.0.2",
+    "@graphql-codegen/client-preset": "4.3.2",
     "@types/node": "20.14.10",
+    "dotenv": "16.4.5",
     "eslint": "8.57.0",
     "prettier": "3.3.2",
     "tsup": "8.1.0",
