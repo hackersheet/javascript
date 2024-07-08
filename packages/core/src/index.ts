@@ -1,2 +1,2 @@
-export { createClient } from './create-client';
-export type * from './types';
+export * from './types';
+export { createClient } from './client/create-client';

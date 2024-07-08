@@ -1,9 +1,9 @@
 import { OperationResult } from '@urql/core';
 
-import { graphql } from './gql';
-import { QueryWebsitesArgs, WebsitesQuery } from './gql/graphql';
-import { WebsiteListeItem } from './types';
-import { toArrayFromEdges } from './utils';
+import { graphql } from '../../gql';
+import { QueryWebsitesArgs, WebsitesQuery } from '../../gql/graphql';
+import { WebsiteListeItem } from '../../types';
+import { toArrayFromEdges } from '../../utils';
 
 graphql(`
   query websites($after: String, $first: Int) {
@@ -44,7 +44,7 @@ graphql(`
   }
 `);
 
-export function createGetWebsitesResponse(result: OperationResult<WebsitesQuery, QueryWebsitesArgs>) {
+export function makeGetWebsitesResponse(result: OperationResult<WebsitesQuery, QueryWebsitesArgs>) {
   const websites: WebsiteListeItem[] = toArrayFromEdges(result.data?.websites?.edges).map((website) => ({
     ...website,
     documents: toArrayFromEdges(website.documents?.edges),

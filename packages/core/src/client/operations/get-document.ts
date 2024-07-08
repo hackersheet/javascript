@@ -1,9 +1,9 @@
 import { OperationResult } from '@urql/core';
 
-import { graphql } from './gql';
-import { DocumentQuery, QueryDocumentArgs } from './gql/graphql';
-import { Document } from './types';
-import { toArrayFromEdges } from './utils';
+import { graphql } from '../../gql';
+import { DocumentQuery, QueryDocumentArgs } from '../../gql/graphql';
+import { Document } from '../../types';
+import { toArrayFromEdges } from '../../utils';
 
 graphql(`
   query document($slug: String) {
@@ -115,7 +115,7 @@ graphql(`
   }
 `);
 
-export function createGetDocumentResponse(result: OperationResult<DocumentQuery, QueryDocumentArgs>) {
+export function makeGetDocumentResponse(result: OperationResult<DocumentQuery, QueryDocumentArgs>) {
   if (!result.data?.document) {
     return { document: null, error: result.error };
   }

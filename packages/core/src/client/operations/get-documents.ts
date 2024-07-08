@@ -1,9 +1,9 @@
 import { OperationResult } from '@urql/core';
 
-import { graphql } from './gql';
-import { DocumentsQuery, QueryDocumentsArgs } from './gql/graphql';
-import { DocumentList } from './types';
-import { toArrayFromEdges } from './utils';
+import { graphql } from '../../gql';
+import { DocumentsQuery, QueryDocumentsArgs } from '../../gql/graphql';
+import { DocumentList } from '../../types';
+import { toArrayFromEdges } from '../../utils';
 
 graphql(`
   query documents($after: String, $first: Int, $filter: DocumentConnectionFilter, $sort: ConnectionSort) {
@@ -40,7 +40,7 @@ graphql(`
   }
 `);
 
-export function createDocumentListResponse(result: OperationResult<DocumentsQuery, QueryDocumentsArgs>) {
+export function makeGetDocumentsResponse(result: OperationResult<DocumentsQuery, QueryDocumentsArgs>) {
   if (!result.data || !result.data.documents) {
     return { documents: [], totalCount: 0, isEmpty: true, error: result.error };
   }
