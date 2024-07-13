@@ -16,7 +16,7 @@
     "dist"
   ],
   "scripts": {
-    "build": "rm -rf ./dist && pnpm tsup ./src --minify terser",
+    "build": "rm -rf ./dist && pnpm tsup",
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "eslint \"**/*.{ts,tsx}\"",
     "lint:fix": "eslint --fix \"**/*.{ts,tsx}\"",
