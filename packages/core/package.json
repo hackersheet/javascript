@@ -21,7 +21,8 @@
     "lint": "eslint \"**/*.{ts,tsx}\"",
     "lint:fix": "eslint --fix \"**/*.{ts,tsx}\"",
     "format": "pnpm -w format && pnpm lint:fix",
-    "check": "pnpm tsc && pnpm lint"
+    "check": "pnpm tsc && pnpm lint",
+    "publish": "pnpm publish --tag alpha"
   },
   "keywords": [],
   "author": "",
