@@ -37,19 +37,20 @@ importers:
         version: 5.5.3
 
   packages/core:
-    devDependencies:
+    dependencies:
       '@graphql-typed-document-node/core':
-        specifier: 3.2.0
+        specifier: ^3.2.0
         version: 3.2.0(graphql@16.9.0)
+      '@urql/core':
+        specifier: ^5.0.4
+        version: 5.0.4(graphql@16.9.0)
+      graphql:
+        specifier: ^16.9.0
+        version: 16.9.0
+    devDependencies:
       '@hackersheet/eslint-config-custom':
         specifier: workspace:*
         version: link:../eslint-config-custom
-      '@urql/core':
-        specifier: 5.0.4
-        version: 5.0.4(graphql@16.9.0)
-      graphql:
-        specifier: 16.9.0
-        version: 16.9.0
       terser:
         specifier: 5.31.2
         version: 5.31.2
