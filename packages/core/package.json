@@ -16,7 +16,9 @@
     "build": "rm -rf ./dist && pnpm tsup ./src",
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "eslint \"**/*.{ts,tsx}\"",
-    "lint:fix": "eslint --fix \"**/*.{ts,tsx}\""
+    "lint:fix": "eslint --fix \"**/*.{ts,tsx}\"",
+    "format": "pnpm -w format && pnpm lint:fix",
+    "check": "pnpm tsc && pnpm lint"
   },
   "keywords": [],
   "author": "",
