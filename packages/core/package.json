@@ -16,7 +16,7 @@
     "dist"
   ],
   "scripts": {
-    "build": "rm -rf ./dist && pnpm tsup ./src",
+    "build": "rm -rf ./dist && pnpm tsup ./src --minify terser",
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "eslint \"**/*.{ts,tsx}\"",
     "lint:fix": "eslint --fix \"**/*.{ts,tsx}\"",
@@ -31,6 +31,7 @@
     "@graphql-typed-document-node/core": "3.2.0",
     "@hackersheet/eslint-config-custom": "workspace:*",
     "@urql/core": "5.0.4",
-    "graphql": "16.9.0"
+    "graphql": "16.9.0",
+    "terser": "5.31.2"
   }
 }
