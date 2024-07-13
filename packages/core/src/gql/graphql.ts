@@ -5,9 +5,7 @@ export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
 export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
 export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
-export type MakeEmpty<T extends { [key: string]: unknown }, K extends keyof T> = {
-  [_ in K]?: never;
-};
+export type MakeEmpty<T extends { [key: string]: unknown }, K extends keyof T> = { [_ in K]?: never };
 export type Incremental<T> = T | { [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
@@ -310,6 +308,8 @@ export type Tag = {
   id: Scalars['ID']['output'];
   /** The name of the tag. */
   name: Scalars['String']['output'];
+  /** A list of related tags associated with the object. */
+  relatedTags?: Maybe<TagConnection>;
   /** Identifies the date and time when the object was updated. */
   updatedAt: Scalars['DateTime']['output'];
 };
@@ -321,6 +321,13 @@ export type TagDocumentsArgs = {
   first?: InputMaybe<Scalars['Int']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
   sort?: InputMaybe<ConnectionSort>;
+};
+
+export type TagRelatedTagsArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
 };
 
 /** The connection type for Tag. */
@@ -615,6 +622,19 @@ export type TagQuery = {
     name: string;
     documentCount: number;
     documentCountInPublished: number;
+    relatedTags?: {
+      __typename?: 'TagConnection';
+      edges?: Array<{
+        __typename?: 'TagEdge';
+        node?: {
+          __typename?: 'Tag';
+          id: string;
+          name: string;
+          documentCount: number;
+          documentCountInPublished: number;
+        } | null;
+      } | null> | null;
+    } | null;
   } | null;
 };
 
@@ -676,13 +696,7 @@ export type WebsitesQuery = {
           __typename?: 'DocumentConnection';
           edges?: Array<{
             __typename?: 'DocumentEdge';
-            node?: {
-              __typename?: 'Document';
-              id: string;
-              draft: boolean;
-              title: string;
-              slug: string;
-            } | null;
+            node?: { __typename?: 'Document'; id: string; draft: boolean; title: string; slug: string } | null;
           } | null> | null;
         } | null;
       } | null;
@@ -847,14 +861,8 @@ export const DocumentDocument = {
                                                 selectionSet: {
                                                   kind: 'SelectionSet',
                                                   selections: [
-                                                    {
-                                                      kind: 'Field',
-                                                      name: { kind: 'Name', value: 'id' },
-                                                    },
-                                                    {
-                                                      kind: 'Field',
-                                                      name: { kind: 'Name', value: 'name' },
-                                                    },
+                                                    { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                                                    { kind: 'Field', name: { kind: 'Name', value: 'name' } },
                                                   ],
                                                 },
                                               },
@@ -917,14 +925,8 @@ export const DocumentDocument = {
                                                 selectionSet: {
                                                   kind: 'SelectionSet',
                                                   selections: [
-                                                    {
-                                                      kind: 'Field',
-                                                      name: { kind: 'Name', value: 'id' },
-                                                    },
-                                                    {
-                                                      kind: 'Field',
-                                                      name: { kind: 'Name', value: 'name' },
-                                                    },
+                                                    { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                                                    { kind: 'Field', name: { kind: 'Name', value: 'name' } },
                                                   ],
                                                 },
                                               },
@@ -1101,14 +1103,8 @@ export const DocumentsDocument = {
                                           selectionSet: {
                                             kind: 'SelectionSet',
                                             selections: [
-                                              {
-                                                kind: 'Field',
-                                                name: { kind: 'Name', value: 'id' },
-                                              },
-                                              {
-                                                kind: 'Field',
-                                                name: { kind: 'Name', value: 'name' },
-                                              },
+                                              { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                                              { kind: 'Field', name: { kind: 'Name', value: 'name' } },
                                             ],
                                           },
                                         },
@@ -1182,6 +1178,37 @@ export const TagDocument = {
                 { kind: 'Field', name: { kind: 'Name', value: 'name' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'documentCount' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'documentCountInPublished' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'relatedTags' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'edges' },
+                        selectionSet: {
+                          kind: 'SelectionSet',
+                          selections: [
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'node' },
+                              selectionSet: {
+                                kind: 'SelectionSet',
+                                selections: [
+                                  { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                                  { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                                  { kind: 'Field', name: { kind: 'Name', value: 'documentCount' } },
+                                  { kind: 'Field', name: { kind: 'Name', value: 'documentCountInPublished' } },
+                                ],
+                              },
+                            },
+                          ],
+                        },
+                      },
+                    ],
+                  },
+                },
               ],
             },
           },
@@ -1236,10 +1263,7 @@ export const TagsDocument = {
                             { kind: 'Field', name: { kind: 'Name', value: 'id' } },
                             { kind: 'Field', name: { kind: 'Name', value: 'name' } },
                             { kind: 'Field', name: { kind: 'Name', value: 'documentCount' } },
-                            {
-                              kind: 'Field',
-                              name: { kind: 'Name', value: 'documentCountInPublished' },
-                            },
+                            { kind: 'Field', name: { kind: 'Name', value: 'documentCountInPublished' } },
                           ],
                         },
                       },
@@ -1349,22 +1373,10 @@ export const WebsitesDocument = {
                                           selectionSet: {
                                             kind: 'SelectionSet',
                                             selections: [
-                                              {
-                                                kind: 'Field',
-                                                name: { kind: 'Name', value: 'id' },
-                                              },
-                                              {
-                                                kind: 'Field',
-                                                name: { kind: 'Name', value: 'draft' },
-                                              },
-                                              {
-                                                kind: 'Field',
-                                                name: { kind: 'Name', value: 'title' },
-                                              },
-                                              {
-                                                kind: 'Field',
-                                                name: { kind: 'Name', value: 'slug' },
-                                              },
+                                              { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                                              { kind: 'Field', name: { kind: 'Name', value: 'draft' } },
+                                              { kind: 'Field', name: { kind: 'Name', value: 'title' } },
+                                              { kind: 'Field', name: { kind: 'Name', value: 'slug' } },
                                             ],
                                           },
                                         },
