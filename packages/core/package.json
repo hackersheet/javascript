@@ -2,9 +2,14 @@
   "name": "@hackersheet/core",
   "version": "0.1.0-alpha.4",
   "description": "A core package that includes Hacker Sheet's GraphQL API client.",
-  "main": "./dist/index.js",
-  "module": "./dist/index.mjs",
-  "types": "./dist/index.d.ts",
+  "keywords": [],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hackersheet/javascript.git",
+    "directory": "packages/core"
+  },
+  "license": "MIT",
+  "author": "",
   "exports": {
     ".": {
       "require": "./dist/index.js",
@@ -12,25 +17,20 @@
       "types": "./dist/index.d.ts"
     }
   },
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
   "files": [
     "dist"
   ],
   "scripts": {
     "build": "rm -rf ./dist && pnpm tsup",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "check": "pnpm tsc && pnpm lint",
+    "format": "pnpm -w format && pnpm lint:fix",
     "lint": "eslint \"**/*.{ts,tsx}\"",
     "lint:fix": "eslint --fix \"**/*.{ts,tsx}\"",
-    "format": "pnpm -w format && pnpm lint:fix",
-    "check": "pnpm tsc && pnpm lint",
-    "pub": "pnpm publish --access=public --tag alpha"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/hackersheet/javascript.git",
-    "directory": "packages/core"
+    "pub": "pnpm publish --access=public --tag alpha",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
     "@graphql-typed-document-node/core": "^3.2.0",
@@ -38,7 +38,6 @@
     "graphql": "^16.9.0"
   },
   "devDependencies": {
-    "@hackersheet/eslint-config-custom": "workspace:*",
-    "terser": "5.31.2"
+    "@hackersheet/eslint-config-custom": "workspace:*"
   }
 }
