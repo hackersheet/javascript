@@ -46,6 +46,7 @@
     "@hackersheet/core": "alpha",
     "deepmerge": "^4.0.0",
     "mustache": "^4.0.0",
+    "path": "^0.12.7",
     "react-markdown": "^9.0.0",
     "rehype-katex": "^7.0.0",
     "rehype-raw": "^7.0.0",
