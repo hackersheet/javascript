@@ -1,0 +1,73 @@
+{
+  "name": "@hackersheet/next-document-content-components",
+  "version": "0.1.0-alpha.1",
+  "description": "Hacker Sheet document content components for Next.js",
+  "keywords": [],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hackersheet/javascript.git",
+    "directory": "packages/next-document-content-components"
+  },
+  "license": "MIT",
+  "author": "",
+  "sideEffects": [
+    "*.css"
+  ],
+  "exports": {
+    ".": {
+      "require": "./dist/cjs/index.js",
+      "import": "./dist/esm/index.mjs",
+      "types": "./dist/esm/index.d.ts"
+    },
+    "./style": {
+      "import": "./dist/style.module.css",
+      "require": "./dist/style.module.css",
+      "types": "./dist/style.module.scss.d.ts"
+    }
+  },
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/esm/index.mjs",
+  "types": "./dist/esm/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "rm -rf ./dist && pnpm tsup && pnpm typegen:scss && pnpm build:css",
+    "build:css": "cp src/styles/*.ts dist && pnpm sass src/styles/style.module.scss dist/style.module.css --no-source-map",
+    "check": "pnpm tsc && pnpm lint",
+    "format": "pnpm -w format && pnpm lint:fix",
+    "lint": "eslint \"**/*.{ts,tsx}\"",
+    "lint:fix": "eslint --fix \"**/*.{ts,tsx}\"",
+    "pub": "pnpm publish --access=public --tag alpha",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "typegen:scss": "typed-scss-modules src/styles/style.module.scss"
+  },
+  "dependencies": {
+    "@hackersheet/core": "alpha",
+    "@hackersheet/react-document-content": "alpha",
+    "@next/third-parties": "^14.2.5",
+    "@shikijs/transformers": "^1.10.3",
+    "kifu-for-js": "^5.4.1",
+    "mermaid": "^10.9.1",
+    "next-themes": "^0.3.0",
+    "react-icons": "^5.2.1",
+    "react-tweet": "^3.2.1",
+    "shiki": "^1.10.3"
+  },
+  "devDependencies": {
+    "@hackersheet/eslint-config-custom": "workspace:*",
+    "@types/react": "^18.0.0",
+    "@types/react-dom": "^18.0.0",
+    "next": "14.2.5",
+    "postcss": "8.4.39",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
+    "sass": "1.77.8",
+    "typed-scss-modules": "8.0.1"
+  },
+  "peerDependencies": {
+    "next": "^14.0.0",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0"
+  }
+}
