@@ -1,0 +1,42 @@
+{
+  "name": "@hackersheet/react-document-content-styles",
+  "version": "0.1.0-alpha.1",
+  "description": "Hacker Sheet document content styles.",
+  "keywords": [],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hackersheet/javascript.git",
+    "directory": "packages/react-document-content-styles"
+  },
+  "license": "MIT",
+  "author": "",
+  "sideEffects": [
+    "*.css"
+  ],
+  "exports": {
+    "./basic": {
+      "import": "./dist/basic.module.css",
+      "require": "./dist/basic.module.css",
+      "types": "./dist/basic.module.scss.d.ts"
+    }
+  },
+  "main": "",
+  "module": "",
+  "types": "",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "rm -rf ./dist && mkdir dist && pnpm typegen:scss && pnpm build:css",
+    "build:css": "cp src/styles/*.ts dist && pnpm sass:basic",
+    "format": "pnpm -w format",
+    "pub": "pnpm publish --access=public --tag alpha",
+    "sass:basic": "pnpm sass src/styles/basic.module.scss:dist/basic.module.css --no-source-map",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "typegen:scss": "typed-scss-modules \"src/styles/*.module.scss\""
+  },
+  "devDependencies": {
+    "sass": "1.77.8",
+    "typed-scss-modules": "8.0.1"
+  }
+}

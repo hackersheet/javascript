@@ -216,6 +216,15 @@ importers:
         specifier: 8.0.1
         version: 8.0.1(sass@1.77.8)
 
+  packages/react-document-content-styles:
+    devDependencies:
+      sass:
+        specifier: 1.77.8
+        version: 1.77.8
+      typed-scss-modules:
+        specifier: 8.0.1
+        version: 8.0.1(sass@1.77.8)
+
 packages:
 
   '@0no-co/graphql.web@1.0.7':
