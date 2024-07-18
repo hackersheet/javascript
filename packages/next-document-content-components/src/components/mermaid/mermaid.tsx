@@ -6,9 +6,7 @@ import mermaid from 'mermaid';
 import { useTheme } from 'next-themes';
 import React, { useEffect, useRef, useState } from 'react';
 
-export interface CodeBlockMermaidProps {
-  code: string;
-}
+import type { MermaidComponentProps } from '@hackersheet/react-document-content';
 
 function createId(code: string) {
   const hash = createHash('sha256');
@@ -16,7 +14,7 @@ function createId(code: string) {
   return 'id-' + hash.digest('hex');
 }
 
-export default function CodeBlockMermaid({ code }: CodeBlockMermaidProps) {
+export default function Mermaid({ code }: MermaidComponentProps) {
   const ref = useRef<HTMLDivElement>(null);
   const [mounted, setMounted] = useState(false);
   const [svg, setSvg] = useState('');

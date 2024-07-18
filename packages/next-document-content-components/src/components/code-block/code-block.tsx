@@ -2,22 +2,14 @@ import React from 'react';
 
 import CodeBlockCopyButton from './code-block-copy-button';
 import CodeBlockIcon from './code-block-icon';
-import CodeBlockKifu from './code-block-kifu';
-import CodeBlockMermaid from './code-block-mermaid';
 import { highlighteCode } from './shiki';
 
 import type { CodeBlockComponentProps } from '@hackersheet/react-document-content';
 
-export default async function CodeBlock({ code, language }: CodeBlockComponentProps) {
-  const [lang, filename] = language.split(':');
+export default async function CodeBlock({ code, ...props }: CodeBlockComponentProps) {
+  const [language, filename] = props.language.split(':');
 
-  const isMermaid = lang === 'mermaid';
-  const isKifu = lang === 'kifu';
-
-  if (isMermaid) return <CodeBlockMermaid code={code} />;
-  if (isKifu) return <CodeBlockKifu kifu={code} filename={filename} />;
-
-  const html = await highlighteCode(code, lang);
+  const html = await highlighteCode(code, language);
 
   return (
     <div className="code-block">

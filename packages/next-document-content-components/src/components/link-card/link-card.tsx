@@ -17,7 +17,9 @@ export default function LinkCard({
   return (
     <a href={url} className="link-card">
       <div className="link-card-main">
-        <div className="link-card-title">{title}</div>
+        <div className="link-card-title-container">
+          <div className="link-card-title">{title}</div>
+        </div>
         <div className="link-card-description">{description}</div>
         <div className="link-card-domain">
           <picture>
