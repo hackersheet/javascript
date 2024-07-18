@@ -242,6 +242,10 @@
       padding: 0 16px;
     }
 
+    :global(span.line.highlighted) {
+      background-color: hsl(var(--hsdc-shiki-highlighted-word) / 0.1) !important;
+    }
+
     :global(span.line.diff.add) {
       background-color: hsl(var(--hsdc-shiki-diff-add) / 0.1) !important;
 
@@ -268,6 +272,23 @@
       background-color: hsl(var(--hsdc-shiki-highlighted-word) / 0.2);
       padding: 2px 0;
       margin: -2px 0;
+    }
+
+    :global(.tab),
+    :global(.space) {
+      position: relative;
+    }
+
+    :global(.tab::before) {
+      content: '⇥';
+      position: absolute;
+      opacity: 0.3;
+    }
+
+    :global(.space::before) {
+      content: '·';
+      position: absolute;
+      opacity: 0.3;
     }
   }
 
