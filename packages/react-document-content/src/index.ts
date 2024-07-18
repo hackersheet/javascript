@@ -1,11 +1,13 @@
 export type {
-  ImageComponentProps,
-  LinkComponentProps,
   CodeBlockComponentProps,
-  XPostComponentProps,
+  ImageComponentProps,
+  KifuComponentProps,
   KifuToComponentProps,
-  YoutubeComponentProps,
   LinkCardComponentProps,
+  LinkComponentProps,
+  MermaidComponentProps,
+  XPostComponentProps,
+  YoutubeComponentProps,
 } from './component-resolvers';
 
 export { DocumentContent } from './document-content';
