@@ -12,6 +12,7 @@
     "format": "prettier --write --ignore-unknown .",
     "format:package": "pnpm dlx sort-package-json \"package.json\" \"packages/*/package.json\"",
     "next-document-content-components": "pnpm -F next-document-content-components",
+    "next-document-content-kifu": "pnpm -F next-document-content-kifu",
     "react-document-content": "pnpm -F react-document-content",
     "react-document-content-styles": "pnpm -F react-document-content-styles",
     "test": "echo \"Error: no test specified\" && exit 1"

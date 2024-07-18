@@ -1,0 +1,53 @@
+{
+  "name": "@hackersheet/next-document-content-kifu",
+  "version": "0.1.0-alpha.1",
+  "description": "Hacker Sheet document content kifu components for Next.js",
+  "keywords": [],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hackersheet/javascript.git",
+    "directory": "packages/next-document-content-kifu"
+  },
+  "license": "MIT",
+  "author": "",
+  "exports": {
+    ".": {
+      "require": "./dist/cjs/index.js",
+      "import": "./dist/esm/index.mjs",
+      "types": "./dist/esm/index.d.ts"
+    }
+  },
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/esm/index.mjs",
+  "types": "./dist/esm/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "rm -rf ./dist && pnpm tsup",
+    "check": "pnpm tsc && pnpm lint",
+    "format": "pnpm -w format && pnpm lint:fix",
+    "lint": "eslint \"**/*.{ts,tsx}\"",
+    "lint:fix": "eslint --fix \"**/*.{ts,tsx}\"",
+    "pub": "pnpm publish --access=public --tag alpha",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "@hackersheet/core": "alpha",
+    "@hackersheet/react-document-content": "alpha",
+    "kifu-for-js": "^5.4.1"
+  },
+  "devDependencies": {
+    "@hackersheet/eslint-config-custom": "workspace:*",
+    "@types/react": "^18.0.0",
+    "@types/react-dom": "^18.0.0",
+    "next": "14.2.5",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0"
+  },
+  "peerDependencies": {
+    "next": "^14.0.0",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0"
+  }
+}
