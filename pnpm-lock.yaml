@@ -90,9 +90,6 @@ importers:
       '@shikijs/transformers':
         specifier: ^1.10.3
         version: 1.10.3
-      kifu-for-js:
-        specifier: ^5.4.1
-        version: 5.4.1(prop-types@15.8.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       mermaid:
         specifier: ^10.9.1
         version: 10.9.1
@@ -121,27 +118,52 @@ importers:
       next:
         specifier: 14.2.5
         version: 14.2.5(@babel/core@7.24.7)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(sass@1.77.8)
-      postcss:
-        specifier: 8.4.39
-        version: 8.4.39
       react:
         specifier: ^18.0.0
         version: 18.3.1
       react-dom:
         specifier: ^18.0.0
         version: 18.3.1(react@18.3.1)
-      sass:
-        specifier: 1.77.8
-        version: 1.77.8
-      typed-scss-modules:
-        specifier: 8.0.1
-        version: 8.0.1(sass@1.77.8)
+
+  packages/next-document-content-kifu:
+    dependencies:
+      '@hackersheet/core':
+        specifier: alpha
+        version: 0.1.0-alpha.4
+      '@hackersheet/react-document-content':
+        specifier: alpha
+        version: 0.1.0-alpha.2(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      kifu-for-js:
+        specifier: ^5.4.1
+        version: 5.4.1(prop-types@15.8.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+    devDependencies:
+      '@hackersheet/eslint-config-custom':
+        specifier: workspace:*
+        version: link:../eslint-config-custom
+      '@types/react':
+        specifier: ^18.0.0
+        version: 18.3.3
+      '@types/react-dom':
+        specifier: ^18.0.0
+        version: 18.3.0
+      next:
+        specifier: 14.2.5
+        version: 14.2.5(@babel/core@7.24.7)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(sass@1.77.8)
+      react:
+        specifier: ^18.0.0
+        version: 18.3.1
+      react-dom:
+        specifier: ^18.0.0
+        version: 18.3.1(react@18.3.1)
 
   packages/react-document-content:
     dependencies:
       '@hackersheet/core':
         specifier: alpha
         version: 0.1.0-alpha.4
+      '@hackersheet/react-document-content-styles':
+        specifier: alpha
+        version: 0.1.0-alpha.1
       deepmerge:
         specifier: ^4.0.0
         version: 4.3.1
@@ -200,21 +222,12 @@ importers:
       '@types/unist':
         specifier: 3.0.2
         version: 3.0.2
-      postcss:
-        specifier: 8.4.39
-        version: 8.4.39
       react:
         specifier: ^18.0.0
         version: 18.3.1
       react-dom:
         specifier: ^18.0.0
         version: 18.3.1(react@18.3.1)
-      sass:
-        specifier: 1.77.8
-        version: 1.77.8
-      typed-scss-modules:
-        specifier: 8.0.1
-        version: 8.0.1(sass@1.77.8)
 
   packages/react-document-content-styles:
     devDependencies:
@@ -911,8 +924,17 @@ packages:
   '@hackersheet/core@0.1.0-alpha.4':
     resolution: {integrity: sha512-3VVTrjsY8Dzhva3YkVPXa4/WlzcNwzSuwjrTQOohfPbD70E18+XbOp6EcEDdt4w+Uz6j9ZQzShMZ+3G7K5gI7Q==}
 
+  '@hackersheet/react-document-content-styles@0.1.0-alpha.1':
+    resolution: {integrity: sha512-pOtzI0Mr/epJQE+eKYZXjAcvcVRRU4DozEXMSZjN1Tpw5rmt99l5UcStOxit7m7ZMEJU08O1nOKTfKguQfqj2w==}
+
   '@hackersheet/react-document-content@0.1.0-alpha.1':
     resolution: {integrity: sha512-FAzb0KTE+afMbI6zRNuC8YpmXCI3W9RMA9Bv4b/EcVVezIG/n3weGYnS4ixk/pA5AkDW/Ud/TWbGTFiC+yedNA==}
+    peerDependencies:
+      react: ^18.0.0
+      react-dom: ^18.0.0
+
+  '@hackersheet/react-document-content@0.1.0-alpha.2':
+    resolution: {integrity: sha512-nQgny4uAQ86CCfbAbsr/Enx0aygzw239wteBhG16/dYk6LukcQWFhcYKryrJDGiyxUkdjdzbuiHoDlwAro8o3A==}
     peerDependencies:
       react: ^18.0.0
       react-dom: ^18.0.0
@@ -5224,11 +5246,35 @@ snapshots:
       '@urql/core': 5.0.4(graphql@16.9.0)
       graphql: 16.9.0
 
+  '@hackersheet/react-document-content-styles@0.1.0-alpha.1': {}
+
   '@hackersheet/react-document-content@0.1.0-alpha.1(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
       '@hackersheet/core': 0.1.0-alpha.4
       deepmerge: 4.3.1
       mustache: 4.2.0
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
+      react-markdown: 9.0.1(@types/react@18.3.3)(react@18.3.1)
+      rehype-katex: 7.0.0
+      rehype-raw: 7.0.0
+      rehype-sanitize: 6.0.0
+      rehype-slug: 6.0.0
+      remark-directive: 3.0.0
+      remark-directive-rehype: 0.4.2
+      remark-gfm: 4.0.0
+      remark-math: 6.0.0
+      unist-util-visit: 5.0.0
+    transitivePeerDependencies:
+      - '@types/react'
+      - supports-color
+
+  '@hackersheet/react-document-content@0.1.0-alpha.2(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+    dependencies:
+      '@hackersheet/core': 0.1.0-alpha.4
+      deepmerge: 4.3.1
+      mustache: 4.2.0
+      path: 0.12.7
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
       react-markdown: 9.0.1(@types/react@18.3.3)(react@18.3.1)

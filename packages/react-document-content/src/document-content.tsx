@@ -25,14 +25,16 @@ import { processInternalLinks, rehypeClobberUrlDecode, rehypeFootnoteLinks } fro
 import type {
   CodeBlockComponentProps,
   ImageComponentProps,
+  KifuComponentProps,
   KifuToComponentProps,
   LinkCardComponentProps,
   LinkComponentProps,
+  MermaidComponentProps,
   XPostComponentProps,
   YoutubeComponentProps,
 } from './component-resolvers';
-import type { Styles } from './styles/style.module.scss';
 import type { Document } from '@hackersheet/core';
+import type { Styles } from '@hackersheet/react-document-content-styles/basic';
 
 type DirectiveProps = { children: ReactNode } & ExtraProps;
 
@@ -59,9 +61,11 @@ export interface DocumentContentProps {
   components?: {
     codeBlock?: FC<CodeBlockComponentProps>;
     image?: FC<ImageComponentProps>;
+    kifu?: FC<KifuComponentProps>;
     kifuTo?: FC<KifuToComponentProps>;
     link?: FC<LinkComponentProps>;
     linkCard?: FC<LinkCardComponentProps>;
+    mermaid?: FC<MermaidComponentProps>;
     xPost?: FC<XPostComponentProps>;
     youtube?: FC<YoutubeComponentProps>;
   };
@@ -75,9 +79,11 @@ export function DocumentContent({ document, permaLinkFormat, style, components }
 
   const CodeBlockComponent = components?.codeBlock ?? CodeBlock;
   const ImageComponent = components?.image ?? Image;
+  const KifuComponent = components?.kifu;
   const KifuToComponent = components?.kifuTo ?? KifuTo;
   const LinkCardComponent = components?.linkCard ?? LinkCard;
   const LinkComponent = components?.link ?? Link;
+  const MermaidComponent = components?.mermaid;
   const XPostComponent = components?.xPost ?? XPost;
   const YoutubeComponent = components?.youtube ?? Youtube;
 
@@ -100,7 +106,7 @@ export function DocumentContent({ document, permaLinkFormat, style, components }
       a: (props) => AComponentResolver({ ...props, document, LinkComponent }),
       h1: 'h2',
       img: (props) => ImgComponentResolver({ ...props, document, ImageComponent }),
-      pre: (props) => PreComponentResolver({ ...props, document, CodeBlockComponent }),
+      pre: (props) => PreComponentResolver({ ...props, document, CodeBlockComponent, KifuComponent, MermaidComponent }),
       youtube: (props) => YoutubeComponentResolver({ ...props, document, YoutubeComponent }),
     },
   };

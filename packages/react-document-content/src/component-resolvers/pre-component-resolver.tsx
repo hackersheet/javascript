@@ -12,10 +12,26 @@ export type CodeBlockComponentProps = {
   children?: ReactNode;
 };
 
+export type MermaidComponentProps = {
+  code: string;
+  language: string;
+  document: Document;
+  children?: ReactNode;
+};
+
+export type KifuComponentProps = {
+  code: string;
+  language: string;
+  document: Document;
+  children?: ReactNode;
+};
+
 export type PreComponentResolverProps = JSX.IntrinsicElements['pre'] &
   ExtraProps & {
     document: Document;
     CodeBlockComponent: FC<CodeBlockComponentProps>;
+    MermaidComponent?: FC<MermaidComponentProps>;
+    KifuComponent?: FC<KifuComponentProps>;
   };
 
 export default function PreComponentResolver({
@@ -23,6 +39,8 @@ export default function PreComponentResolver({
   node,
   document,
   CodeBlockComponent,
+  MermaidComponent,
+  KifuComponent,
 }: PreComponentResolverProps) {
   const childrenElm = <>{children}</>;
 
@@ -43,10 +61,23 @@ export default function PreComponentResolver({
   }
 
   const className = code.properties.className as string;
-  const codeValue = text.value as string;
+  const codeValue = text.value;
 
   const match = /language-(.+)/.exec(className || '');
   const language = match && match[1] ? (match[1] as string) : '';
 
-  return <CodeBlockComponent code={codeValue} language={language} document={document} children={children} />;
+  const isMermaid = /^mermaid(:.*$|$)/.test(language);
+  const isKifu = /^kifu(:.*$|$)/.test(language);
+
+  const props = {
+    code: codeValue,
+    language: language,
+    document: document,
+    children: children,
+  };
+
+  if (isMermaid && MermaidComponent) return <MermaidComponent {...props} />;
+  if (isKifu && KifuComponent) return <KifuComponent {...props} />;
+
+  return <CodeBlockComponent {...props} />;
 }

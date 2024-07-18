@@ -10,19 +10,11 @@
   },
   "license": "MIT",
   "author": "",
-  "sideEffects": [
-    "*.css"
-  ],
   "exports": {
     ".": {
       "require": "./dist/index.js",
       "import": "./dist/index.mjs",
       "types": "./dist/index.d.ts"
-    },
-    "./style": {
-      "import": "./dist/style.module.css",
-      "require": "./dist/style.module.css",
-      "types": "./dist/style.module.scss.d.ts"
     }
   },
   "main": "./dist/index.js",
@@ -32,18 +24,17 @@
     "dist"
   ],
   "scripts": {
-    "build": "rm -rf ./dist && pnpm tsup && pnpm typegen:scss && pnpm build:css",
-    "build:css": "cp src/styles/*.ts dist && pnpm sass src/styles/style.module.scss dist/style.module.css --no-source-map",
+    "build": "rm -rf ./dist && pnpm tsup",
     "check": "pnpm tsc && pnpm lint",
     "format": "pnpm -w format && pnpm lint:fix",
     "lint": "eslint \"**/*.{ts,tsx}\"",
     "lint:fix": "eslint --fix \"**/*.{ts,tsx}\"",
     "pub": "pnpm publish --access=public --tag alpha",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "typegen:scss": "typed-scss-modules \"src/styles/style.module.scss\""
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
     "@hackersheet/core": "alpha",
+    "@hackersheet/react-document-content-styles": "alpha",
     "deepmerge": "^4.0.0",
     "mustache": "^4.0.0",
     "path": "^0.12.7",
@@ -65,11 +56,8 @@
     "@types/react": "^18.0.0",
     "@types/react-dom": "^18.0.0",
     "@types/unist": "3.0.2",
-    "postcss": "8.4.39",
     "react": "^18.0.0",
-    "react-dom": "^18.0.0",
-    "sass": "1.77.8",
-    "typed-scss-modules": "8.0.1"
+    "react-dom": "^18.0.0"
   },
   "peerDependencies": {
     "react": "^18.0.0",
