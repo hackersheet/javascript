@@ -11,5 +11,9 @@ export default async function Youtube({ videoId, params, playLabel, ...props }: 
         .join('&')
     : undefined;
 
-  return <YouTubeEmbed {...props} videoid={videoId} params={paramsString} playlabel={playLabel} />;
+  return (
+    <div className="youtube-block">
+      <YouTubeEmbed {...props} videoid={videoId} params={paramsString} playlabel={playLabel} />
+    </div>
+  );
 }
