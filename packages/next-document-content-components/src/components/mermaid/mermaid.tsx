@@ -40,16 +40,13 @@ export default function Mermaid({ code }: MermaidComponentProps) {
     renderMermaid();
   }, [mounted, code, id, theme, systemTheme, setSvg, setMounted]);
 
-  if (!mounted)
+  if (!mounted) {
     return (
-      <div>
+      <div className="mermaid-block mermaid-loading">
         <div>Loading...</div>
       </div>
     );
+  }
 
-  return (
-    <div>
-      <div dangerouslySetInnerHTML={{ __html: svg }} ref={ref} />
-    </div>
-  );
+  return <div className="mermaid-block" dangerouslySetInnerHTML={{ __html: svg }} ref={ref} />;
 }
