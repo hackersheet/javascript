@@ -1,6 +1,7 @@
 import deepmerge from 'deepmerge';
 import React, { FC, ReactNode } from 'react';
 import Markdown, { ExtraProps, Options } from 'react-markdown';
+import { rehypeGithubAlerts } from 'rehype-github-alerts';
 import rehypeKatex from 'rehype-katex';
 import rehypeRaw from 'rehype-raw';
 import rehypeSanitize, { defaultSchema } from 'rehype-sanitize';
@@ -98,6 +99,7 @@ export function DocumentContent({ document, permaLinkFormat, style, components }
       [processInternalLinks, { document, permaLinkFormat }],
       rehypeFootnoteLinks,
       rehypeClobberUrlDecode,
+      rehypeGithubAlerts,
     ],
     components: {
       'kifu-to': (props) => KifuToComponentResolver({ ...props, document, KifuToComponent }),
