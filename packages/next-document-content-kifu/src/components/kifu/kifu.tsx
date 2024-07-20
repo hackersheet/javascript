@@ -29,7 +29,7 @@ export default function Kifu({ code, language }: KifuComponentProps) {
   }
 
   return (
-    <div className="my-4 flex justify-center" id={id}>
+    <div className="kifu-block" id={id}>
       <KifuLite style={{ width: '100%' }} kifuStore={kifuStore} />
     </div>
   );
