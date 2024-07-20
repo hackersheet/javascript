@@ -457,6 +457,8 @@
   }
 
   :global(.mermaid-block) {
+    margin: 1.5rem 0;
+
     svg {
       margin-right: auto;
       margin-left: auto;
@@ -476,7 +478,18 @@
   }
 
   :global(.youtube-block) {
+    margin: 1.5rem 0;
+
     div > lite-youtube {
+      margin-right: auto;
+      margin-left: auto;
+    }
+  }
+
+  :global(.kifu-block) {
+    margin: 1.5rem 0;
+
+    svg {
       margin-right: auto;
       margin-left: auto;
     }
