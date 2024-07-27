@@ -4,10 +4,11 @@
   "private": true,
   "scripts": {
     "build": "next build",
-    "dev": "next dev",
+    "dev": "pnpm with-env next dev",
     "lint": "next lint",
     "lint:fix": "next lint --fix",
-    "start": "next start"
+    "start": "next start",
+    "with-env": "dotenv -e ../../.env --"
   },
   "dependencies": {
     "@hackersheet/core": "workspace:*",
