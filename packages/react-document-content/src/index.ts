@@ -1,5 +1,6 @@
 export type {
   CodeBlockComponentProps,
+  HeadingComponentProps,
   ImageComponentProps,
   KifuComponentProps,
   KifuToComponentProps,

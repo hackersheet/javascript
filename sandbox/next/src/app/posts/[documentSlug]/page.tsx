@@ -1,5 +1,6 @@
 import {
   CodeBlock,
+  Heading,
   Image,
   Link,
   LinkCard,
@@ -31,6 +32,7 @@ export default async function PostPage({ params: { documentSlug } }: { params: {
         permaLinkFormat="/posts/{{slug}}"
         components={{
           codeBlock: CodeBlock,
+          heading: Heading,
           image: Image,
           kifu: Kifu,
           kifuTo: KifuTo,
