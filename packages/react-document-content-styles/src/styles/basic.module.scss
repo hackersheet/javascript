@@ -1,10 +1,12 @@
+@use './gist/gist';
+
 .main {
   > :first-child {
-    margin-top: 0;
+    margin-top: 0 !important;
   }
 
   > :last-child {
-    margin-bottom: 0;
+    margin-bottom: 0 !important;
   }
 
   * {
@@ -100,7 +102,7 @@
     }
   }
 
-  table {
+  table:not(:global .gist-block table) {
     margin: 1.5rem 0;
     width: 100%;
     table-layout: fixed;
@@ -554,6 +556,20 @@
       svg {
         margin-right: auto;
         margin-left: auto;
+      }
+    }
+
+    .gist-block {
+      margin: 1.5rem 0;
+
+      .gist-file {
+        border-radius: 0.25rem;
+        overflow: hidden;
+        border: 1px solid hsl(var(--hsdc-border));
+      }
+
+      .gist-file:last-child {
+        margin-bottom: 0;
       }
     }
   }

@@ -18,6 +18,10 @@
       "import": "./dist/basic.module.css",
       "require": "./dist/basic.module.css",
       "types": "./dist/basic.module.scss.d.ts"
+    },
+    "./gist-theme": {
+      "import": "./dist/gist-theme.css",
+      "require": "./dist/gist-theme.css"
     }
   },
   "main": "",
@@ -31,7 +35,7 @@
     "build:css": "cp src/styles/*.ts dist && pnpm sass:basic",
     "format": "pnpm -w format",
     "pub": "pnpm publish --access=public --tag alpha",
-    "sass:basic": "pnpm sass src/styles/basic.module.scss:dist/basic.module.css --no-source-map",
+    "sass:basic": "pnpm sass src/styles/basic.module.scss:dist/basic.module.css src/styles/gist-theme.scss:dist/gist-theme.css --no-source-map",
     "test": "echo \"Error: no test specified\" && exit 1",
     "typegen:scss": "typed-scss-modules \"src/styles/*.module.scss\""
   },
