@@ -13,6 +13,7 @@ import remarkMath from 'remark-math';
 
 import {
   AComponentResolver,
+  HeadingComponentResolver,
   ImgComponentResolver,
   KifuToComponentResolver,
   LinkCardComponentResolver,
@@ -20,11 +21,12 @@ import {
   XPostComponentResolver,
   YoutubeComponentResolver,
 } from './component-resolvers';
-import { Link, Image, CodeBlock, KifuTo, LinkCard, XPost, Youtube } from './components';
+import { Link, Heading, Image, CodeBlock, KifuTo, LinkCard, XPost, Youtube } from './components';
 import { processInternalLinks, rehypeClobberUrlDecode, rehypeFootnoteLinks } from './rehype-plugins';
 
 import type {
   CodeBlockComponentProps,
+  HeadingComponentProps,
   ImageComponentProps,
   KifuComponentProps,
   KifuToComponentProps,
@@ -36,7 +38,6 @@ import type {
 } from './component-resolvers';
 import type { Document } from '@hackersheet/core';
 import type { Styles } from '@hackersheet/react-document-content-styles/basic';
-
 type DirectiveProps = { children: ReactNode } & ExtraProps;
 
 declare global {
@@ -61,6 +62,7 @@ export interface DocumentContentProps {
   style?: Styles | CssModule;
   components?: {
     codeBlock?: FC<CodeBlockComponentProps>;
+    heading?: FC<HeadingComponentProps>;
     image?: FC<ImageComponentProps>;
     kifu?: FC<KifuComponentProps>;
     kifuTo?: FC<KifuToComponentProps>;
@@ -79,6 +81,7 @@ export function DocumentContent({ document, permaLinkFormat, style, components }
   });
 
   const CodeBlockComponent = components?.codeBlock ?? CodeBlock;
+  const HeadingComponent = components?.heading ?? Heading;
   const ImageComponent = components?.image ?? Image;
   const KifuComponent = components?.kifu;
   const KifuToComponent = components?.kifuTo ?? KifuTo;
@@ -106,7 +109,12 @@ export function DocumentContent({ document, permaLinkFormat, style, components }
       'link-card': (props) => LinkCardComponentResolver({ ...props, document, LinkCardComponent }),
       'x-post': (props) => XPostComponentResolver({ ...props, document, XPostComponent }),
       a: (props) => AComponentResolver({ ...props, document, LinkComponent }),
-      h1: 'h2',
+      h1: (props) => HeadingComponentResolver({ ...props, document, HeadingComponent }),
+      h2: (props) => HeadingComponentResolver({ ...props, document, HeadingComponent }),
+      h3: (props) => HeadingComponentResolver({ ...props, document, HeadingComponent }),
+      h4: (props) => HeadingComponentResolver({ ...props, document, HeadingComponent }),
+      h5: (props) => HeadingComponentResolver({ ...props, document, HeadingComponent }),
+      h6: (props) => HeadingComponentResolver({ ...props, document, HeadingComponent }),
       img: (props) => ImgComponentResolver({ ...props, document, ImageComponent }),
       pre: (props) => PreComponentResolver({ ...props, document, CodeBlockComponent, KifuComponent, MermaidComponent }),
       youtube: (props) => YoutubeComponentResolver({ ...props, document, YoutubeComponent }),

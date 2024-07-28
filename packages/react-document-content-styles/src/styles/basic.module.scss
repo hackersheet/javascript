@@ -194,6 +194,28 @@
 
 .main {
   :global {
+    .heading {
+      &:has(a) {
+        padding: 0;
+      }
+      a {
+        padding: 0.5rem 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: inherit;
+        font-size: 0.9em;
+      }
+      .heading-link-icon {
+        display: none;
+      }
+      &:hover {
+        .heading-link-icon {
+          display: inline;
+        }
+      }
+    }
+
     .footnotes {
       margin-top: 4rem;
       padding-top: 2rem;
