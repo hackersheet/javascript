@@ -40,7 +40,10 @@ function getGistIdFromGistUrl(value: string) {
   try {
     const url = new URL(value);
     if (/(^|\.)gist.github.com$/.test(url.host)) {
-      return url.pathname.match(/^\/(.+)\/(\w+)$/) ?? ([undefined, undefined] as const);
+      const result = url.pathname.match(/^\/(.+)\/(\w+)$/);
+      if (result === null) return [undefined, undefined] as const;
+
+      return [result[1], result[2]] as const;
     }
     return [undefined, undefined] as const;
   } catch {
