@@ -7,6 +7,7 @@ import type { ExtraProps } from 'react-markdown';
 
 export type GistComponentProps = {
   gistId: string;
+  username?: string;
   filename?: string;
   url?: string;
   children?: ReactNode;
@@ -26,22 +27,23 @@ export default function GistComponentResolver({ children, node, GistComponent }:
 
   if (!href || typeof href !== 'string') return <p>{children}</p>;
 
-  const gistId = getGistIdFromGistUrl(href);
+  const [username, gistId] = getGistIdFromGistUrl(href);
 
   const filename = node.properties.filename ? String(node.properties.filename) : undefined;
 
   if (!gistId) return <p>{children}</p>;
 
-  return <GistComponent gistId={gistId} filename={filename} url={href} children={children} />;
+  return <GistComponent gistId={gistId} username={username} filename={filename} url={href} children={children} />;
 }
 
 function getGistIdFromGistUrl(value: string) {
   try {
     const url = new URL(value);
     if (/(^|\.)gist.github.com$/.test(url.host)) {
-      return url.pathname.match(/^\/.+\/(\w+)$/)?.[1];
+      return url.pathname.match(/^\/(.+)\/(\w+)$/) ?? ([undefined, undefined] as const);
     }
+    return [undefined, undefined] as const;
   } catch {
-    return;
+    return [undefined, undefined] as const;
   }
 }
