@@ -86,7 +86,7 @@ importers:
         version: 0.1.0-alpha.4
       '@hackersheet/react-document-content':
         specifier: alpha
-        version: 0.1.0-alpha.6(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        version: 0.1.0-alpha.7(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@next/third-parties':
         specifier: ^14.2.5
         version: 14.2.5(next@14.2.5(@babel/core@7.24.9)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(sass@1.77.8))(react@18.3.1)
@@ -135,7 +135,7 @@ importers:
         version: 0.1.0-alpha.4
       '@hackersheet/react-document-content':
         specifier: alpha
-        version: 0.1.0-alpha.6(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        version: 0.1.0-alpha.7(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       kifu-for-js:
         specifier: ^5.4.1
         version: 5.4.1(prop-types@15.8.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -166,7 +166,7 @@ importers:
         version: 0.1.0-alpha.4
       '@hackersheet/react-document-content-styles':
         specifier: alpha
-        version: 0.1.0-alpha.7
+        version: 0.1.0-alpha.8
       deepmerge:
         specifier: ^4.0.0
         version: 4.3.1
@@ -1004,11 +1004,11 @@ packages:
   '@hackersheet/core@0.1.0-alpha.4':
     resolution: {integrity: sha512-3VVTrjsY8Dzhva3YkVPXa4/WlzcNwzSuwjrTQOohfPbD70E18+XbOp6EcEDdt4w+Uz6j9ZQzShMZ+3G7K5gI7Q==}
 
-  '@hackersheet/react-document-content-styles@0.1.0-alpha.7':
-    resolution: {integrity: sha512-f15KHkSMcOEHruy8xQkMKXwO2AplTkjteAP6qkNIrmix0TwXlHRErAwgKYINHXzHyn8neBX+xbFOzMtxdq19DQ==}
+  '@hackersheet/react-document-content-styles@0.1.0-alpha.8':
+    resolution: {integrity: sha512-a8/BDQ3D4aTn8u+NGtvWShaXxWyf4D2GKCd0G0lVfpMQuldkKDJMTOOad8UsZKwg0y3xEUFHmtjrhu59PMBRRA==}
 
-  '@hackersheet/react-document-content@0.1.0-alpha.6':
-    resolution: {integrity: sha512-YPza8TAeiJO2R6y7PHfNfvAesc57Mjl3TGyt13ceIfg2oHta7E3kYJ3MhI8f7//MxiokQQdfgFLIDCJm7K77Tg==}
+  '@hackersheet/react-document-content@0.1.0-alpha.7':
+    resolution: {integrity: sha512-vNlSp6hnWZBh9OKclptOK9P91DLAJXbhnvcukqBycpFxUVRx7x9hwO3eqL9ugSI58HL5MQAogbP7NHNEGRzK2Q==}
     peerDependencies:
       react: ^18.0.0
       react-dom: ^18.0.0
@@ -5743,12 +5743,12 @@ snapshots:
       '@urql/core': 5.0.4(graphql@16.9.0)
       graphql: 16.9.0
 
-  '@hackersheet/react-document-content-styles@0.1.0-alpha.7': {}
+  '@hackersheet/react-document-content-styles@0.1.0-alpha.8': {}
 
-  '@hackersheet/react-document-content@0.1.0-alpha.6(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+  '@hackersheet/react-document-content@0.1.0-alpha.7(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
       '@hackersheet/core': 0.1.0-alpha.4
-      '@hackersheet/react-document-content-styles': 0.1.0-alpha.7
+      '@hackersheet/react-document-content-styles': 0.1.0-alpha.8
       deepmerge: 4.3.1
       mustache: 4.2.0
       path: 0.12.7
