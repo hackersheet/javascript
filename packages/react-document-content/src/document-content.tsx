@@ -13,6 +13,7 @@ import remarkMath from 'remark-math';
 
 import {
   AComponentResolver,
+  GistComponentResolver,
   HeadingComponentResolver,
   ImgComponentResolver,
   KifuToComponentResolver,
@@ -21,11 +22,12 @@ import {
   XPostComponentResolver,
   YoutubeComponentResolver,
 } from './component-resolvers';
-import { Link, Heading, Image, CodeBlock, KifuTo, LinkCard, XPost, Youtube } from './components';
+import { Gist, Link, Heading, Image, CodeBlock, KifuTo, LinkCard, XPost, Youtube } from './components';
 import { processInternalLinks, rehypeClobberUrlDecode, rehypeFootnoteLinks } from './rehype-plugins';
 
 import type {
   CodeBlockComponentProps,
+  GistComponentProps,
   HeadingComponentProps,
   ImageComponentProps,
   KifuComponentProps,
@@ -38,6 +40,7 @@ import type {
 } from './component-resolvers';
 import type { Document } from '@hackersheet/core';
 import type { Styles } from '@hackersheet/react-document-content-styles/basic';
+
 type DirectiveProps = { children: ReactNode } & ExtraProps;
 
 declare global {
@@ -48,6 +51,7 @@ declare global {
       'link-card': DirectiveProps;
       'x-post': DirectiveProps;
       youtube: DirectiveProps;
+      gist: DirectiveProps;
     }
   }
 }
@@ -62,6 +66,7 @@ export interface DocumentContentProps {
   style?: Styles | CssModule;
   components?: {
     codeBlock?: FC<CodeBlockComponentProps>;
+    gist?: FC<GistComponentProps>;
     heading?: FC<HeadingComponentProps>;
     image?: FC<ImageComponentProps>;
     kifu?: FC<KifuComponentProps>;
@@ -76,11 +81,12 @@ export interface DocumentContentProps {
 
 export function DocumentContent({ document, permaLinkFormat, style, components }: DocumentContentProps) {
   const sanitizeSchema = deepmerge(defaultSchema, {
-    attributes: { div: [['className', /^sr-only$/]] },
-    tagNames: ['link-card', 'x-post', 'youtube', 'kifu-to'],
+    attributes: { div: [['className', /^sr-only$/]], gist: [['filename']] },
+    tagNames: ['gist', 'link-card', 'x-post', 'youtube', 'kifu-to'],
   });
 
   const CodeBlockComponent = components?.codeBlock ?? CodeBlock;
+  const GistComponent = components?.gist ?? Gist;
   const HeadingComponent = components?.heading ?? Heading;
   const ImageComponent = components?.image ?? Image;
   const KifuComponent = components?.kifu;
@@ -109,6 +115,7 @@ export function DocumentContent({ document, permaLinkFormat, style, components }
       'link-card': (props) => LinkCardComponentResolver({ ...props, document, LinkCardComponent }),
       'x-post': (props) => XPostComponentResolver({ ...props, document, XPostComponent }),
       a: (props) => AComponentResolver({ ...props, document, LinkComponent }),
+      gist: (props) => GistComponentResolver({ ...props, document, GistComponent }),
       h1: (props) => HeadingComponentResolver({ ...props, document, HeadingComponent }),
       h2: (props) => HeadingComponentResolver({ ...props, document, HeadingComponent }),
       h3: (props) => HeadingComponentResolver({ ...props, document, HeadingComponent }),
