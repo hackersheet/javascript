@@ -20,7 +20,7 @@ export default function CodeBlockCopyButton({ code }: CodeBlockCopyButtonProps) 
   };
 
   return (
-    <button onClick={handleClick}>
+    <button onClick={handleClick} aria-label="Copy code to clipboard">
       {copied ? <HiCheck size={18} /> : <HiOutlineClipboardDocumentList size={18} />}
     </button>
   );
