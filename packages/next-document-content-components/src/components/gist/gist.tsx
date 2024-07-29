@@ -1,3 +1,4 @@
+import Script from 'next/script';
 import React from 'react';
 
 import type { GistComponentProps } from '@hackersheet/react-document-content';
@@ -17,11 +18,14 @@ export default async function Gist({ gistId, username, filename }: GistComponent
   const json = await result.json();
 
   return (
-    <div
-      className="gist-block"
-      dangerouslySetInnerHTML={{
-        __html: json.div,
-      }}
-    />
+    <>
+      <div
+        className="gist-block"
+        dangerouslySetInnerHTML={{
+          __html: json.div,
+        }}
+      />
+      <Script stylesheets={[json.stylesheet]} />
+    </>
   );
 }

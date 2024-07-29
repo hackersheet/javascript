@@ -1,5 +1,4 @@
 import './globals.css';
-import '@hackersheet/react-document-content-styles/gist-theme';
 
 import { Inter } from 'next/font/google';
 import Link from 'next/link';
