@@ -4,7 +4,7 @@ import React from 'react';
 import type { GistComponentProps } from '@hackersheet/react-document-content';
 
 export default async function Gist({ gistId, username, filename }: GistComponentProps) {
-  const src = (() => {
+  const gistUrl = (() => {
     const base = `https://gist.github.com/${username}/${gistId}.json`;
 
     if (filename) {
@@ -14,7 +14,7 @@ export default async function Gist({ gistId, username, filename }: GistComponent
     return base;
   })();
 
-  const result = await fetch(src);
+  const result = await fetch(gistUrl);
   const json = await result.json();
 
   return (
