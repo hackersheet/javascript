@@ -18,10 +18,6 @@
       "import": "./dist/basic.module.css",
       "require": "./dist/basic.module.css",
       "types": "./dist/basic.module.scss.d.ts"
-    },
-    "./gist-theme": {
-      "import": "./dist/gist-theme.css",
-      "require": "./dist/gist-theme.css"
     }
   },
   "main": "",
