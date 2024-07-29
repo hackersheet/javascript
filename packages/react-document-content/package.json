@@ -33,8 +33,8 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-    "@hackersheet/core": "alpha",
-    "@hackersheet/react-document-content-styles": "alpha",
+    "@hackersheet/core": "workspace:*",
+    "@hackersheet/react-document-content-styles": "workspace:*",
     "deepmerge": "^4.0.0",
     "mustache": "^4.0.0",
     "path": "^0.12.7",
