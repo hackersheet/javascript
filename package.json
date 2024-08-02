@@ -9,17 +9,18 @@
   "scripts": {
     "build": "turbo build",
     "build:packages": "turbo build -F @hackersheet/*",
-    "watch": "turbo watch build -F @hackersheet/*",
     "codegen": "gql-gen --config codegen.ts",
     "core": "pnpm -F core",
     "format": "prettier --write --ignore-unknown .",
     "format:package": "pnpm dlx sort-package-json \"package.json\" \"packages/*/package.json\" \"sandbox/*/package.json\"",
+    "ncu:minor": "pnpm ncu --deep -t minor",
     "next-document-content-components": "pnpm -F next-document-content-components",
     "next-document-content-kifu": "pnpm -F next-document-content-kifu",
     "react-document-content": "pnpm -F react-document-content",
     "react-document-content-styles": "pnpm -F react-document-content-styles",
     "sandbox:next": "pnpm -F next",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "watch": "turbo watch build -F @hackersheet/*"
   },
   "devDependencies": {
     "@graphql-codegen/cli": "5.0.2",
@@ -29,6 +30,7 @@
     "dotenv-cli": "7.4.2",
     "eslint": "8.57.0",
     "graphql-config": "5.0.3",
+    "npm-check-updates": "16.14.20",
     "prettier": "3.3.2",
     "terser": "5.31.2",
     "tsup": "8.1.0",
