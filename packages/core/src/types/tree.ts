@@ -11,7 +11,7 @@ export type TreeNode = {
   fullSlug: string;
   defaultName: string;
   parentId?: string;
-  children?: TreeNode[];
   root: boolean;
   position?: number;
+  children?: TreeNode[];
 };
