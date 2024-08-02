@@ -8,6 +8,11 @@ const nextConfig = {
         hostname: 'public-content.hackersheet.com',
         pathname: '/**',
       },
+      {
+        protocol: 'http',
+        hostname: 'hackersheet.test',
+        pathname: '/**',
+      },
     ],
   },
 };

@@ -237,6 +237,8 @@ export type Query = {
   tag?: Maybe<Tag>;
   /** A list of tags associated with the workspace. */
   tags?: Maybe<TagConnection>;
+  /** Find a tree associated with the workspace by either `ID` or `slug`. */
+  tree?: Maybe<Tree>;
   /** Find a website associated with the workspace by `ID`. */
   website?: Maybe<WorkspaceWebsite>;
   /** A list of websites associated with the workspace. */
@@ -282,6 +284,11 @@ export type QueryTagsArgs = {
   first?: InputMaybe<Scalars['Int']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
   sort?: InputMaybe<ConnectionSort>;
+};
+
+export type QueryTreeArgs = {
+  id?: InputMaybe<Scalars['ID']['input']>;
+  slug?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type QueryWebsiteArgs = {
@@ -350,6 +357,67 @@ export type TagEdge = {
   cursor: Scalars['String']['output'];
   /** The item at the end of the edge. */
   node?: Maybe<Tag>;
+};
+
+export type Tree = {
+  __typename?: 'Tree';
+  /** The Node ID of the tree object. */
+  id: Scalars['ID']['output'];
+  /** The name of the tree. */
+  name: Scalars['String']['output'];
+  /** A list of tree node associated with the object. */
+  nodes?: Maybe<TreeNodeConnection>;
+  /** The slug of the tree. */
+  slug: Scalars['String']['output'];
+};
+
+export type TreeNodesArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+};
+
+export type TreeNode = {
+  __typename?: 'TreeNode';
+  /** The default document of the tree node. */
+  defaultDocument?: Maybe<Document>;
+  /** The default name of the tree node. */
+  defaultName: Scalars['String']['output'];
+  /** The full slug of the tree node. */
+  fullSlug: Scalars['String']['output'];
+  /** The Node ID of the tree node object. */
+  id: Scalars['ID']['output'];
+  /** The parent tree node of the tree node. */
+  parent?: Maybe<TreeNode>;
+  /** The position of the tree node. */
+  position?: Maybe<Scalars['Int']['output']>;
+  /** Whether the tree node is root. */
+  root: Scalars['Boolean']['output'];
+  /** The slug of the tree node. */
+  slug: Scalars['String']['output'];
+};
+
+/** The connection type for TreeNode. */
+export type TreeNodeConnection = {
+  __typename?: 'TreeNodeConnection';
+  /** A list of edges. */
+  edges?: Maybe<Array<Maybe<TreeNodeEdge>>>;
+  /** A list of nodes. */
+  nodes?: Maybe<Array<Maybe<TreeNode>>>;
+  /** Information to aid in pagination. */
+  pageInfo: PageInfo;
+  /** Total count of nodes. */
+  totalCount: Scalars['Int']['output'];
+};
+
+/** An edge in a connection. */
+export type TreeNodeEdge = {
+  __typename?: 'TreeNodeEdge';
+  /** A cursor for use in pagination. */
+  cursor: Scalars['String']['output'];
+  /** The item at the end of the edge. */
+  node?: Maybe<TreeNode>;
 };
 
 export type WebsiteOgImage = {
@@ -657,6 +725,35 @@ export type TagsQuery = {
         documentCountInPublished: number;
       } | null;
     } | null> | null;
+  } | null;
+};
+
+export type TreeQueryVariables = Exact<{
+  slug?: InputMaybe<Scalars['String']['input']>;
+}>;
+
+export type TreeQuery = {
+  __typename?: 'Query';
+  tree?: {
+    __typename?: 'Tree';
+    id: string;
+    slug: string;
+    name: string;
+    nodes?: {
+      __typename?: 'TreeNodeConnection';
+      edges?: Array<{
+        __typename?: 'TreeNodeEdge';
+        node?: {
+          __typename?: 'TreeNode';
+          id: string;
+          fullSlug: string;
+          defaultName: string;
+          root: boolean;
+          position?: number | null;
+          parent?: { __typename?: 'TreeNode'; id: string } | null;
+        } | null;
+      } | null> | null;
+    } | null;
   } | null;
 };
 
@@ -1278,6 +1375,87 @@ export const TagsDocument = {
     },
   ],
 } as unknown as DocumentNode<TagsQuery, TagsQueryVariables>;
+export const TreeDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'tree' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'slug' } },
+          type: { kind: 'NamedType', name: { kind: 'Name', value: 'String' } },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'tree' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'slug' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'slug' } },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'slug' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'nodes' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'edges' },
+                        selectionSet: {
+                          kind: 'SelectionSet',
+                          selections: [
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'node' },
+                              selectionSet: {
+                                kind: 'SelectionSet',
+                                selections: [
+                                  { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                                  { kind: 'Field', name: { kind: 'Name', value: 'fullSlug' } },
+                                  { kind: 'Field', name: { kind: 'Name', value: 'defaultName' } },
+                                  {
+                                    kind: 'Field',
+                                    name: { kind: 'Name', value: 'parent' },
+                                    selectionSet: {
+                                      kind: 'SelectionSet',
+                                      selections: [{ kind: 'Field', name: { kind: 'Name', value: 'id' } }],
+                                    },
+                                  },
+                                  { kind: 'Field', name: { kind: 'Name', value: 'root' } },
+                                  { kind: 'Field', name: { kind: 'Name', value: 'position' } },
+                                ],
+                              },
+                            },
+                          ],
+                        },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<TreeQuery, TreeQueryVariables>;
 export const WebsitesDocument = {
   kind: 'Document',
   definitions: [
