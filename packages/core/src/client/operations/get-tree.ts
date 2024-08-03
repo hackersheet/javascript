@@ -16,7 +16,17 @@ graphql(`
           node {
             id
             fullSlug
-            defaultName
+            names {
+              variant
+              content
+            }
+            documents {
+              variant
+              document {
+                id
+                path
+              }
+            }
             parent {
               id
             }
@@ -36,26 +46,22 @@ export function makeGetTreeResponse(result: OperationResult<TreeQuery, QueryTree
 
   const tmpTree = result.data?.tree;
 
+  const nodeArray = toArrayFromEdges(tmpTree.nodes?.edges).map((node) => ({
+    id: node.id,
+    fullSlug: node.fullSlug,
+    names: node.names ?? [],
+    nameMap: new Map(node.names?.map((name) => [name.variant, name.content])),
+    documents: node.documents ?? [],
+    documentMap: new Map(node.documents?.map((name) => [name.variant, name.document])),
+    parentId: node.parent?.id ?? undefined,
+    root: node.root,
+    position: node.position,
+  }));
+
   const tree: Tree = {
     ...tmpTree,
-    nodes: makeChildren(
-      toArrayFromEdges(tmpTree.nodes?.edges).map((node) => ({
-        id: node.id,
-        fullSlug: node.fullSlug,
-        defaultName: node.defaultName,
-        parentId: node.parent?.id ?? undefined,
-        root: node.root,
-        position: node.position ?? undefined,
-      }))
-    ),
-    flatNodes: toArrayFromEdges(tmpTree.nodes?.edges).map((node) => ({
-      id: node.id,
-      fullSlug: node.fullSlug,
-      defaultName: node.defaultName,
-      parentId: node.parent?.id ?? undefined,
-      root: node.root,
-      position: node.position ?? undefined,
-    })),
+    nodes: makeChildren(nodeArray),
+    flatNodes: nodeArray,
   };
   const error = result.error;
 

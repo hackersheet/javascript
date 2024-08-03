@@ -380,14 +380,14 @@ export type TreeNodesArgs = {
 
 export type TreeNode = {
   __typename?: 'TreeNode';
-  /** The default document of the tree node. */
-  defaultDocument?: Maybe<Document>;
-  /** The default name of the tree node. */
-  defaultName: Scalars['String']['output'];
+  /** A list of tree node document associated with the object. */
+  documents?: Maybe<Array<TreeNodeDocument>>;
   /** The full slug of the tree node. */
   fullSlug: Scalars['String']['output'];
   /** The Node ID of the tree node object. */
   id: Scalars['ID']['output'];
+  /** A list of tree node name associated with the object. */
+  names?: Maybe<Array<TreeNodeName>>;
   /** The parent tree node of the tree node. */
   parent?: Maybe<TreeNode>;
   /** The position of the tree node. */
@@ -411,6 +411,14 @@ export type TreeNodeConnection = {
   totalCount: Scalars['Int']['output'];
 };
 
+export type TreeNodeDocument = {
+  __typename?: 'TreeNodeDocument';
+  /** The document of the tree node document. */
+  document: Document;
+  /** The variant of the tree node document. */
+  variant: Scalars['String']['output'];
+};
+
 /** An edge in a connection. */
 export type TreeNodeEdge = {
   __typename?: 'TreeNodeEdge';
@@ -418,6 +426,14 @@ export type TreeNodeEdge = {
   cursor: Scalars['String']['output'];
   /** The item at the end of the edge. */
   node?: Maybe<TreeNode>;
+};
+
+export type TreeNodeName = {
+  __typename?: 'TreeNodeName';
+  /** The content of the tree node name. */
+  content: Scalars['String']['output'];
+  /** The variant of the tree node name. */
+  variant: Scalars['String']['output'];
 };
 
 export type WebsiteOgImage = {
@@ -747,9 +763,14 @@ export type TreeQuery = {
           __typename?: 'TreeNode';
           id: string;
           fullSlug: string;
-          defaultName: string;
           root: boolean;
           position: number;
+          names?: Array<{ __typename?: 'TreeNodeName'; variant: string; content: string }> | null;
+          documents?: Array<{
+            __typename?: 'TreeNodeDocument';
+            variant: string;
+            document: { __typename?: 'Document'; id: string; path?: string | null };
+          }> | null;
           parent?: { __typename?: 'TreeNode'; id: string } | null;
         } | null;
       } | null> | null;
@@ -1428,7 +1449,38 @@ export const TreeDocument = {
                                 selections: [
                                   { kind: 'Field', name: { kind: 'Name', value: 'id' } },
                                   { kind: 'Field', name: { kind: 'Name', value: 'fullSlug' } },
-                                  { kind: 'Field', name: { kind: 'Name', value: 'defaultName' } },
+                                  {
+                                    kind: 'Field',
+                                    name: { kind: 'Name', value: 'names' },
+                                    selectionSet: {
+                                      kind: 'SelectionSet',
+                                      selections: [
+                                        { kind: 'Field', name: { kind: 'Name', value: 'variant' } },
+                                        { kind: 'Field', name: { kind: 'Name', value: 'content' } },
+                                      ],
+                                    },
+                                  },
+                                  {
+                                    kind: 'Field',
+                                    name: { kind: 'Name', value: 'documents' },
+                                    selectionSet: {
+                                      kind: 'SelectionSet',
+                                      selections: [
+                                        { kind: 'Field', name: { kind: 'Name', value: 'variant' } },
+                                        {
+                                          kind: 'Field',
+                                          name: { kind: 'Name', value: 'document' },
+                                          selectionSet: {
+                                            kind: 'SelectionSet',
+                                            selections: [
+                                              { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                                              { kind: 'Field', name: { kind: 'Name', value: 'path' } },
+                                            ],
+                                          },
+                                        },
+                                      ],
+                                    },
+                                  },
                                   {
                                     kind: 'Field',
                                     name: { kind: 'Name', value: 'parent' },

@@ -24,7 +24,7 @@ function Nodes({ nodes }: { nodes: TreeNode[] }) {
     <ul className="pl-5 list-outside list-disc [&_ul]:list-[revert]">
       {nodes.map((node) => (
         <li key={node.id}>
-          <Link href={`tree/${node.fullSlug}`}>{node.defaultName}</Link>
+          <Link href={`tree/${node.fullSlug}`}>{node.nameMap.get('')}</Link>
           {node.children && <Nodes nodes={node.children} />}
         </li>
       ))}

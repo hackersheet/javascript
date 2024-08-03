@@ -9,9 +9,27 @@ export type Tree = {
 export type TreeNode = {
   id: string;
   fullSlug: string;
-  defaultName: string;
+  names: TreeNodeName[];
+  nameMap: Map<string, string>;
+  documents: TreeNodeDocument[];
+  documentMap: Map<string, TreeNodeDocumentDocument>;
   parentId?: string;
   root: boolean;
   position: number;
   children?: TreeNode[];
+};
+
+export type TreeNodeName = {
+  variant: string;
+  content: string;
+};
+
+export type TreeNodeDocument = {
+  variant: string;
+  document: TreeNodeDocumentDocument;
+};
+
+export type TreeNodeDocumentDocument = {
+  id: string;
+  path?: string | null;
 };
