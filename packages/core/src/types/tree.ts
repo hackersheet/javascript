@@ -12,6 +12,6 @@ export type TreeNode = {
   defaultName: string;
   parentId?: string;
   root: boolean;
-  position?: number;
+  position: number;
   children?: TreeNode[];
 };

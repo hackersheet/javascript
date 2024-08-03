@@ -391,7 +391,7 @@ export type TreeNode = {
   /** The parent tree node of the tree node. */
   parent?: Maybe<TreeNode>;
   /** The position of the tree node. */
-  position?: Maybe<Scalars['Int']['output']>;
+  position: Scalars['Int']['output'];
   /** Whether the tree node is root. */
   root: Scalars['Boolean']['output'];
   /** The slug of the tree node. */
@@ -749,7 +749,7 @@ export type TreeQuery = {
           fullSlug: string;
           defaultName: string;
           root: boolean;
-          position?: number | null;
+          position: number;
           parent?: { __typename?: 'TreeNode'; id: string } | null;
         } | null;
       } | null> | null;
