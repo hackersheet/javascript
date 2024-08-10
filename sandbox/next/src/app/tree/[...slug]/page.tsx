@@ -21,6 +21,7 @@ import 'katex/dist/katex.min.css';
 export default async function TreeNodePage({ params: { slug } }: { params: { slug: string[] } }) {
   const fullSlug = slug.join('/');
   const { document } = await client.getTreeNodeDocument({ treeSlug: 'tree01', nodeFullSlug: fullSlug });
+  const { tree } = await client.getTree({ slug: 'tree01' });
 
   if (!document) notFound();
 
@@ -30,8 +31,9 @@ export default async function TreeNodePage({ params: { slug } }: { params: { slu
 
       <DocumentContent
         document={document}
+        tree={tree ?? undefined}
         style={documentContentStyle}
-        permaLinkFormat="/posts/{{slug}}"
+        permaLinkFormat="/tree/{{{slug}}}"
         components={{
           codeBlock: CodeBlock,
           gist: Gist,

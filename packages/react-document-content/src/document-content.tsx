@@ -38,7 +38,7 @@ import type {
   XPostComponentProps,
   YoutubeComponentProps,
 } from './component-resolvers';
-import type { Document } from '@hackersheet/core';
+import type { Document, Tree } from '@hackersheet/core';
 import type { Styles } from '@hackersheet/react-document-content-styles/basic';
 
 type DirectiveProps = { children: ReactNode } & ExtraProps;
@@ -62,6 +62,7 @@ type CssModule = {
 
 export interface DocumentContentProps {
   document: Document;
+  tree?: Tree;
   permaLinkFormat?: string;
   style?: Styles | CssModule;
   components?: {
@@ -79,7 +80,7 @@ export interface DocumentContentProps {
   };
 }
 
-export function DocumentContent({ document, permaLinkFormat, style, components }: DocumentContentProps) {
+export function DocumentContent({ document, tree, permaLinkFormat, style, components }: DocumentContentProps) {
   const sanitizeSchema = deepmerge(defaultSchema, {
     attributes: { div: [['className', /^sr-only$/]], gist: [['filename']] },
     tagNames: ['gist', 'link-card', 'x-post', 'youtube', 'kifu-to'],
@@ -97,6 +98,8 @@ export function DocumentContent({ document, permaLinkFormat, style, components }
   const XPostComponent = components?.xPost ?? XPost;
   const YoutubeComponent = components?.youtube ?? Youtube;
 
+  const docTree = tree;
+
   const options: Options = {
     remarkRehypeOptions: { footnoteLabelTagName: 'div', clobberPrefix: '' },
     remarkPlugins: [remarkGfm, remarkMath, remarkDirective, remarkDirectiveRehype],
@@ -105,7 +108,7 @@ export function DocumentContent({ document, permaLinkFormat, style, components }
       [rehypeSanitize, sanitizeSchema],
       rehypeSlug,
       rehypeKatex,
-      [processInternalLinks, { document, permaLinkFormat }],
+      [processInternalLinks, { document, permaLinkFormat, docTree }],
       rehypeFootnoteLinks,
       rehypeClobberUrlDecode,
       rehypeGithubAlerts,

@@ -5,16 +5,17 @@ import { visit } from 'unist-util-visit';
 
 import { isUrl } from '../utils';
 
-import type { Document } from '@hackersheet/core';
+import type { Document, Tree } from '@hackersheet/core';
 import type { Element } from 'hast';
 import type { Parent } from 'unist';
 
 export interface ProcessInternalLinksArgs {
   document: Document;
   permaLinkFormat: string;
+  docTree?: Tree;
 }
 
-export default function processInternalLinks({ document, permaLinkFormat }: ProcessInternalLinksArgs) {
+export default function processInternalLinks({ document, permaLinkFormat, docTree }: ProcessInternalLinksArgs) {
   return (tree: Parent) => {
     visit(tree, 'element', (element: Element) => {
       const link = element.properties.href || element.properties.src;
@@ -28,9 +29,20 @@ export default function processInternalLinks({ document, permaLinkFormat }: Proc
       const fullPath = path.resolve(baseDirname, decodeURI(link)).replace(/^\//, '');
 
       if (tagName === 'a') {
-        const doc = document.outboundLinkDocuments.find((doc) => doc.path === fullPath);
-        if (doc) {
-          element.properties.href = Mustache.render(permaLinkFormat, doc);
+        if (docTree) {
+          const treeNode = docTree.flatNodes.find((node) =>
+            node.nodeDocuments.find((nodeDoc) => {
+              return nodeDoc.document.path === fullPath;
+            })
+          );
+          if (treeNode) {
+            element.properties.href = Mustache.render(permaLinkFormat, { slug: treeNode.fullSlug });
+          }
+        } else {
+          const doc = document.outboundLinkDocuments.find((doc) => doc.path === fullPath);
+          if (doc) {
+            element.properties.href = Mustache.render(permaLinkFormat, doc);
+          }
         }
       }
 
