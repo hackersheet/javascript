@@ -756,6 +756,143 @@ export type TagsQuery = {
   } | null;
 };
 
+export type TreeNodeDocumentQueryVariables = Exact<{
+  treeSlug?: InputMaybe<Scalars['String']['input']>;
+  nodeFullSlug: Scalars['String']['input'];
+}>;
+
+export type TreeNodeDocumentQuery = {
+  __typename?: 'Query';
+  tree?: {
+    __typename?: 'Tree';
+    id: string;
+    node?: {
+      __typename?: 'TreeNode';
+      id: string;
+      nodeDocument?: {
+        __typename?: 'TreeNodeDocument';
+        document: {
+          __typename?: 'Document';
+          id: string;
+          slug: string;
+          emoji: string;
+          title: string;
+          draft: boolean;
+          content: string;
+          path?: string | null;
+          publishedAt: any;
+          modifiedAt: any;
+          tags?: {
+            __typename?: 'TagConnection';
+            edges?: Array<{
+              __typename?: 'TagEdge';
+              node?: { __typename?: 'Tag'; id: string; name: string } | null;
+            } | null> | null;
+          } | null;
+          preview?: {
+            __typename?: 'Asset';
+            id: string;
+            width: number;
+            height: number;
+            path?: string | null;
+            fileUrl: string;
+          } | null;
+          assets?: {
+            __typename?: 'AssetConnection';
+            edges?: Array<{
+              __typename?: 'AssetEdge';
+              node?: {
+                __typename?: 'Asset';
+                id: string;
+                path?: string | null;
+                name: string;
+                fileUrl: string;
+                height: number;
+                width: number;
+              } | null;
+            } | null> | null;
+          } | null;
+          outboundLinkDocuments?: {
+            __typename?: 'DocumentConnection';
+            edges?: Array<{
+              __typename?: 'DocumentEdge';
+              node?: {
+                __typename?: 'Document';
+                id: string;
+                slug: string;
+                emoji: string;
+                title: string;
+                draft: boolean;
+                path?: string | null;
+                publishedAt: any;
+                modifiedAt: any;
+                tags?: {
+                  __typename?: 'TagConnection';
+                  edges?: Array<{
+                    __typename?: 'TagEdge';
+                    node?: { __typename?: 'Tag'; id: string; name: string } | null;
+                  } | null> | null;
+                } | null;
+              } | null;
+            } | null> | null;
+          } | null;
+          inboundLinkDocuments?: {
+            __typename?: 'DocumentConnection';
+            edges?: Array<{
+              __typename?: 'DocumentEdge';
+              node?: {
+                __typename?: 'Document';
+                id: string;
+                slug: string;
+                emoji: string;
+                title: string;
+                draft: boolean;
+                path?: string | null;
+                publishedAt: any;
+                modifiedAt: any;
+                tags?: {
+                  __typename?: 'TagConnection';
+                  edges?: Array<{
+                    __typename?: 'TagEdge';
+                    node?: { __typename?: 'Tag'; id: string; name: string } | null;
+                  } | null> | null;
+                } | null;
+              } | null;
+            } | null> | null;
+          } | null;
+          websites?: {
+            __typename?: 'WorkspaceWebsiteConnection';
+            edges?: Array<{
+              __typename?: 'WorkspaceWebsiteEdge';
+              node?: {
+                __typename?: 'WorkspaceWebsite';
+                id: string;
+                url: string;
+                domain: string;
+                title: string;
+                description: string;
+                ogSiteName: string;
+                ogTitle: string;
+                ogType: string;
+                ogUrl: string;
+                ogDescription: string;
+                ogLocale: string;
+                ogImage?: {
+                  __typename?: 'WebsiteOgImage';
+                  id: string;
+                  fileUrl?: string | null;
+                  width: number;
+                  height: number;
+                } | null;
+              } | null;
+            } | null> | null;
+          } | null;
+        };
+      } | null;
+    } | null;
+  } | null;
+};
+
 export type TreeQueryVariables = Exact<{
   slug?: InputMaybe<Scalars['String']['input']>;
 }>;
@@ -1408,6 +1545,361 @@ export const TagsDocument = {
     },
   ],
 } as unknown as DocumentNode<TagsQuery, TagsQueryVariables>;
+export const TreeNodeDocumentDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'treeNodeDocument' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'treeSlug' } },
+          type: { kind: 'NamedType', name: { kind: 'Name', value: 'String' } },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'nodeFullSlug' } },
+          type: { kind: 'NonNullType', type: { kind: 'NamedType', name: { kind: 'Name', value: 'String' } } },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'tree' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'slug' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'treeSlug' } },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'node' },
+                  arguments: [
+                    {
+                      kind: 'Argument',
+                      name: { kind: 'Name', value: 'fullSlug' },
+                      value: { kind: 'Variable', name: { kind: 'Name', value: 'nodeFullSlug' } },
+                    },
+                  ],
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'nodeDocument' },
+                        selectionSet: {
+                          kind: 'SelectionSet',
+                          selections: [
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'document' },
+                              selectionSet: {
+                                kind: 'SelectionSet',
+                                selections: [
+                                  { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                                  { kind: 'Field', name: { kind: 'Name', value: 'slug' } },
+                                  { kind: 'Field', name: { kind: 'Name', value: 'emoji' } },
+                                  { kind: 'Field', name: { kind: 'Name', value: 'title' } },
+                                  { kind: 'Field', name: { kind: 'Name', value: 'draft' } },
+                                  { kind: 'Field', name: { kind: 'Name', value: 'content' } },
+                                  { kind: 'Field', name: { kind: 'Name', value: 'path' } },
+                                  {
+                                    kind: 'Field',
+                                    name: { kind: 'Name', value: 'tags' },
+                                    selectionSet: {
+                                      kind: 'SelectionSet',
+                                      selections: [
+                                        {
+                                          kind: 'Field',
+                                          name: { kind: 'Name', value: 'edges' },
+                                          selectionSet: {
+                                            kind: 'SelectionSet',
+                                            selections: [
+                                              {
+                                                kind: 'Field',
+                                                name: { kind: 'Name', value: 'node' },
+                                                selectionSet: {
+                                                  kind: 'SelectionSet',
+                                                  selections: [
+                                                    { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                                                    { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                                                  ],
+                                                },
+                                              },
+                                            ],
+                                          },
+                                        },
+                                      ],
+                                    },
+                                  },
+                                  {
+                                    kind: 'Field',
+                                    name: { kind: 'Name', value: 'preview' },
+                                    selectionSet: {
+                                      kind: 'SelectionSet',
+                                      selections: [
+                                        { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                                        { kind: 'Field', name: { kind: 'Name', value: 'width' } },
+                                        { kind: 'Field', name: { kind: 'Name', value: 'height' } },
+                                        { kind: 'Field', name: { kind: 'Name', value: 'path' } },
+                                        { kind: 'Field', name: { kind: 'Name', value: 'fileUrl' } },
+                                      ],
+                                    },
+                                  },
+                                  { kind: 'Field', name: { kind: 'Name', value: 'publishedAt' } },
+                                  { kind: 'Field', name: { kind: 'Name', value: 'modifiedAt' } },
+                                  {
+                                    kind: 'Field',
+                                    name: { kind: 'Name', value: 'assets' },
+                                    selectionSet: {
+                                      kind: 'SelectionSet',
+                                      selections: [
+                                        {
+                                          kind: 'Field',
+                                          name: { kind: 'Name', value: 'edges' },
+                                          selectionSet: {
+                                            kind: 'SelectionSet',
+                                            selections: [
+                                              {
+                                                kind: 'Field',
+                                                name: { kind: 'Name', value: 'node' },
+                                                selectionSet: {
+                                                  kind: 'SelectionSet',
+                                                  selections: [
+                                                    { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                                                    { kind: 'Field', name: { kind: 'Name', value: 'path' } },
+                                                    { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                                                    { kind: 'Field', name: { kind: 'Name', value: 'fileUrl' } },
+                                                    { kind: 'Field', name: { kind: 'Name', value: 'height' } },
+                                                    { kind: 'Field', name: { kind: 'Name', value: 'width' } },
+                                                  ],
+                                                },
+                                              },
+                                            ],
+                                          },
+                                        },
+                                      ],
+                                    },
+                                  },
+                                  {
+                                    kind: 'Field',
+                                    name: { kind: 'Name', value: 'outboundLinkDocuments' },
+                                    selectionSet: {
+                                      kind: 'SelectionSet',
+                                      selections: [
+                                        {
+                                          kind: 'Field',
+                                          name: { kind: 'Name', value: 'edges' },
+                                          selectionSet: {
+                                            kind: 'SelectionSet',
+                                            selections: [
+                                              {
+                                                kind: 'Field',
+                                                name: { kind: 'Name', value: 'node' },
+                                                selectionSet: {
+                                                  kind: 'SelectionSet',
+                                                  selections: [
+                                                    { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                                                    { kind: 'Field', name: { kind: 'Name', value: 'slug' } },
+                                                    { kind: 'Field', name: { kind: 'Name', value: 'emoji' } },
+                                                    { kind: 'Field', name: { kind: 'Name', value: 'title' } },
+                                                    { kind: 'Field', name: { kind: 'Name', value: 'draft' } },
+                                                    { kind: 'Field', name: { kind: 'Name', value: 'path' } },
+                                                    {
+                                                      kind: 'Field',
+                                                      name: { kind: 'Name', value: 'tags' },
+                                                      selectionSet: {
+                                                        kind: 'SelectionSet',
+                                                        selections: [
+                                                          {
+                                                            kind: 'Field',
+                                                            name: { kind: 'Name', value: 'edges' },
+                                                            selectionSet: {
+                                                              kind: 'SelectionSet',
+                                                              selections: [
+                                                                {
+                                                                  kind: 'Field',
+                                                                  name: { kind: 'Name', value: 'node' },
+                                                                  selectionSet: {
+                                                                    kind: 'SelectionSet',
+                                                                    selections: [
+                                                                      {
+                                                                        kind: 'Field',
+                                                                        name: { kind: 'Name', value: 'id' },
+                                                                      },
+                                                                      {
+                                                                        kind: 'Field',
+                                                                        name: { kind: 'Name', value: 'name' },
+                                                                      },
+                                                                    ],
+                                                                  },
+                                                                },
+                                                              ],
+                                                            },
+                                                          },
+                                                        ],
+                                                      },
+                                                    },
+                                                    { kind: 'Field', name: { kind: 'Name', value: 'publishedAt' } },
+                                                    { kind: 'Field', name: { kind: 'Name', value: 'modifiedAt' } },
+                                                  ],
+                                                },
+                                              },
+                                            ],
+                                          },
+                                        },
+                                      ],
+                                    },
+                                  },
+                                  {
+                                    kind: 'Field',
+                                    name: { kind: 'Name', value: 'inboundLinkDocuments' },
+                                    selectionSet: {
+                                      kind: 'SelectionSet',
+                                      selections: [
+                                        {
+                                          kind: 'Field',
+                                          name: { kind: 'Name', value: 'edges' },
+                                          selectionSet: {
+                                            kind: 'SelectionSet',
+                                            selections: [
+                                              {
+                                                kind: 'Field',
+                                                name: { kind: 'Name', value: 'node' },
+                                                selectionSet: {
+                                                  kind: 'SelectionSet',
+                                                  selections: [
+                                                    { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                                                    { kind: 'Field', name: { kind: 'Name', value: 'slug' } },
+                                                    { kind: 'Field', name: { kind: 'Name', value: 'emoji' } },
+                                                    { kind: 'Field', name: { kind: 'Name', value: 'title' } },
+                                                    { kind: 'Field', name: { kind: 'Name', value: 'draft' } },
+                                                    { kind: 'Field', name: { kind: 'Name', value: 'path' } },
+                                                    {
+                                                      kind: 'Field',
+                                                      name: { kind: 'Name', value: 'tags' },
+                                                      selectionSet: {
+                                                        kind: 'SelectionSet',
+                                                        selections: [
+                                                          {
+                                                            kind: 'Field',
+                                                            name: { kind: 'Name', value: 'edges' },
+                                                            selectionSet: {
+                                                              kind: 'SelectionSet',
+                                                              selections: [
+                                                                {
+                                                                  kind: 'Field',
+                                                                  name: { kind: 'Name', value: 'node' },
+                                                                  selectionSet: {
+                                                                    kind: 'SelectionSet',
+                                                                    selections: [
+                                                                      {
+                                                                        kind: 'Field',
+                                                                        name: { kind: 'Name', value: 'id' },
+                                                                      },
+                                                                      {
+                                                                        kind: 'Field',
+                                                                        name: { kind: 'Name', value: 'name' },
+                                                                      },
+                                                                    ],
+                                                                  },
+                                                                },
+                                                              ],
+                                                            },
+                                                          },
+                                                        ],
+                                                      },
+                                                    },
+                                                    { kind: 'Field', name: { kind: 'Name', value: 'publishedAt' } },
+                                                    { kind: 'Field', name: { kind: 'Name', value: 'modifiedAt' } },
+                                                  ],
+                                                },
+                                              },
+                                            ],
+                                          },
+                                        },
+                                      ],
+                                    },
+                                  },
+                                  {
+                                    kind: 'Field',
+                                    name: { kind: 'Name', value: 'websites' },
+                                    selectionSet: {
+                                      kind: 'SelectionSet',
+                                      selections: [
+                                        {
+                                          kind: 'Field',
+                                          name: { kind: 'Name', value: 'edges' },
+                                          selectionSet: {
+                                            kind: 'SelectionSet',
+                                            selections: [
+                                              {
+                                                kind: 'Field',
+                                                name: { kind: 'Name', value: 'node' },
+                                                selectionSet: {
+                                                  kind: 'SelectionSet',
+                                                  selections: [
+                                                    { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                                                    { kind: 'Field', name: { kind: 'Name', value: 'url' } },
+                                                    { kind: 'Field', name: { kind: 'Name', value: 'domain' } },
+                                                    { kind: 'Field', name: { kind: 'Name', value: 'title' } },
+                                                    { kind: 'Field', name: { kind: 'Name', value: 'description' } },
+                                                    { kind: 'Field', name: { kind: 'Name', value: 'ogSiteName' } },
+                                                    { kind: 'Field', name: { kind: 'Name', value: 'ogTitle' } },
+                                                    { kind: 'Field', name: { kind: 'Name', value: 'ogType' } },
+                                                    { kind: 'Field', name: { kind: 'Name', value: 'ogUrl' } },
+                                                    { kind: 'Field', name: { kind: 'Name', value: 'ogDescription' } },
+                                                    { kind: 'Field', name: { kind: 'Name', value: 'ogLocale' } },
+                                                    {
+                                                      kind: 'Field',
+                                                      name: { kind: 'Name', value: 'ogImage' },
+                                                      selectionSet: {
+                                                        kind: 'SelectionSet',
+                                                        selections: [
+                                                          { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                                                          { kind: 'Field', name: { kind: 'Name', value: 'fileUrl' } },
+                                                          { kind: 'Field', name: { kind: 'Name', value: 'width' } },
+                                                          { kind: 'Field', name: { kind: 'Name', value: 'height' } },
+                                                        ],
+                                                      },
+                                                    },
+                                                  ],
+                                                },
+                                              },
+                                            ],
+                                          },
+                                        },
+                                      ],
+                                    },
+                                  },
+                                ],
+                              },
+                            },
+                          ],
+                        },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<TreeNodeDocumentQuery, TreeNodeDocumentQueryVariables>;
 export const TreeDocument = {
   kind: 'Document',
   definitions: [

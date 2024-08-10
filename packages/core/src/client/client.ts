@@ -8,6 +8,7 @@ import {
   makeGetWebsitesResponse,
 } from './operations';
 import { makeGetTreeResponse } from './operations/get-tree';
+import { makeGetTreeNodeDocumentResponse } from './operations/get-tree-node-document';
 import {
   DocumentDocument,
   DocumentsDocument,
@@ -20,6 +21,8 @@ import {
   TagDocument,
   TagsDocument,
   TreeDocument,
+  TreeNodeDocumentDocument,
+  TreeNodeDocumentQueryVariables,
   WebsitesDocument,
 } from '../gql/graphql';
 
@@ -68,6 +71,11 @@ export class Client {
   async getTree(args?: QueryTreeArgs) {
     const result = await this.urqlClient.query(TreeDocument, args ?? {});
     return makeGetTreeResponse(result);
+  }
+
+  async getTreeNodeDocument(args: TreeNodeDocumentQueryVariables) {
+    const result = await this.urqlClient.query(TreeNodeDocumentDocument, args);
+    return makeGetTreeNodeDocumentResponse(result);
   }
 
   private createUrqlClient(): UrqlClient {

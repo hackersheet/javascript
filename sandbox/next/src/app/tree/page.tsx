@@ -11,7 +11,7 @@ export default async function TreePage() {
   const { tree } = await client.getTree({ slug: 'tree01' });
 
   if (!tree) notFound();
-  console.log(tree);
+
   return (
     <main className="mx-auto max-w-screen-sm">
       <Nodes nodes={tree.nodes} />
