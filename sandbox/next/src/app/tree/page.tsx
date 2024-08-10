@@ -11,7 +11,7 @@ export default async function TreePage() {
   const { tree } = await client.getTree({ slug: 'tree01' });
 
   if (!tree) notFound();
-
+  console.log(tree);
   return (
     <main className="mx-auto max-w-screen-sm">
       <Nodes nodes={tree.nodes} />
@@ -24,8 +24,17 @@ function Nodes({ nodes }: { nodes: TreeNode[] }) {
     <ul className="pl-5 list-outside list-disc [&_ul]:list-[revert]">
       {nodes.map((node) => (
         <li key={node.id}>
-          <Link href={`tree/${node.fullSlug}`}>{node.nameMap.get('')}</Link>
-          {node.children && <Nodes nodes={node.children} />}
+          {node.document !== null ? (
+            <>
+              <Link href={`tree/${node.fullSlug}`}>{node.name}</Link>
+              {node.children && <Nodes nodes={node.children} />}
+            </>
+          ) : (
+            <>
+              <span>{node.name}</span>
+              {node.children && <Nodes nodes={node.children} />}
+            </>
+          )}
         </li>
       ))}
     </ul>

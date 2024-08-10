@@ -46,17 +46,23 @@ export function makeGetTreeResponse(result: OperationResult<TreeQuery, QueryTree
 
   const tmpTree = result.data?.tree;
 
-  const nodeArray = toArrayFromEdges(tmpTree.nodes?.edges).map((node) => ({
-    id: node.id,
-    fullSlug: node.fullSlug,
-    names: node.names ?? [],
-    nameMap: new Map(node.names?.map((name) => [name.variant, name.content])),
-    documents: node.documents ?? [],
-    documentMap: new Map(node.documents?.map((name) => [name.variant, name.document])),
-    parentId: node.parent?.id ?? undefined,
-    root: node.root,
-    position: node.position,
-  }));
+  const nodeArray = toArrayFromEdges(tmpTree.nodes?.edges).map((node) => {
+    const nameMap = new Map(node.names?.map((name) => [name.variant, name.content]));
+    const documentMap = new Map(node.documents?.map((name) => [name.variant, name.document]));
+    return {
+      id: node.id,
+      fullSlug: node.fullSlug,
+      name: nameMap.get('') ?? '',
+      names: node.names ?? [],
+      nameMap: nameMap,
+      document: documentMap.get('') ?? null,
+      documents: node.documents ?? [],
+      documentMap: documentMap,
+      parentId: node.parent?.id ?? undefined,
+      root: node.root,
+      position: node.position,
+    };
+  });
 
   const tree: Tree = {
     ...tmpTree,

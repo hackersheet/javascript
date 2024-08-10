@@ -9,8 +9,10 @@ export type Tree = {
 export type TreeNode = {
   id: string;
   fullSlug: string;
+  name: string;
   names: TreeNodeName[];
   nameMap: Map<string, string>;
+  document: TreeNodeDocumentDocument | null;
   documents: TreeNodeDocument[];
   documentMap: Map<string, TreeNodeDocumentDocument>;
   parentId?: string;
