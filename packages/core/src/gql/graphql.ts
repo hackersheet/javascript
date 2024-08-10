@@ -365,10 +365,16 @@ export type Tree = {
   id: Scalars['ID']['output'];
   /** The name of the tree. */
   name: Scalars['String']['output'];
+  /** Find a tree node associated with the object by `full_slug`. */
+  node?: Maybe<TreeNode>;
   /** A list of tree node associated with the object. */
   nodes?: Maybe<TreeNodeConnection>;
   /** The slug of the tree. */
   slug: Scalars['String']['output'];
+};
+
+export type TreeNodeArgs = {
+  fullSlug: Scalars['String']['input'];
 };
 
 export type TreeNodesArgs = {
@@ -380,14 +386,16 @@ export type TreeNodesArgs = {
 
 export type TreeNode = {
   __typename?: 'TreeNode';
-  /** A list of tree node document associated with the object. */
-  documents?: Maybe<Array<TreeNodeDocument>>;
   /** The full slug of the tree node. */
   fullSlug: Scalars['String']['output'];
   /** The Node ID of the tree node object. */
   id: Scalars['ID']['output'];
   /** A list of tree node name associated with the object. */
   names?: Maybe<Array<TreeNodeName>>;
+  /** Find a tree node document associated with the object by `variant`. */
+  nodeDocument?: Maybe<TreeNodeDocument>;
+  /** A list of tree node document associated with the object. */
+  nodeDocuments?: Maybe<Array<TreeNodeDocument>>;
   /** The parent tree node of the tree node. */
   parent?: Maybe<TreeNode>;
   /** The position of the tree node. */
@@ -396,6 +404,10 @@ export type TreeNode = {
   root: Scalars['Boolean']['output'];
   /** The slug of the tree node. */
   slug: Scalars['String']['output'];
+};
+
+export type TreeNodeNodeDocumentArgs = {
+  variant?: InputMaybe<Scalars['String']['input']>;
 };
 
 /** The connection type for TreeNode. */
@@ -766,7 +778,7 @@ export type TreeQuery = {
           root: boolean;
           position: number;
           names?: Array<{ __typename?: 'TreeNodeName'; variant: string; content: string }> | null;
-          documents?: Array<{
+          nodeDocuments?: Array<{
             __typename?: 'TreeNodeDocument';
             variant: string;
             document: { __typename?: 'Document'; id: string; path?: string | null };
@@ -1462,7 +1474,7 @@ export const TreeDocument = {
                                   },
                                   {
                                     kind: 'Field',
-                                    name: { kind: 'Name', value: 'documents' },
+                                    name: { kind: 'Name', value: 'nodeDocuments' },
                                     selectionSet: {
                                       kind: 'SelectionSet',
                                       selections: [

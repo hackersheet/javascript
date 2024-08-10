@@ -13,8 +13,8 @@ export type TreeNode = {
   names: TreeNodeName[];
   nameMap: Map<string, string>;
   document: TreeNodeDocumentDocument | null;
-  documents: TreeNodeDocument[];
   documentMap: Map<string, TreeNodeDocumentDocument>;
+  nodeDocuments: TreeNodeDocument[];
   parentId?: string;
   root: boolean;
   position: number;

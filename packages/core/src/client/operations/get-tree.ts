@@ -20,7 +20,7 @@ graphql(`
               variant
               content
             }
-            documents {
+            nodeDocuments {
               variant
               document {
                 id
@@ -48,7 +48,7 @@ export function makeGetTreeResponse(result: OperationResult<TreeQuery, QueryTree
 
   const nodeArray = toArrayFromEdges(tmpTree.nodes?.edges).map((node) => {
     const nameMap = new Map(node.names?.map((name) => [name.variant, name.content]));
-    const documentMap = new Map(node.documents?.map((name) => [name.variant, name.document]));
+    const documentMap = new Map(node.nodeDocuments?.map((name) => [name.variant, name.document]));
     return {
       id: node.id,
       fullSlug: node.fullSlug,
@@ -56,8 +56,8 @@ export function makeGetTreeResponse(result: OperationResult<TreeQuery, QueryTree
       names: node.names ?? [],
       nameMap: nameMap,
       document: documentMap.get('') ?? null,
-      documents: node.documents ?? [],
       documentMap: documentMap,
+      nodeDocuments: node.nodeDocuments ?? [],
       parentId: node.parent?.id ?? undefined,
       root: node.root,
       position: node.position,
