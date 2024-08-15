@@ -1,3 +1,4 @@
+import { type Tree } from '@hackersheet/core';
 import {
   CodeBlock,
   Gist,
@@ -24,7 +25,10 @@ export default async function TreeNodePage({ params: { slug } }: { params: { slu
   const { document } = await client.getTreeNodeDocument({ treeSlug: 'tree', nodeFullSlug: fullSlug });
   const { tree } = await client.getTree({ slug: 'tree' });
 
-  if (!document) notFound();
+  if (!document || !tree) notFound();
+
+  const prev = getPrevDocumentNode(tree, fullSlug);
+  const next = getNextDocumentNode(tree, fullSlug);
 
   return (
     <main>
@@ -49,6 +53,38 @@ export default async function TreeNodePage({ params: { slug } }: { params: { slu
           youtube: Youtube,
         }}
       />
+
+      <div className="mt-4 flex">
+        {prev && (
+          <div className="border rounded px-4 py-2">
+            <div>Prev</div>
+            <Link href={`/tree/${prev.fullSlug}`}>{prev.name}</Link>
+          </div>
+        )}
+        <div className="flex-auto"></div>
+        {next && (
+          <div className="border rounded py-2 px-4">
+            <div>Next</div>
+            <Link href={`/tree/${next.fullSlug}`}>{next.name}</Link>
+          </div>
+        )}
+      </div>
     </main>
   );
+}
+
+function getNextDocumentNode(tree: Tree, currentSlug: string) {
+  const current = tree.flatNodes.find((node) => node.fullSlug === currentSlug);
+
+  if (!current) return null;
+
+  return tree.flatNodes.find((node) => node.position > current.position && node.document !== null);
+}
+
+function getPrevDocumentNode(tree: Tree, currentSlug: string) {
+  const current = tree.flatNodes.find((node) => node.fullSlug === currentSlug);
+
+  if (!current) return null;
+
+  return [...tree.flatNodes].reverse().find((node) => node.position < current.position && node.document !== null);
 }

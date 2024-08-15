@@ -25,7 +25,7 @@ export default async function PostPage({ params: { documentSlug } }: { params: {
 
   return (
     <main className="mx-auto max-w-screen-sm">
-      <h1 className="text-xl pt-10 pb-20">{document.title}</h1>
+      <h1 className="text-4xl pt-10 pb-20">{document.title}</h1>
 
       <DocumentContent
         document={document}
