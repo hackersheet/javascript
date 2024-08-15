@@ -14,10 +14,10 @@ export default async function TreeLayout({ children }: TreeLayoutProps) {
 
   return (
     <div className="flex gap-4 container">
-      <div className="w-[200px]">
+      <div className="w-[320px] text-sm">
         <Nodes nodes={tree.nodes} />
       </div>
-      <div className="flex-auto">{children}</div>
+      <div className="flex-auto w-full">{children}</div>
     </div>
   );
 }

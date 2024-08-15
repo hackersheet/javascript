@@ -31,7 +31,7 @@ export default async function TreeNodePage({ params: { slug } }: { params: { slu
   const next = getNextDocumentNode(tree, fullSlug);
 
   return (
-    <main>
+    <main className="max-w-screen-sm">
       <h1 className="text-4xl pt-10 pb-20">{document.title}</h1>
 
       <DocumentContent
@@ -54,7 +54,7 @@ export default async function TreeNodePage({ params: { slug } }: { params: { slu
         }}
       />
 
-      <div className="mt-4 flex">
+      <div className="py-12 flex">
         {prev && (
           <div className="border rounded px-4 py-2">
             <div>Prev</div>
