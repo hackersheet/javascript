@@ -24,6 +24,7 @@ graphql(`
               variant
               document {
                 id
+                title
                 path
               }
             }

@@ -361,6 +361,10 @@ export type TagEdge = {
 
 export type Tree = {
   __typename?: 'Tree';
+  /** Identifies the date and time when the object was created. */
+  createdAt: Scalars['DateTime']['output'];
+  /** The file path of the tree. */
+  filePath: Scalars['String']['output'];
   /** The Node ID of the tree object. */
   id: Scalars['ID']['output'];
   /** The name of the tree. */
@@ -371,6 +375,8 @@ export type Tree = {
   nodes?: Maybe<TreeNodeConnection>;
   /** The slug of the tree. */
   slug: Scalars['String']['output'];
+  /** Identifies the date and time when the object was updated. */
+  updatedAt: Scalars['DateTime']['output'];
 };
 
 export type TreeNodeArgs = {
@@ -390,6 +396,8 @@ export type TreeNode = {
   fullSlug: Scalars['String']['output'];
   /** The Node ID of the tree node object. */
   id: Scalars['ID']['output'];
+  /** Find a tree node name associated with the object by `variant`. */
+  name?: Maybe<TreeNodeName>;
   /** A list of tree node name associated with the object. */
   names?: Maybe<Array<TreeNodeName>>;
   /** Find a tree node document associated with the object by `variant`. */
@@ -404,6 +412,10 @@ export type TreeNode = {
   root: Scalars['Boolean']['output'];
   /** The slug of the tree node. */
   slug: Scalars['String']['output'];
+};
+
+export type TreeNodeNameArgs = {
+  variant?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type TreeNodeNodeDocumentArgs = {
@@ -759,6 +771,7 @@ export type TagsQuery = {
 export type TreeNodeDocumentQueryVariables = Exact<{
   treeSlug?: InputMaybe<Scalars['String']['input']>;
   nodeFullSlug: Scalars['String']['input'];
+  variant?: InputMaybe<Scalars['String']['input']>;
 }>;
 
 export type TreeNodeDocumentQuery = {
@@ -918,7 +931,7 @@ export type TreeQuery = {
           nodeDocuments?: Array<{
             __typename?: 'TreeNodeDocument';
             variant: string;
-            document: { __typename?: 'Document'; id: string; path?: string | null };
+            document: { __typename?: 'Document'; id: string; title: string; path?: string | null };
           }> | null;
           parent?: { __typename?: 'TreeNode'; id: string } | null;
         } | null;
@@ -1563,6 +1576,11 @@ export const TreeNodeDocumentDocument = {
           variable: { kind: 'Variable', name: { kind: 'Name', value: 'nodeFullSlug' } },
           type: { kind: 'NonNullType', type: { kind: 'NamedType', name: { kind: 'Name', value: 'String' } } },
         },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'variant' } },
+          type: { kind: 'NamedType', name: { kind: 'Name', value: 'String' } },
+        },
       ],
       selectionSet: {
         kind: 'SelectionSet',
@@ -1598,6 +1616,13 @@ export const TreeNodeDocumentDocument = {
                       {
                         kind: 'Field',
                         name: { kind: 'Name', value: 'nodeDocument' },
+                        arguments: [
+                          {
+                            kind: 'Argument',
+                            name: { kind: 'Name', value: 'variant' },
+                            value: { kind: 'Variable', name: { kind: 'Name', value: 'variant' } },
+                          },
+                        ],
                         selectionSet: {
                           kind: 'SelectionSet',
                           selections: [
@@ -1978,6 +2003,7 @@ export const TreeDocument = {
                                             kind: 'SelectionSet',
                                             selections: [
                                               { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                                              { kind: 'Field', name: { kind: 'Name', value: 'title' } },
                                               { kind: 'Field', name: { kind: 'Name', value: 'path' } },
                                             ],
                                           },
