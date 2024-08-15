@@ -8,7 +8,7 @@ import 'katex/dist/katex.min.css';
 import type { TreeNode } from '@hackersheet/core';
 
 export default async function TreePage() {
-  const { tree } = await client.getTree({ slug: 'tree01' });
+  const { tree } = await client.getTree({ slug: 'tree' });
 
   if (!tree) notFound();
 
