@@ -20,14 +20,15 @@ import 'katex/dist/katex.min.css';
 
 export default async function TreeNodePage({ params: { slug } }: { params: { slug: string[] } }) {
   const fullSlug = slug.join('/');
+
   const { document } = await client.getTreeNodeDocument({ treeSlug: 'tree', nodeFullSlug: fullSlug });
   const { tree } = await client.getTree({ slug: 'tree' });
 
   if (!document) notFound();
 
   return (
-    <main className="mx-auto max-w-screen-sm">
-      <h1 className="text-xl pt-10 pb-20">{document.title}</h1>
+    <main>
+      <h1 className="text-4xl pt-10 pb-20">{document.title}</h1>
 
       <DocumentContent
         document={document}
