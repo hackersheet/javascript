@@ -15,6 +15,14 @@ export default async function Home() {
             </li>
           ))}
       </ul>
+
+      <hr />
+
+      <ul className="list-disc">
+        <li className="my-2">
+          <Link href={`/tree`}>Tree</Link>
+        </li>
+      </ul>
     </main>
   );
 }
