@@ -26,7 +26,7 @@ export default function processInternalLinks({ document, permaLinkFormat, docTre
       }
 
       const baseDirname = `/${path.dirname(document.path)}`;
-      const fullPath = path.resolve(baseDirname, decodeURI(link)).replace(/^\//, '');
+      const [fullPath, anchor] = path.resolve(baseDirname, decodeURI(link)).replace(/^\//, '').split('#');
 
       if (tagName === 'a') {
         if (docTree) {
@@ -36,12 +36,13 @@ export default function processInternalLinks({ document, permaLinkFormat, docTre
             })
           );
           if (treeNode) {
-            element.properties.href = Mustache.render(permaLinkFormat, { slug: treeNode.fullSlug });
+            element.properties.href =
+              Mustache.render(permaLinkFormat, { slug: treeNode.fullSlug }) + (anchor ? `#${anchor}` : '');
           }
         } else {
           const doc = document.outboundLinkDocuments.find((doc) => doc.path === fullPath);
           if (doc) {
-            element.properties.href = Mustache.render(permaLinkFormat, doc);
+            element.properties.href = Mustache.render(permaLinkFormat, doc) + (anchor ? `#${anchor}` : '');
           }
         }
       }
