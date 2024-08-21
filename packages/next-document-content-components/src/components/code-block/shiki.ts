@@ -15,7 +15,7 @@ export async function highlighteCode(code: string, language: string) {
     return null;
   }
 
-  const html = highlighter.codeToHtml(code, {
+  const html = highlighter.codeToHtml(code.trim(), {
     lang: shikiLang || 'text',
     themes: {
       light: 'github-light',
