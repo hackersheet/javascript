@@ -302,15 +302,17 @@
 
     .shiki {
       code {
-        min-width: max-content;
-        display: flex;
-        flex-direction: column;
-        margin: 0 -1rem;
+        display: block;
+        width: fit-content;
+        min-width: 100%;
       }
 
       span.line {
+        display: inline-block;
         position: relative;
-        width: 100%;
+        width: fit-content;
+        min-width: calc(100% + 2rem);
+        margin: 0 -1rem;
         padding: 0 1rem;
       }
 
