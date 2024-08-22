@@ -49,7 +49,9 @@ export function makeGetTreeResponse(result: OperationResult<TreeQuery, QueryTree
 
   const nodeArray = toArrayFromEdges(tmpTree.nodes?.edges).map((node) => {
     const nameMap = new Map(node.names?.map((name) => [name.variant, name.content]));
-    const documentMap = new Map(node.nodeDocuments?.map((name) => [name.variant, name.document]));
+    const documentMap = new Map(
+      node.nodeDocuments?.map((nodeDocument) => [nodeDocument.variant, nodeDocument.document ?? null])
+    );
     return {
       id: node.id,
       fullSlug: node.fullSlug,

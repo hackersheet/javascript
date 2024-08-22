@@ -308,6 +308,8 @@ export type Tag = {
   createdAt: Scalars['DateTime']['output'];
   /** Number of documents with this tag. */
   documentCount: Scalars['Int']['output'];
+  /** Number of documents in draft with this tag. */
+  documentCountInDraft: Scalars['Int']['output'];
   /** Number of documents in published with this tag. */
   documentCountInPublished: Scalars['Int']['output'];
   /** A list of documents associated with the object. */
@@ -438,7 +440,7 @@ export type TreeNodeConnection = {
 export type TreeNodeDocument = {
   __typename?: 'TreeNodeDocument';
   /** The document of the tree node document. */
-  document: Document;
+  document?: Maybe<Document>;
   /** The variant of the tree node document. */
   variant: Scalars['String']['output'];
 };
@@ -784,7 +786,7 @@ export type TreeNodeDocumentQuery = {
       id: string;
       nodeDocument?: {
         __typename?: 'TreeNodeDocument';
-        document: {
+        document?: {
           __typename?: 'Document';
           id: string;
           slug: string;
@@ -900,7 +902,7 @@ export type TreeNodeDocumentQuery = {
               } | null;
             } | null> | null;
           } | null;
-        };
+        } | null;
       } | null;
     } | null;
   } | null;
@@ -931,7 +933,7 @@ export type TreeQuery = {
           nodeDocuments?: Array<{
             __typename?: 'TreeNodeDocument';
             variant: string;
-            document: { __typename?: 'Document'; id: string; title: string; path?: string | null };
+            document?: { __typename?: 'Document'; id: string; title: string; path?: string | null } | null;
           }> | null;
           parent?: { __typename?: 'TreeNode'; id: string } | null;
         } | null;

@@ -13,7 +13,7 @@ export type TreeNode = {
   names: TreeNodeName[];
   nameMap: Map<string, string>;
   document: TreeNodeDocumentDocument | null;
-  documentMap: Map<string, TreeNodeDocumentDocument>;
+  documentMap: Map<string, TreeNodeDocumentDocument | null>;
   nodeDocuments: TreeNodeDocument[];
   parentId?: string;
   root: boolean;
@@ -28,7 +28,7 @@ export type TreeNodeName = {
 
 export type TreeNodeDocument = {
   variant: string;
-  document: TreeNodeDocumentDocument;
+  document?: TreeNodeDocumentDocument | null;
 };
 
 export type TreeNodeDocumentDocument = {
