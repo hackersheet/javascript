@@ -32,7 +32,7 @@ export default function processInternalLinks({ document, permaLinkFormat, docTre
         if (docTree) {
           const treeNode = docTree.flatNodes.find((node) =>
             node.nodeDocuments.find((nodeDoc) => {
-              return nodeDoc.document.path === fullPath;
+              return nodeDoc.document?.path === fullPath;
             })
           );
           if (treeNode) {
