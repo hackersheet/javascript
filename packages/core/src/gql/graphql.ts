@@ -933,7 +933,13 @@ export type TreeQuery = {
           nodeDocuments?: Array<{
             __typename?: 'TreeNodeDocument';
             variant: string;
-            document?: { __typename?: 'Document'; id: string; title: string; path?: string | null } | null;
+            document?: {
+              __typename?: 'Document';
+              id: string;
+              slug: string;
+              title: string;
+              path?: string | null;
+            } | null;
           }> | null;
           parent?: { __typename?: 'TreeNode'; id: string } | null;
         } | null;
@@ -2005,6 +2011,7 @@ export const TreeDocument = {
                                             kind: 'SelectionSet',
                                             selections: [
                                               { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                                              { kind: 'Field', name: { kind: 'Name', value: 'slug' } },
                                               { kind: 'Field', name: { kind: 'Name', value: 'title' } },
                                               { kind: 'Field', name: { kind: 'Name', value: 'path' } },
                                             ],

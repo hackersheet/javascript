@@ -33,6 +33,7 @@ export type TreeNodeDocument = {
 
 export type TreeNodeDocumentDocument = {
   id: string;
+  slug: string;
   title: string;
   path?: string | null;
 };
