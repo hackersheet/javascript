@@ -6,8 +6,15 @@ import { WebsiteListeItem } from '../../types';
 import { toArrayFromEdges } from '../../utils';
 
 graphql(`
-  query websites($after: String, $first: Int) {
-    websites(after: $after, first: $first) {
+  query websites(
+    $after: String
+    $before: String
+    $first: Int
+    $last: Int
+    $filter: WorkspaceWebsiteConnectionFilter
+    $sort: ConnectionSort
+  ) {
+    websites(after: $after, before: $before, first: $first, last: $last, filter: $filter, sort: $sort) {
       totalCount
       edges {
         node {

@@ -44,7 +44,7 @@ graphql(`
           }
         }
       }
-      outboundLinkDocuments {
+      outboundLinkDocuments(sort: { by: "published_at", order: "desc" }) {
         edges {
           node {
             id
@@ -66,7 +66,7 @@ graphql(`
           }
         }
       }
-      inboundLinkDocuments {
+      inboundLinkDocuments(sort: { by: "published_at", order: "desc" }) {
         edges {
           node {
             id
@@ -88,7 +88,7 @@ graphql(`
           }
         }
       }
-      websites {
+      websites(sort: { by: "published_at", order: "desc" }) {
         edges {
           node {
             id

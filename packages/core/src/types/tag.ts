@@ -3,6 +3,7 @@ export type Tag = {
   name: string;
   documentCount: number;
   documentCountInPublished: number;
+  documentCountInDraft: number;
   relatedTags: RelatedTagList;
 };
 
@@ -11,6 +12,7 @@ export type TagListItem = {
   name: string;
   documentCount: number;
   documentCountInPublished: number;
+  documentCountInDraft: number;
 };
 
 export type TagList = TagListItem[];
@@ -20,6 +22,7 @@ export type RelatedTagListItem = {
   name: string;
   documentCount: number;
   documentCountInPublished: number;
+  documentCountInDraft: number;
 };
 
 export type RelatedTagList = RelatedTagListItem[];

@@ -63,6 +63,20 @@ export type AssetConnection = {
   totalCount: Scalars['Int']['output'];
 };
 
+/** Args for filter of asset connection. */
+export type AssetConnectionFilter = {
+  /** End of date and time the asset was created. */
+  createdAtEnd?: InputMaybe<Scalars['DateTime']['input']>;
+  /** Start of date and time the asset was created. */
+  createdAtStart?: InputMaybe<Scalars['DateTime']['input']>;
+  /** The keyword inclued in the asset. */
+  keyword?: InputMaybe<Scalars['String']['input']>;
+  /** End of date and time the asset was updated. */
+  updatedAtEnd?: InputMaybe<Scalars['DateTime']['input']>;
+  /** Start of date and time the asset was updated. */
+  updatedAtStart?: InputMaybe<Scalars['DateTime']['input']>;
+};
+
 /** An edge in a connection. */
 export type AssetEdge = {
   __typename?: 'AssetEdge';
@@ -122,36 +136,46 @@ export type Document = {
 export type DocumentAssetsArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
+  filter?: InputMaybe<AssetConnectionFilter>;
   first?: InputMaybe<Scalars['Int']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
+  sort?: InputMaybe<ConnectionSort>;
 };
 
 export type DocumentInboundLinkDocumentsArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
+  filter?: InputMaybe<DocumentConnectionFilter>;
   first?: InputMaybe<Scalars['Int']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
+  sort?: InputMaybe<ConnectionSort>;
 };
 
 export type DocumentOutboundLinkDocumentsArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
+  filter?: InputMaybe<DocumentConnectionFilter>;
   first?: InputMaybe<Scalars['Int']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
+  sort?: InputMaybe<ConnectionSort>;
 };
 
 export type DocumentTagsArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
+  filter?: InputMaybe<TagConnectionFilter>;
   first?: InputMaybe<Scalars['Int']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
+  sort?: InputMaybe<ConnectionSort>;
 };
 
 export type DocumentWebsitesArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
+  filter?: InputMaybe<WorkspaceWebsiteConnectionFilter>;
   first?: InputMaybe<Scalars['Int']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
+  sort?: InputMaybe<ConnectionSort>;
 };
 
 /** The connection type for Document. */
@@ -253,6 +277,7 @@ export type QueryAssetArgs = {
 export type QueryAssetsArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
+  filter?: InputMaybe<AssetConnectionFilter>;
   first?: InputMaybe<Scalars['Int']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
   sort?: InputMaybe<ConnectionSort>;
@@ -281,6 +306,7 @@ export type QueryTagArgs = {
 export type QueryTagsArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
+  filter?: InputMaybe<TagConnectionFilter>;
   first?: InputMaybe<Scalars['Int']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
   sort?: InputMaybe<ConnectionSort>;
@@ -298,8 +324,10 @@ export type QueryWebsiteArgs = {
 export type QueryWebsitesArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
+  filter?: InputMaybe<WorkspaceWebsiteConnectionFilter>;
   first?: InputMaybe<Scalars['Int']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
+  sort?: InputMaybe<ConnectionSort>;
 };
 
 export type Tag = {
@@ -335,8 +363,10 @@ export type TagDocumentsArgs = {
 export type TagRelatedTagsArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
+  filter?: InputMaybe<TagConnectionFilter>;
   first?: InputMaybe<Scalars['Int']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
+  sort?: InputMaybe<ConnectionSort>;
 };
 
 /** The connection type for Tag. */
@@ -350,6 +380,20 @@ export type TagConnection = {
   pageInfo: PageInfo;
   /** Total count of nodes. */
   totalCount: Scalars['Int']['output'];
+};
+
+/** Args for filter of tag connection. */
+export type TagConnectionFilter = {
+  /** End of date and time the tag was created. */
+  createdAtEnd?: InputMaybe<Scalars['DateTime']['input']>;
+  /** Start of date and time the tag was created. */
+  createdAtStart?: InputMaybe<Scalars['DateTime']['input']>;
+  /** The keyword inclued in the tag. */
+  keyword?: InputMaybe<Scalars['String']['input']>;
+  /** End of date and time the tag was updated. */
+  updatedAtEnd?: InputMaybe<Scalars['DateTime']['input']>;
+  /** Start of date and time the tag was updated. */
+  updatedAtStart?: InputMaybe<Scalars['DateTime']['input']>;
 };
 
 /** An edge in a connection. */
@@ -542,6 +586,20 @@ export type WorkspaceWebsiteConnection = {
   totalCount: Scalars['Int']['output'];
 };
 
+/** Args for filter of website connection. */
+export type WorkspaceWebsiteConnectionFilter = {
+  /** End of date and time the website was created. */
+  createdAtEnd?: InputMaybe<Scalars['DateTime']['input']>;
+  /** Start of date and time the website was created. */
+  createdAtStart?: InputMaybe<Scalars['DateTime']['input']>;
+  /** The keyword inclued in the website. */
+  keyword?: InputMaybe<Scalars['String']['input']>;
+  /** End of date and time the website was updated. */
+  updatedAtEnd?: InputMaybe<Scalars['DateTime']['input']>;
+  /** Start of date and time the website was updated. */
+  updatedAtStart?: InputMaybe<Scalars['DateTime']['input']>;
+};
+
 /** An edge in a connection. */
 export type WorkspaceWebsiteEdge = {
   __typename?: 'WorkspaceWebsiteEdge';
@@ -678,7 +736,9 @@ export type DocumentQuery = {
 
 export type DocumentsQueryVariables = Exact<{
   after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
   filter?: InputMaybe<DocumentConnectionFilter>;
   sort?: InputMaybe<ConnectionSort>;
 }>;
@@ -732,6 +792,7 @@ export type TagQuery = {
     name: string;
     documentCount: number;
     documentCountInPublished: number;
+    documentCountInDraft: number;
     relatedTags?: {
       __typename?: 'TagConnection';
       edges?: Array<{
@@ -742,6 +803,7 @@ export type TagQuery = {
           name: string;
           documentCount: number;
           documentCountInPublished: number;
+          documentCountInDraft: number;
         } | null;
       } | null> | null;
     } | null;
@@ -749,6 +811,11 @@ export type TagQuery = {
 };
 
 export type TagsQueryVariables = Exact<{
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  filter?: InputMaybe<TagConnectionFilter>;
   sort?: InputMaybe<ConnectionSort>;
 }>;
 
@@ -765,6 +832,7 @@ export type TagsQuery = {
         name: string;
         documentCount: number;
         documentCountInPublished: number;
+        documentCountInDraft: number;
       } | null;
     } | null> | null;
   } | null;
@@ -950,7 +1018,11 @@ export type TreeQuery = {
 
 export type WebsitesQueryVariables = Exact<{
   after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  filter?: InputMaybe<WorkspaceWebsiteConnectionFilter>;
+  sort?: InputMaybe<ConnectionSort>;
 }>;
 
 export type WebsitesQuery = {
@@ -1110,6 +1182,27 @@ export const DocumentDocument = {
                 {
                   kind: 'Field',
                   name: { kind: 'Name', value: 'outboundLinkDocuments' },
+                  arguments: [
+                    {
+                      kind: 'Argument',
+                      name: { kind: 'Name', value: 'sort' },
+                      value: {
+                        kind: 'ObjectValue',
+                        fields: [
+                          {
+                            kind: 'ObjectField',
+                            name: { kind: 'Name', value: 'by' },
+                            value: { kind: 'StringValue', value: 'published_at', block: false },
+                          },
+                          {
+                            kind: 'ObjectField',
+                            name: { kind: 'Name', value: 'order' },
+                            value: { kind: 'StringValue', value: 'desc', block: false },
+                          },
+                        ],
+                      },
+                    },
+                  ],
                   selectionSet: {
                     kind: 'SelectionSet',
                     selections: [
@@ -1174,6 +1267,27 @@ export const DocumentDocument = {
                 {
                   kind: 'Field',
                   name: { kind: 'Name', value: 'inboundLinkDocuments' },
+                  arguments: [
+                    {
+                      kind: 'Argument',
+                      name: { kind: 'Name', value: 'sort' },
+                      value: {
+                        kind: 'ObjectValue',
+                        fields: [
+                          {
+                            kind: 'ObjectField',
+                            name: { kind: 'Name', value: 'by' },
+                            value: { kind: 'StringValue', value: 'published_at', block: false },
+                          },
+                          {
+                            kind: 'ObjectField',
+                            name: { kind: 'Name', value: 'order' },
+                            value: { kind: 'StringValue', value: 'desc', block: false },
+                          },
+                        ],
+                      },
+                    },
+                  ],
                   selectionSet: {
                     kind: 'SelectionSet',
                     selections: [
@@ -1238,6 +1352,27 @@ export const DocumentDocument = {
                 {
                   kind: 'Field',
                   name: { kind: 'Name', value: 'websites' },
+                  arguments: [
+                    {
+                      kind: 'Argument',
+                      name: { kind: 'Name', value: 'sort' },
+                      value: {
+                        kind: 'ObjectValue',
+                        fields: [
+                          {
+                            kind: 'ObjectField',
+                            name: { kind: 'Name', value: 'by' },
+                            value: { kind: 'StringValue', value: 'published_at', block: false },
+                          },
+                          {
+                            kind: 'ObjectField',
+                            name: { kind: 'Name', value: 'order' },
+                            value: { kind: 'StringValue', value: 'desc', block: false },
+                          },
+                        ],
+                      },
+                    },
+                  ],
                   selectionSet: {
                     kind: 'SelectionSet',
                     selections: [
@@ -1309,7 +1444,17 @@ export const DocumentsDocument = {
         },
         {
           kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'before' } },
+          type: { kind: 'NamedType', name: { kind: 'Name', value: 'String' } },
+        },
+        {
+          kind: 'VariableDefinition',
           variable: { kind: 'Variable', name: { kind: 'Name', value: 'first' } },
+          type: { kind: 'NamedType', name: { kind: 'Name', value: 'Int' } },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'last' } },
           type: { kind: 'NamedType', name: { kind: 'Name', value: 'Int' } },
         },
         {
@@ -1337,8 +1482,18 @@ export const DocumentsDocument = {
               },
               {
                 kind: 'Argument',
+                name: { kind: 'Name', value: 'before' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'before' } },
+              },
+              {
+                kind: 'Argument',
                 name: { kind: 'Name', value: 'first' },
                 value: { kind: 'Variable', name: { kind: 'Name', value: 'first' } },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'last' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'last' } },
               },
               {
                 kind: 'Argument',
@@ -1466,6 +1621,7 @@ export const TagDocument = {
                 { kind: 'Field', name: { kind: 'Name', value: 'name' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'documentCount' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'documentCountInPublished' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'documentCountInDraft' } },
                 {
                   kind: 'Field',
                   name: { kind: 'Name', value: 'relatedTags' },
@@ -1488,6 +1644,7 @@ export const TagDocument = {
                                   { kind: 'Field', name: { kind: 'Name', value: 'name' } },
                                   { kind: 'Field', name: { kind: 'Name', value: 'documentCount' } },
                                   { kind: 'Field', name: { kind: 'Name', value: 'documentCountInPublished' } },
+                                  { kind: 'Field', name: { kind: 'Name', value: 'documentCountInDraft' } },
                                 ],
                               },
                             },
@@ -1515,6 +1672,31 @@ export const TagsDocument = {
       variableDefinitions: [
         {
           kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'after' } },
+          type: { kind: 'NamedType', name: { kind: 'Name', value: 'String' } },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'before' } },
+          type: { kind: 'NamedType', name: { kind: 'Name', value: 'String' } },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'first' } },
+          type: { kind: 'NamedType', name: { kind: 'Name', value: 'Int' } },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'last' } },
+          type: { kind: 'NamedType', name: { kind: 'Name', value: 'Int' } },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'filter' } },
+          type: { kind: 'NamedType', name: { kind: 'Name', value: 'TagConnectionFilter' } },
+        },
+        {
+          kind: 'VariableDefinition',
           variable: { kind: 'Variable', name: { kind: 'Name', value: 'sort' } },
           type: { kind: 'NamedType', name: { kind: 'Name', value: 'ConnectionSort' } },
         },
@@ -1526,6 +1708,31 @@ export const TagsDocument = {
             kind: 'Field',
             name: { kind: 'Name', value: 'tags' },
             arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'after' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'after' } },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'before' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'before' } },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'first' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'first' } },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'last' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'last' } },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'filter' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'filter' } },
+              },
               {
                 kind: 'Argument',
                 name: { kind: 'Name', value: 'sort' },
@@ -1552,6 +1759,7 @@ export const TagsDocument = {
                             { kind: 'Field', name: { kind: 'Name', value: 'name' } },
                             { kind: 'Field', name: { kind: 'Name', value: 'documentCount' } },
                             { kind: 'Field', name: { kind: 'Name', value: 'documentCountInPublished' } },
+                            { kind: 'Field', name: { kind: 'Name', value: 'documentCountInDraft' } },
                           ],
                         },
                       },
@@ -2062,8 +2270,28 @@ export const WebsitesDocument = {
         },
         {
           kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'before' } },
+          type: { kind: 'NamedType', name: { kind: 'Name', value: 'String' } },
+        },
+        {
+          kind: 'VariableDefinition',
           variable: { kind: 'Variable', name: { kind: 'Name', value: 'first' } },
           type: { kind: 'NamedType', name: { kind: 'Name', value: 'Int' } },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'last' } },
+          type: { kind: 'NamedType', name: { kind: 'Name', value: 'Int' } },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'filter' } },
+          type: { kind: 'NamedType', name: { kind: 'Name', value: 'WorkspaceWebsiteConnectionFilter' } },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'sort' } },
+          type: { kind: 'NamedType', name: { kind: 'Name', value: 'ConnectionSort' } },
         },
       ],
       selectionSet: {
@@ -2080,8 +2308,28 @@ export const WebsitesDocument = {
               },
               {
                 kind: 'Argument',
+                name: { kind: 'Name', value: 'before' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'before' } },
+              },
+              {
+                kind: 'Argument',
                 name: { kind: 'Name', value: 'first' },
                 value: { kind: 'Variable', name: { kind: 'Name', value: 'first' } },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'last' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'last' } },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'filter' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'filter' } },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'sort' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'sort' } },
               },
             ],
             selectionSet: {

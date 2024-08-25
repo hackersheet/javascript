@@ -6,8 +6,15 @@ import { DocumentList } from '../../types';
 import { toArrayFromEdges } from '../../utils';
 
 graphql(`
-  query documents($after: String, $first: Int, $filter: DocumentConnectionFilter, $sort: ConnectionSort) {
-    documents(after: $after, first: $first, filter: $filter, sort: $sort) {
+  query documents(
+    $after: String
+    $before: String
+    $first: Int
+    $last: Int
+    $filter: DocumentConnectionFilter
+    $sort: ConnectionSort
+  ) {
+    documents(after: $after, before: $before, first: $first, last: $last, filter: $filter, sort: $sort) {
       totalCount
       edges {
         node {

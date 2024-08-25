@@ -6,8 +6,15 @@ import { TagList } from '../../types';
 import { toArrayFromEdges } from '../../utils';
 
 graphql(`
-  query tags($sort: ConnectionSort) {
-    tags(sort: $sort) {
+  query tags(
+    $after: String
+    $before: String
+    $first: Int
+    $last: Int
+    $filter: TagConnectionFilter
+    $sort: ConnectionSort
+  ) {
+    tags(after: $after, before: $before, first: $first, last: $last, filter: $filter, sort: $sort) {
       totalCount
       edges {
         node {
@@ -15,6 +22,7 @@ graphql(`
           name
           documentCount
           documentCountInPublished
+          documentCountInDraft
         }
       }
     }

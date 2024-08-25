@@ -13,6 +13,7 @@ graphql(`
       name
       documentCount
       documentCountInPublished
+      documentCountInDraft
       relatedTags {
         edges {
           node {
@@ -20,6 +21,7 @@ graphql(`
             name
             documentCount
             documentCountInPublished
+            documentCountInDraft
           }
         }
       }
