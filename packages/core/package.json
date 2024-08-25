@@ -1,6 +1,6 @@
 {
   "name": "@hackersheet/core",
-  "version": "0.1.0-alpha.8",
+  "version": "0.1.0-alpha.9",
   "description": "A core package that includes Hacker Sheet's GraphQL API client.",
   "keywords": [],
   "repository": {
