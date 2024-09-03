@@ -1,5 +1,6 @@
 export type {
   CodeBlockComponentProps,
+  DirectoryTreeComponentProps,
   GistComponentProps,
   HeadingComponentProps,
   ImageComponentProps,

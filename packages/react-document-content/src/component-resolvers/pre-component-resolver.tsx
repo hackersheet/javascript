@@ -26,12 +26,20 @@ export type KifuComponentProps = {
   children?: ReactNode;
 };
 
+export type DirectoryTreeComponentProps = {
+  code: string;
+  language: string;
+  document: Document;
+  children?: ReactNode;
+};
+
 export type PreComponentResolverProps = JSX.IntrinsicElements['pre'] &
   ExtraProps & {
     document: Document;
     CodeBlockComponent: FC<CodeBlockComponentProps>;
     MermaidComponent?: FC<MermaidComponentProps>;
     KifuComponent?: FC<KifuComponentProps>;
+    DirectoryTreeComponent?: FC<DirectoryTreeComponentProps>;
   };
 
 export default function PreComponentResolver({
@@ -41,6 +49,7 @@ export default function PreComponentResolver({
   CodeBlockComponent,
   MermaidComponent,
   KifuComponent,
+  DirectoryTreeComponent,
 }: PreComponentResolverProps) {
   const childrenElm = <>{children}</>;
 
@@ -68,6 +77,7 @@ export default function PreComponentResolver({
 
   const isMermaid = /^mermaid(:.*$|$)/.test(language);
   const isKifu = /^kifu(:.*$|$)/.test(language);
+  const isDirectoryTree = /^tree(:.*$|$)/.test(language);
 
   const props = {
     code: codeValue,
@@ -78,6 +88,7 @@ export default function PreComponentResolver({
 
   if (isMermaid && MermaidComponent) return <MermaidComponent {...props} />;
   if (isKifu && KifuComponent) return <KifuComponent {...props} />;
+  if (isDirectoryTree && DirectoryTreeComponent) return <DirectoryTreeComponent {...props} />;
 
   return <CodeBlockComponent {...props} />;
 }

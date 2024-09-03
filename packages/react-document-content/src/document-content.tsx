@@ -27,6 +27,7 @@ import { processInternalLinks, rehypeClobberUrlDecode, rehypeFootnoteLinks } fro
 
 import type {
   CodeBlockComponentProps,
+  DirectoryTreeComponentProps,
   GistComponentProps,
   HeadingComponentProps,
   ImageComponentProps,
@@ -67,6 +68,7 @@ export interface DocumentContentProps {
   style?: Styles | CssModule;
   components?: {
     codeBlock?: FC<CodeBlockComponentProps>;
+    directoryTree?: FC<DirectoryTreeComponentProps>;
     gist?: FC<GistComponentProps>;
     heading?: FC<HeadingComponentProps>;
     image?: FC<ImageComponentProps>;
@@ -87,6 +89,7 @@ export function DocumentContent({ document, tree, permaLinkFormat, style, compon
   });
 
   const CodeBlockComponent = components?.codeBlock ?? CodeBlock;
+  const DirectoryTreeComponent = components?.directoryTree;
   const GistComponent = components?.gist ?? Gist;
   const HeadingComponent = components?.heading ?? Heading;
   const ImageComponent = components?.image ?? Image;
@@ -126,7 +129,15 @@ export function DocumentContent({ document, tree, permaLinkFormat, style, compon
       h5: (props) => HeadingComponentResolver({ ...props, document, HeadingComponent }),
       h6: (props) => HeadingComponentResolver({ ...props, document, HeadingComponent }),
       img: (props) => ImgComponentResolver({ ...props, document, ImageComponent }),
-      pre: (props) => PreComponentResolver({ ...props, document, CodeBlockComponent, KifuComponent, MermaidComponent }),
+      pre: (props) =>
+        PreComponentResolver({
+          ...props,
+          document,
+          CodeBlockComponent,
+          KifuComponent,
+          MermaidComponent,
+          DirectoryTreeComponent,
+        }),
       youtube: (props) => YoutubeComponentResolver({ ...props, document, YoutubeComponent }),
     },
   };
