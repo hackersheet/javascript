@@ -8,7 +8,7 @@
   "main": "index.js",
   "scripts": {
     "build": "turbo build",
-    "build:packages": "turbo build -F @hackersheet/*",
+    "build:packages": "turbo build -F @hackersheet/* -F !@hackersheet/sandbox*",
     "codegen": "gql-gen --config codegen.ts",
     "core": "pnpm -F core",
     "format": "prettier --write --ignore-unknown .",
@@ -18,7 +18,7 @@
     "next-document-content-kifu": "pnpm -F next-document-content-kifu",
     "react-document-content": "pnpm -F react-document-content",
     "react-document-content-styles": "pnpm -F react-document-content-styles",
-    "sandbox:next": "pnpm -F next",
+    "sandbox:next": "pnpm -F @hackersheet/sandbox-next",
     "test": "echo \"Error: no test specified\" && exit 1",
     "watch": "turbo watch build -F @hackersheet/*"
   },
