@@ -1,3 +1,5 @@
+import { createHash } from 'crypto';
+
 import React from 'react';
 import { LuFolder, LuFile, LuFolderTree } from 'react-icons/lu';
 
@@ -11,7 +13,7 @@ export default async function DirectoryTree({ code, ...props }: DirectoryTreeCom
 
   const renderTree = (node: TreeNode): React.ReactNode => {
     return (
-      <li className={`${node.type === 'directory' ? 'directory-tree-directory' : 'directory-tree-file'}`}>
+      <li key={node.id} className={`${node.type === 'directory' ? 'directory-tree-directory' : 'directory-tree-file'}`}>
         <div className="directory-tree-node-content">
           <div className="directory-tree-icon">
             {node.type === 'directory' && <LuFolder />}
@@ -42,6 +44,7 @@ export default async function DirectoryTree({ code, ...props }: DirectoryTreeCom
 }
 
 type TreeNode = {
+  id: string;
   name: string;
   type: 'file' | 'directory';
   extension?: string;
@@ -49,9 +52,17 @@ type TreeNode = {
   children?: TreeNode[];
 };
 
+function encryptSha256(str: string) {
+  const hash = createHash('sha256');
+  hash.update(str);
+  return hash.digest('hex');
+}
+
 function parseTreeOutput(treeOutput: string): TreeNode | null {
   const lines = treeOutput.trim().split('\n');
+  const idPrefix = 'tree-' + encryptSha256(treeOutput.trim()) + '-';
   const rootNode: TreeNode = {
+    id: idPrefix + 'root',
     name: '',
     type: 'directory',
     level: 0,
@@ -65,7 +76,7 @@ function parseTreeOutput(treeOutput: string): TreeNode | null {
   const cleanNodeName = (name: string): string => name.replace(/^[\s│├└─]+/, '').trim();
 
   try {
-    lines.forEach((line) => {
+    lines.forEach((line, index) => {
       const trimmedLine = line.trimStart();
       const indent = (trimmedLine.match(/^[\s│├└─]+/) || [''])[0];
       const level = indent.length / 4;
@@ -80,6 +91,7 @@ function parseTreeOutput(treeOutput: string): TreeNode | null {
 
       const isDirectory = !cleanedLine.includes('.');
       const newNode: TreeNode = {
+        id: idPrefix + 'node-' + index,
         name: cleanedLine,
         type: isDirectory ? 'directory' : 'file',
         extension: isDirectory ? undefined : getExtension(cleanedLine),
