@@ -10,7 +10,6 @@ import {
   XPost,
   Youtube,
 } from '@hackersheet/next-document-content-components';
-import { Kifu, KifuTo } from '@hackersheet/next-document-content-kifu';
 import { DocumentContent } from '@hackersheet/react-document-content';
 import documentContentStyle from '@hackersheet/react-document-content-styles/basic';
 import { notFound } from 'next/navigation';
@@ -19,7 +18,11 @@ import { client } from '@/lib/hackersheet/client';
 
 import 'katex/dist/katex.min.css';
 
-export default async function PostPage({ params: { documentSlug } }: { params: { documentSlug: string } }) {
+export default async function PostPage(props: { params: Promise<{ documentSlug: string }> }) {
+  const params = await props.params;
+
+  const { documentSlug } = params;
+
   const { document } = await client.getDocument({ slug: documentSlug });
 
   if (!document) notFound();
@@ -38,8 +41,7 @@ export default async function PostPage({ params: { documentSlug } }: { params: {
           gist: Gist,
           heading: Heading,
           image: Image,
-          kifu: Kifu,
-          kifuTo: KifuTo,
+
           link: Link,
           linkCard: LinkCard,
           mermaid: Mermaid,

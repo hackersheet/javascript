@@ -19,7 +19,11 @@ import { client } from '@/lib/hackersheet/client';
 
 import 'katex/dist/katex.min.css';
 
-export default async function TreeNodePage({ params: { slug } }: { params: { slug: string[] } }) {
+export default async function TreeNodePage(props: { params: Promise<{ slug: string[] }> }) {
+  const params = await props.params;
+
+  const { slug } = params;
+
   const fullSlug = slug.join('/');
 
   const { document } = await client.getTreeNodeDocument({ treeSlug: 'tree', nodeFullSlug: fullSlug });
