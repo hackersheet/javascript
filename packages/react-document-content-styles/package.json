@@ -36,7 +36,7 @@
     "typegen:scss": "typed-scss-modules \"src/styles/*.module.scss\""
   },
   "devDependencies": {
-    "sass": "1.77.8",
-    "typed-scss-modules": "8.0.1"
+    "sass": "1.93.2",
+    "typed-scss-modules": "8.1.1"
   }
 }
