@@ -10,7 +10,7 @@ export type XPostComponentProps = {
   children?: ReactNode;
 };
 
-export type XPostComponentResolverProps = { children: ReactNode } & ExtraProps & {
+export type XPostComponentResolverProps = { children?: ReactNode } & ExtraProps & {
     document: Document;
     XPostComponent: FC<XPostComponentProps>;
   };

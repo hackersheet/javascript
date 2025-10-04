@@ -12,7 +12,7 @@ export type ImageComponentProps = {
   children?: ReactNode;
 };
 
-export type ImgComponentResolverProps = JSX.IntrinsicElements['img'] &
+export type ImgComponentResolverProps = React.JSX.IntrinsicElements['img'] &
   ExtraProps & {
     document: Document;
     ImageComponent: FC<ImageComponentProps>;

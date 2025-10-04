@@ -13,7 +13,7 @@ export type GistComponentProps = {
   children?: ReactNode;
 };
 
-export type GistComponentResolverProps = { children: ReactNode } & ExtraProps & {
+export type GistComponentResolverProps = { children?: ReactNode } & ExtraProps & {
     document: Document;
     GistComponent: FC<GistComponentProps>;
   };

@@ -10,7 +10,7 @@ export type LinkComponentProps = {
   children?: ReactNode;
 };
 
-export type AComponentResolverProps = JSX.IntrinsicElements['a'] &
+export type AComponentResolverProps = React.JSX.IntrinsicElements['a'] &
   ExtraProps & {
     document: Document;
     LinkComponent: FC<LinkComponentProps>;

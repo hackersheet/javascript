@@ -1,6 +1,6 @@
 import deepmerge from 'deepmerge';
-import React, { FC, ReactNode } from 'react';
-import Markdown, { ExtraProps, Options } from 'react-markdown';
+import React, { FC } from 'react';
+import Markdown, { Options } from 'react-markdown';
 import { rehypeGithubAlerts } from 'rehype-github-alerts';
 import rehypeKatex from 'rehype-katex';
 import rehypeRaw from 'rehype-raw';
@@ -41,21 +41,6 @@ import type {
 } from './component-resolvers';
 import type { Document, Tree } from '@hackersheet/core';
 import type { Styles } from '@hackersheet/react-document-content-styles/basic';
-
-type DirectiveProps = { children: ReactNode } & ExtraProps;
-
-declare global {
-  // eslint-disable-next-line @typescript-eslint/no-namespace
-  namespace JSX {
-    interface IntrinsicElements {
-      'kifu-to': DirectiveProps;
-      'link-card': DirectiveProps;
-      'x-post': DirectiveProps;
-      youtube: DirectiveProps;
-      gist: DirectiveProps;
-    }
-  }
-}
 
 type CssModule = {
   readonly [key: string]: string;
@@ -143,8 +128,8 @@ export function DocumentContent({ document, tree, permaLinkFormat, style, compon
   };
 
   return (
-    <Markdown className={style && style.main} {...options}>
-      {document.content}
-    </Markdown>
+    <div className={style && style.main}>
+      <Markdown {...options}>{document.content}</Markdown>
+    </div>
   );
 }

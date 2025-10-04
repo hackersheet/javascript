@@ -1,7 +1,7 @@
 import React from 'react';
 
 import type { Document } from '@hackersheet/core';
-import type { FC, ReactNode } from 'react';
+import type { ClassAttributes, FC, HTMLAttributes, ReactNode } from 'react';
 import type { ExtraProps } from 'react-markdown';
 
 type HeadingTagType = 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
@@ -12,8 +12,8 @@ export type HeadingComponentProps = {
   children?: ReactNode;
 };
 
-export type HeadingComponentResolverProps = React.ClassAttributes<HTMLHeadingElement> &
-  React.HTMLAttributes<HTMLHeadingElement> &
+export type HeadingComponentResolverProps = ClassAttributes<HTMLHeadingElement> &
+  HTMLAttributes<HTMLHeadingElement> &
   ExtraProps & {
     document: Document;
     HeadingComponent: FC<HeadingComponentProps>;

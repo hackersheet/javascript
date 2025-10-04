@@ -14,7 +14,7 @@ export type YoutubeComponentProps = {
   children?: ReactNode;
 };
 
-export type YoutubeComponentResolverProps = { children: ReactNode } & ExtraProps & {
+export type YoutubeComponentResolverProps = { children?: ReactNode } & ExtraProps & {
     document: Document;
     YoutubeComponent: FC<YoutubeComponentProps>;
   };

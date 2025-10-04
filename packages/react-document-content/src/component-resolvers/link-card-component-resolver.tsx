@@ -16,7 +16,7 @@ export type LinkCardComponentProps = {
   children?: ReactNode;
 };
 
-export type LinkCardComponentResolverProps = { children: ReactNode } & ExtraProps & {
+export type LinkCardComponentResolverProps = { children?: ReactNode } & ExtraProps & {
     document: Document;
     LinkCardComponent: FC<LinkCardComponentProps>;
   };

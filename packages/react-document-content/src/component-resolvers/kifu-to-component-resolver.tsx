@@ -11,7 +11,7 @@ export type KifuToComponentProps = {
   children?: ReactNode;
 };
 
-export type KifuToComponentResolverProps = { children: ReactNode } & ExtraProps &
+export type KifuToComponentResolverProps = { children?: ReactNode } & ExtraProps &
   ExtraProps & {
     document: Document;
     KifuToComponent: FC<KifuToComponentProps>;

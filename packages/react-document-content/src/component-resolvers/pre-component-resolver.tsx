@@ -33,7 +33,7 @@ export type DirectoryTreeComponentProps = {
   children?: ReactNode;
 };
 
-export type PreComponentResolverProps = JSX.IntrinsicElements['pre'] &
+export type PreComponentResolverProps = React.JSX.IntrinsicElements['pre'] &
   ExtraProps & {
     document: Document;
     CodeBlockComponent: FC<CodeBlockComponentProps>;
