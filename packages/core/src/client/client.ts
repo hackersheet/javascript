@@ -88,6 +88,7 @@ export class Client {
         },
         cache: 'no-store',
       },
+      preferGetMethod: false,
     });
   }
 }
