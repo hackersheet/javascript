@@ -17,10 +17,14 @@ cd packages/next-document-content-components
 
 公開対象のパッケージに移動
 
-## npm publish
+## 公開
 
 ```bash
-pnpm publish --access public --tag alpha
+pnpm core pub
+pnpm next-document-content-components pub
+pnpm next-document-content-kifu pub
+pnpm react-document-content pub
+pnpm react-document-content-styles pub
 ```
 
-公開
+パッケージ毎の公開コマンドを実行
