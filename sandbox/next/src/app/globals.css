@@ -4,8 +4,9 @@
 
 /* my theme */
 @theme inline {
-  --font-body: var(--font-inter), 'Hiragino Kaku Gothic ProN', 'Helvetica', 'Helvetica Neue', 'Arial', 'Meiryo',
-    'Hiragino Sans', sans-serif;
+  --font-body:
+    var(--font-inter), 'Hiragino Kaku Gothic ProN', 'Helvetica', 'Helvetica Neue', 'Arial', 'Meiryo', 'Hiragino Sans',
+    sans-serif;
   --color-link: var(--link);
 }
 

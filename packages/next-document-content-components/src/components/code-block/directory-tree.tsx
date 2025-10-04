@@ -117,7 +117,7 @@ function parseTreeOutput(treeOutput: string): TreeNode | null {
     });
 
     return rootNode;
-  } catch (e) {
+  } catch {
     return null;
   }
 }

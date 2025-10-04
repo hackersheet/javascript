@@ -12,6 +12,7 @@
     "codegen": "gql-gen --config codegen.ts",
     "core": "pnpm -F core",
     "dev": "pnpm sandbox:next dev",
+    "lint": "eslint",
     "format": "prettier --write --ignore-unknown .",
     "format:package": "pnpm dlx sort-package-json \"package.json\" \"packages/*/package.json\" \"sandbox/*/package.json\"",
     "ncu:minor": "pnpm ncu --deep -t minor",
@@ -24,23 +25,29 @@
     "watch": "turbo watch build -F @hackersheet/*"
   },
   "devDependencies": {
-    "@graphql-codegen/cli": "5.0.2",
-    "@graphql-codegen/client-preset": "4.3.2",
-    "@types/node": "20.14.10",
-    "dotenv": "16.4.5",
-    "dotenv-cli": "7.4.2",
-    "eslint": "8.57.0",
-    "graphql-config": "5.0.3",
-    "npm-check-updates": "16.14.20",
-    "prettier": "3.3.2",
-    "terser": "5.31.2",
-    "tsup": "8.1.0",
-    "turbo": "2.0.9",
-    "typescript": "5.5.3"
+    "@eslint/eslintrc": "3.3.1",
+    "@eslint/js": "9.37.0",
+    "@graphql-codegen/cli": "6.0.0",
+    "@graphql-codegen/client-preset": "5.0.2",
+    "@next/eslint-plugin-next": "15.5.4",
+    "@types/node": "24.6.2",
+    "dotenv": "17.2.3",
+    "dotenv-cli": "10.0.0",
+    "eslint": "9.37.0",
+    "eslint-config-next": "15.5.4",
+    "eslint-plugin-import": "2.32.0",
+    "eslint-plugin-unused-imports": "4.2.0",
+    "graphql-config": "5.1.5",
+    "npm-check-updates": "19.0.0",
+    "prettier": "3.6.2",
+    "terser": "5.44.0",
+    "tsup": "8.5.0",
+    "turbo": "2.5.8",
+    "typescript": "5.9.3",
+    "typescript-eslint": "8.45.0"
   },
-  "packageManager": "pnpm@10.17.1+sha512.17c560fca4867ae9473a3899ad84a88334914f379be46d455cbf92e5cf4b39d34985d452d2583baf19967fa76cb5c17bc9e245529d0b98745721aa7200ecaf7a",
+  "packageManager": "pnpm@10.18.0+sha512.e804f889f1cecc40d572db084eec3e4881739f8dec69c0ff10d2d1beff9a4e309383ba27b5b750059d7f4c149535b6cd0d2cb1ed3aeb739239a4284a68f40cfa",
   "engines": {
-    "npm": "please_use_pnpm_instead",
-    "pnpm": "10.17.1"
+    "npm": "please_use_pnpm_instead"
   }
 }

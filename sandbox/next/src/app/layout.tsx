@@ -4,9 +4,9 @@ import { Inter } from 'next/font/google';
 import Link from 'next/link';
 import { ThemeProvider } from 'next-themes';
 
-import ThemeSwitcher from '@/components/theme-switcher';
-
 import type { Metadata } from 'next';
+
+import ThemeSwitcher from '@/components/theme-switcher';
 
 const inter = Inter({ subsets: ['latin'] });
 

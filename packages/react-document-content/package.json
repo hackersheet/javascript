@@ -51,7 +51,6 @@
     "unist-util-visit": "^5.0.0"
   },
   "devDependencies": {
-    "@hackersheet/eslint-config-custom": "workspace:*",
     "@types/hast": "3.0.4",
     "@types/mustache": "4.2.5",
     "@types/react": "^18.0.0",
