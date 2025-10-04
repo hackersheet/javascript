@@ -5,11 +5,13 @@ import {
   transformerNotationHighlight,
 } from '@shikijs/transformers';
 import { cache } from 'react';
-import { bundledLanguages, bundledThemes, getSingletonHighlighter } from 'shiki';
+import { bundledLanguages, getSingletonHighlighterCore } from 'shiki/bundle/web';
+import { createJavaScriptRegexEngine } from 'shiki/engine/javascript';
 
 export async function highlighteCode(code: string, language: string) {
   const highlighter = await getShikiHighlighter();
-  const shikiLang = Object.keys(bundledLanguages).find((lang) => lang === language);
+  const shikiLangs = highlighter.getLoadedLanguages();
+  const shikiLang = shikiLangs.find((lang) => lang === language);
 
   if (shikiLang === undefined && language !== 'text') {
     return null;
@@ -33,8 +35,9 @@ export async function highlighteCode(code: string, language: string) {
 }
 
 const getShikiHighlighter = cache(async () => {
-  return getSingletonHighlighter({
-    themes: Object.keys(bundledThemes),
-    langs: Object.keys(bundledLanguages),
+  return getSingletonHighlighterCore({
+    themes: [import('@shikijs/themes/github-light'), import('@shikijs/themes/github-dark-dimmed')],
+    langs: Object.values(bundledLanguages),
+    engine: createJavaScriptRegexEngine(),
   });
 });

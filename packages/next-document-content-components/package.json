@@ -36,12 +36,14 @@
     "@hackersheet/core": "workspace:*",
     "@hackersheet/react-document-content": "workspace:*",
     "@next/third-parties": "^15.5.4",
-    "@shikijs/transformers": "^1.14.1",
+    "@shikijs/langs": "3.13.0",
+    "@shikijs/themes": "3.13.0",
+    "@shikijs/transformers": "^3.13.0",
     "mermaid": "^10.9.1",
     "next-themes": "^0.4.6",
     "react-icons": "^5.5.0",
     "react-tweet": "^3.2.2",
-    "shiki": "^1.14.1"
+    "shiki": "^3.13.0"
   },
   "devDependencies": {
     "@types/react": "^19.2.0",
