@@ -72,10 +72,10 @@ importers:
         specifier: ^3.2.0
         version: 3.2.0(graphql@16.11.0)
       '@urql/core':
-        specifier: ^6.0.1
-        version: 6.0.1(graphql@16.11.0)
+        specifier: ^5.0.4
+        version: 5.2.0(graphql@16.11.0)
       graphql:
-        specifier: ^16.11.0
+        specifier: ^16.9.0
         version: 16.11.0
 
   packages/next-document-content-components:
@@ -2228,8 +2228,8 @@ packages:
   '@ungap/structured-clone@1.2.0':
     resolution: {integrity: sha512-zuVdFrMJiuCDQUMCzQaD6KL28MjnqqN8XnAqiEq9PNm/hCPTSGfrXCOfwj1ow4LFb/tNymJPwsNbVePc1xFqrQ==}
 
-  '@urql/core@6.0.1':
-    resolution: {integrity: sha512-FZDiQk6jxbj5hixf2rEPv0jI+IZz0EqqGW8mJBEug68/zHTtT+f34guZDmyjJZyiWbj0vL165LoMr/TkeDHaug==}
+  '@urql/core@5.2.0':
+    resolution: {integrity: sha512-/n0ieD0mvvDnVAXEQgX/7qJiVcvYvNkOHeBvkwtylfjydar123caCXcl58PXFY11oU1oquJocVXHxLAbtv4x1A==}
 
   '@whatwg-node/disposablestack@0.0.6':
     resolution: {integrity: sha512-LOtTn+JgJvX8WfBVJtF08TGrdjuFzGJc4mkP8EdDI8ADbvO7kiexYep1o8dwnt0okb0jYclCDXF13xU7Ge4zSw==}
@@ -7463,7 +7463,7 @@ snapshots:
 
   '@ungap/structured-clone@1.2.0': {}
 
-  '@urql/core@6.0.1(graphql@16.11.0)':
+  '@urql/core@5.2.0(graphql@16.11.0)':
     dependencies:
       '@0no-co/graphql.web': 1.2.0(graphql@16.11.0)
       wonka: 6.3.4
