@@ -12,7 +12,7 @@ export type MovesAreaProps = {
 
 export function MovesArea(props: MovesAreaProps) {
   const moves = props.moves;
-  const scrollRef = useRef<HTMLTableRowElement>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -31,39 +31,38 @@ export function MovesArea(props: MovesAreaProps) {
 
   return (
     <div className="absolute overflow-y-auto h-full w-full border-2 border-black text-black" ref={containerRef}>
-      <table className="w-full text-xs" style={{ margin: 0 }}>
-        <tbody>
-          {0 === props.tesuu && <tr ref={scrollRef}></tr>}
-          <tr
-            onClick={() => props.onTesuuChange && props.onTesuuChange(0)}
-            className={0 === props.tesuu ? 'bg-yellow-100 cursor-pointer' : 'cursor-pointer hover:bg-amber-300'}
-          >
-            <th className="text-right p-1 pl-0"></th>
-            <td className="p-1 pr-0">開始局面</td>
-          </tr>
-          {moves.map(
-            (move, index) =>
-              index > 0 && (
-                <Fragment key={index}>
-                  {index === props.tesuu && <tr ref={scrollRef}></tr>}
-                  <tr
-                    className={
-                      index === props.tesuu
-                        ? 'bg-yellow-100 border-t border-black/60 cursor-pointer'
-                        : 'border-t border-black/60 cursor-pointer hover:bg-amber-300'
-                    }
-                    onClick={() => props.onTesuuChange && props.onTesuuChange(index)}
-                  >
-                    <th className="text-right p-1 pl-2 w-0" style={{ width: 0 }}>
-                      <div>{index}</div>
-                    </th>
-                    <td className="p-1 pr-0">{JKFPlayer.moveToReadableKifu(move)}</td>
-                  </tr>
-                </Fragment>
-              )
-          )}
-        </tbody>
-      </table>
+      <div className="w-full text-xs">
+        {0 === props.tesuu && <div ref={scrollRef}></div>}
+        <div
+          onClick={() => props.onTesuuChange && props.onTesuuChange(0)}
+          className={
+            0 === props.tesuu ? 'bg-yellow-100 cursor-pointer flex p-2' : 'cursor-pointer hover:bg-amber-300 flex p-2'
+          }
+        >
+          <div>開始局面</div>
+        </div>
+        {moves.map(
+          (move, index) =>
+            index > 0 && (
+              <Fragment key={index}>
+                {index === props.tesuu && <div ref={scrollRef}></div>}
+                <div
+                  className={
+                    index === props.tesuu
+                      ? 'bg-yellow-100 border-t border-black/60 cursor-pointer flex gap-2 p-2'
+                      : 'border-t border-black/60 cursor-pointer hover:bg-amber-300 flex gap-2 p-2'
+                  }
+                  onClick={() => props.onTesuuChange && props.onTesuuChange(index)}
+                >
+                  <div className="w-4 text-right">
+                    <div>{index}</div>
+                  </div>
+                  <div>{JKFPlayer.moveToReadableKifu(move)}</div>
+                </div>
+              </Fragment>
+            )
+        )}
+      </div>
     </div>
   );
 }
