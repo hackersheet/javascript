@@ -10,6 +10,7 @@ import {
   XPost,
   Youtube,
 } from '@hackersheet/next-document-content-components';
+import { Kifu, KifuTo } from '@hackersheet/next-document-content-kifu';
 import { DocumentContent } from '@hackersheet/react-document-content';
 import documentContentStyle from '@hackersheet/react-document-content-styles/basic';
 import { notFound } from 'next/navigation';
@@ -41,7 +42,8 @@ export default async function PostPage(props: { params: Promise<{ documentSlug: 
           gist: Gist,
           heading: Heading,
           image: Image,
-
+          kifu: Kifu,
+          kifuTo: KifuTo,
           link: Link,
           linkCard: LinkCard,
           mermaid: Mermaid,
