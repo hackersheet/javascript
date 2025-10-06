@@ -29,39 +29,41 @@ export function MovesArea(props: MovesAreaProps) {
     }
   }, [props.tesuu]);
 
+  const current = 0 === props.tesuu ? ' bg-amber-600' : '';
+
   return (
     <div className="absolute overflow-y-auto h-full w-full border-2 border-black text-black" ref={containerRef}>
-      <div className="w-full text-xs">
-        {0 === props.tesuu && <div ref={scrollRef}></div>}
+      <div className="grid gap-0 text-xs">
         <div
           onClick={() => props.onTesuuChange && props.onTesuuChange(0)}
-          className={
-            0 === props.tesuu ? 'bg-yellow-100 cursor-pointer flex p-2' : 'cursor-pointer hover:bg-amber-300 flex p-2'
-          }
+          className={'col-span-500 grid grid-cols-subgrid gap-2 py-1 px-2 cursor-pointer hover:bg-amber-100' + current}
         >
+          <div>{0 === props.tesuu && <div ref={scrollRef}></div>}</div>
           <div>開始局面</div>
         </div>
-        {moves.map(
-          (move, index) =>
-            index > 0 && (
-              <Fragment key={index}>
-                {index === props.tesuu && <div ref={scrollRef}></div>}
-                <div
-                  className={
-                    index === props.tesuu
-                      ? 'bg-yellow-100 border-t border-black/60 cursor-pointer flex gap-2 p-2'
-                      : 'border-t border-black/60 cursor-pointer hover:bg-amber-300 flex gap-2 p-2'
-                  }
-                  onClick={() => props.onTesuuChange && props.onTesuuChange(index)}
-                >
-                  <div className="w-4 text-right">
-                    <div>{index}</div>
-                  </div>
-                  <div>{JKFPlayer.moveToReadableKifu(move)}</div>
+        {moves.map((move, index) => {
+          if (index === 0) return;
+
+          const current = index === props.tesuu ? ' bg-amber-600' : '';
+
+          return (
+            <Fragment key={index}>
+              <div
+                className={
+                  'col-span-500 grid grid-cols-subgrid border-black gap-2 border-t py-1 px-2 cursor-pointer hover:bg-amber-100' +
+                  current
+                }
+                onClick={() => props.onTesuuChange && props.onTesuuChange(index)}
+              >
+                <div className="flex">
+                  {index === props.tesuu && <div ref={scrollRef}></div>}
+                  <div className="tabular-nums text-right flex-auto">{index}</div>
                 </div>
-              </Fragment>
-            )
-        )}
+                <div>{JKFPlayer.moveToReadableKifu(move)}</div>
+              </div>
+            </Fragment>
+          );
+        })}
       </div>
     </div>
   );

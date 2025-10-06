@@ -2,7 +2,7 @@
 
 import { JKFPlayer } from 'json-kifu-format';
 import { IMoveMoveFormat } from 'json-kifu-format/dist/src/Formats';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import Button from './button';
 import { MovesArea } from './moves-area';
@@ -11,6 +11,7 @@ import ShogiHandsCanvas from './shogi-hands-canvas';
 
 export type ShogiPlayerProps = {
   kifuText: string;
+  tesuu?: number;
 };
 
 export default function ShogiPlayer(props: ShogiPlayerProps) {
@@ -55,6 +56,12 @@ export default function ShogiPlayer(props: ShogiPlayerProps) {
     setIsSente(!isSente);
     updateState();
   };
+
+  useEffect(() => {
+    if (props.tesuu !== undefined) {
+      handleGoto(props.tesuu);
+    }
+  }, [props.tesuu]);
 
   return (
     <div className="flex w-fit" tabIndex={1}>
