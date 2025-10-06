@@ -23,7 +23,8 @@ export default function KifuToComponentResolver({ children, node, KifuToComponen
   if (!node) return childrenElm;
   if (typeof children !== 'string') return childrenElm;
 
-  const [id, ply] = children.split(':');
+  const [id, tmpPly] = children.split('#');
+  const ply = tmpPly ? tmpPly : '0';
   const label = node.properties.label ? String(node.properties.label) : undefined;
 
   return <KifuToComponent id={id} ply={ply} label={label} children={children} />;
