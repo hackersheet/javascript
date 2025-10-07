@@ -22,7 +22,7 @@ export default function Kifu({ code, language }: KifuComponentProps) {
 
   return (
     <div className="kifu-block" id={id}>
-      <ShogiPlayer kifuText={code} tesuu={ply} />
+      <ShogiPlayer kifuText={code} tesuu={ply} size={320} />
     </div>
   );
 }

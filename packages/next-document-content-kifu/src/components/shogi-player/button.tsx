@@ -7,7 +7,7 @@ export type ButtonProps = {
 export default function Button({ children, onClick }: ButtonProps) {
   return (
     <button
-      className="border-2 text-black p-2 border-black rounded-lg hover:bg-amber-100 cursor-pointer"
+      className="border-2 text-xs text-black p-2 border-black rounded-lg hover:bg-amber-100 cursor-pointer"
       onClick={onClick}
     >
       {children}

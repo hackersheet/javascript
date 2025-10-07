@@ -68,6 +68,7 @@ const drawPieces = (
   ctx: CanvasRenderingContext2D,
   hands: Piece[][],
   margin: number,
+  boardSize: number,
   cell: number,
   fontFamily: string,
   fontSizeRatio: number,
@@ -78,27 +79,48 @@ const drawPieces = (
   ctx.textBaseline = 'middle';
 
   const pieces = (isSente && isTop) || (!isSente && !isTop) ? hands[Color.White] : hands[Color.Black];
+  if (!pieces || pieces.length === 0) return;
 
-  pieces.forEach((piece, index) => {
-    if (!piece) return;
+  const grouped = pieces.reduce<Record<Piece['kind'], { count: number; color: Color }>>(
+    (acc, piece) => {
+      if (!piece) return acc;
+      const key = piece.kind;
+      if (!acc[key]) acc[key] = { count: 0, color: piece.color };
+      acc[key].count += 1;
+      return acc;
+    },
+    {} as Record<Piece['kind'], { count: number; color: Color }>
+  );
 
-    const px = margin + index * cell + cell / 2;
+  const order: Piece['kind'][] = ['OU', 'HI', 'KA', 'KI', 'GI', 'KE', 'KY', 'FU'];
+  const kinds = order.filter((kind) => grouped[kind]);
+
+  kinds.forEach((kind, index) => {
+    const { count, color } = grouped[kind];
+    const px = isTop ? margin + boardSize - (index * cell + cell / 2) : margin + index * cell + cell / 2;
     const py = isTop ? margin + cell / 2 : cell / 2 + 2;
 
     ctx.save();
     ctx.translate(px, py);
 
-    // 駒の回転は、常に駒自身の方向に従う
-    if (isSente && piece.color === Color.White) {
+    if (isSente && color === Color.White) {
       ctx.rotate(Math.PI);
-    } else if (!isSente && piece.color === Color.Black) {
+    } else if (!isSente && color === Color.Black) {
       ctx.rotate(Math.PI);
     }
 
     const fontSize = cell * fontSizeRatio;
-    const kan = JKFPlayer.kindToKan(piece.kind);
+    const kan = JKFPlayer.kindToKan(kind);
     ctx.font = `${fontSize}px ${fontFamily}`;
     ctx.fillText(kan, 0, 0);
+
+    if (count > 1) {
+      ctx.font = `${fontSize * 0.5}px ${fontFamily}`;
+      const countOffsetX = cell * 0;
+      const countOffsetY = cell * 0.8;
+      ctx.fillText(String(count), countOffsetX, countOffsetY);
+    }
+
     ctx.restore();
   });
 };
@@ -138,7 +160,7 @@ const ShogiHandsCanvas: React.FC<Props> = ({
     drawBackground(ctx, size, handsHeight, boardColor);
     drawHandsFrame(ctx, margin, margin, boardSize, cellSize, lineColor, isTop);
     drawCoordinates(ctx, cellSize * 0.35, fontFamily);
-    drawPieces(ctx, hands, margin, cellSize, fontFamily, fontSizeRatio, isSente, isTop);
+    drawPieces(ctx, hands, margin, boardSize, cellSize, fontFamily, fontSizeRatio, isSente, isTop);
   }, [size, boardColor, lineColor, fontFamily, fontSizeRatio, isSente, hands, isTop]);
 
   return <canvas ref={canvasRef} />;

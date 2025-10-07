@@ -65,8 +65,7 @@ const drawPieces = (
   cell: number,
   fontFamily: string,
   fontSizeRatio: number,
-  isSente: boolean,
-  currentMove?: IMoveMoveFormat
+  isSente: boolean
 ) => {
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
@@ -93,14 +92,6 @@ const drawPieces = (
 
       const kan = JKFPlayer.kindToKan(piece.kind);
       ctx.fillStyle = '#000';
-
-      if (currentMove) {
-        // 今回の手番の駒をハイライト表示
-        const to = currentMove.to;
-        if (to && to.x === rowIndex + 1 && to.y === colIndex + 1) {
-          ctx.fillStyle = 'red';
-        }
-      }
 
       if (kan.length === 2) {
         // 2文字 → 横長にして縦並び
@@ -154,18 +145,49 @@ const drawCoordinates = (
   Array.from({ length: 9 }).forEach((_, i) => {
     const x = margin + i * cell + cell / 2;
     const y = margin / 2;
-    const label = isSente ? (9 - i).toString() : (i + 1).toString();
+    const label = isSente ? JKFPlayer.numToZen(9 - i) : JKFPlayer.numToZen(i + 1);
     ctx.fillText(label, x, y);
   });
 
   // 右側縦座標
-  const kanji = ['一', '二', '三', '四', '五', '六', '七', '八', '九'];
-  kanji.forEach((k, i) => {
+  Array.from({ length: 9 }).forEach((_, i) => {
     const x = margin + boardSize + margin / 2;
     const y = margin + i * cell + cell / 2;
-    const label = isSente ? k : kanji[8 - i];
+    const label = isSente ? JKFPlayer.numToKan(i + 1) : JKFPlayer.numToKan(9 - i);
     ctx.fillText(label, x, y);
   });
+};
+
+const drawHighlightedCell = (
+  ctx: CanvasRenderingContext2D,
+  margin: number,
+  cell: number,
+  isSente: boolean,
+  currentMove?: IMoveMoveFormat
+) => {
+  if (!currentMove) return; // currentMove がない場合は何もしない
+
+  // 移動先セルを赤でハイライト
+  if (currentMove.to) {
+    const toRow = currentMove.to.x - 1;
+    const toCol = currentMove.to.y - 1;
+    const toX = isSente ? 8 - toRow : toRow;
+    const toY = isSente ? toCol : 8 - toCol;
+
+    ctx.fillStyle = 'rgba(255,0,0,0.1)';
+    ctx.fillRect(margin + toX * cell, margin + toY * cell, cell, cell);
+  }
+
+  // 移動元セルを緑色でハイライト
+  if (currentMove.from) {
+    const fromRow = currentMove.from.x - 1;
+    const fromCol = currentMove.from.y - 1;
+    const fromX = isSente ? 8 - fromRow : fromRow;
+    const fromY = isSente ? fromCol : 8 - fromCol;
+
+    ctx.fillStyle = 'rgba(255,0,0,0.1)';
+    ctx.fillRect(margin + fromX * cell, margin + fromY * cell, cell, cell);
+  }
 };
 
 // ------------------------
@@ -202,7 +224,8 @@ const ShogiBoardCanvas: React.FC<Props> = ({
 
     drawBackground(ctx, size, boardColor);
     drawBoard(ctx, margin, boardSize, lineColor);
-    drawPieces(ctx, pieces, margin, cell, fontFamily, fontSizeRatio, isSente, currentMove);
+    drawHighlightedCell(ctx, margin, cell, isSente, currentMove);
+    drawPieces(ctx, pieces, margin, cell, fontFamily, fontSizeRatio, isSente);
     drawCoordinates(ctx, margin, boardSize, cell, fontFamily, isSente);
   }, [size, boardColor, lineColor, fontFamily, fontSizeRatio, pieces, isSente, currentMove]);
 

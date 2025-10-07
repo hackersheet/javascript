@@ -2,7 +2,7 @@
 
 import { JKFPlayer } from 'json-kifu-format';
 import { IMoveMoveFormat } from 'json-kifu-format/dist/src/Formats';
-import React, { useEffect, useState } from 'react';
+import React, { KeyboardEvent, useCallback, useEffect, useState } from 'react';
 
 import Button from './button';
 import { MovesArea } from './moves-area';
@@ -11,6 +11,7 @@ import ShogiHandsCanvas from './shogi-hands-canvas';
 
 export type ShogiPlayerProps = {
   kifuText: string;
+  size?: number;
   tesuu?: number;
 };
 
@@ -25,7 +26,7 @@ export default function ShogiPlayer(props: ShogiPlayerProps) {
   const [maxTesuu, setMaxTesuu] = useState(player.getMaxTesuu());
   const [comments, setComments] = useState(player.getComments());
 
-  const size = 360;
+  const size = props.size ? props.size : 360;
 
   const updateState = () => {
     setPieces([...player.shogi.board]);
@@ -57,6 +58,37 @@ export default function ShogiPlayer(props: ShogiPlayerProps) {
     updateState();
   };
 
+  const handleKeydown = useCallback(
+    (event: KeyboardEvent<HTMLDivElement>) => {
+      event.preventDefault();
+      event.stopPropagation();
+
+      switch (event.key) {
+        case 'Up':
+        case 'ArrowUp':
+          handleGoto(0);
+          break;
+        case 'Down':
+        case 'ArrowDown':
+          handleGoto(maxTesuu);
+          break;
+        case 'Left':
+        case 'ArrowLeft':
+          handleBackward();
+          break;
+        case ' ':
+        case 'Right':
+        case 'ArrowRight':
+          handleForward();
+          break;
+        case 'r':
+          handeleToggle();
+          break;
+      }
+    },
+    [maxTesuu, isSente]
+  );
+
   useEffect(() => {
     if (props.tesuu !== undefined) {
       handleGoto(props.tesuu);
@@ -64,11 +96,17 @@ export default function ShogiPlayer(props: ShogiPlayerProps) {
   }, [props.tesuu]);
 
   return (
-    <div className="flex w-fit" tabIndex={1}>
+    <div className="flex w-fit" tabIndex={1} onKeyDown={handleKeydown}>
       <div className="flex flex-col">
+        <div className="bg-[#f9d27a] text-black text-xs text-right p-1">
+          {isSente ? '☖ ' + player.kifu.header['後手'] : '☗ ' + player.kifu.header['先手']}
+        </div>
         <ShogiHandsCanvas size={size} hands={hands} isSente={isSente} isTop={true} />
         <ShogiBoardCanvas size={size} pieces={pieces} isSente={isSente} currentMove={currentMove} />
         <ShogiHandsCanvas size={size} hands={hands} isSente={isSente} isTop={false} />
+        <div className="bg-[#f9d27a] text-black text-xs p-1">
+          {isSente ? '☗ ' + player.kifu.header['先手'] : '☖ ' + player.kifu.header['後手']}
+        </div>
       </div>
       <div className="flex flex-col w-fit bg-[#f9d27a] p-4 gap-4">
         <div className="flex-1 relative w-full">
@@ -78,7 +116,13 @@ export default function ShogiPlayer(props: ShogiPlayerProps) {
           {comments.map((comment, index) => (
             <div key={index}>{comment}</div>
           ))}
-          {comments.length === 0 && <div>&nbsp;</div>}
+          {comments.length === 0 && tesuu !== 0 && <div>&nbsp;</div>}
+          {tesuu === 0 &&
+            Object.entries(player.kifu.header).map(([key, value], i) => (
+              <div key={i}>
+                {key}: {value}
+              </div>
+            ))}
         </div>
         <div className="flex gap-2">
           <Button onClick={() => handleGoto(0)}>最初</Button>
