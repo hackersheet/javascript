@@ -112,14 +112,14 @@ export default function ShogiPlayer(props: ShogiPlayerProps) {
         <div className="flex-1 relative w-full">
           <MovesArea moves={moves} tesuu={tesuu} onTesuuChange={handleGoto} />
         </div>
-        <div className="text-black border-black border-2 p-1 text-xs">
+        <div className="text-black border-black border-2 p-1 text-xs max-h-40 w-0 min-w-full overflow-auto">
           {comments.map((comment, index) => (
             <div key={index}>{comment}</div>
           ))}
           {comments.length === 0 && tesuu !== 0 && <div>&nbsp;</div>}
           {tesuu === 0 &&
             Object.entries(player.kifu.header).map(([key, value], i) => (
-              <div key={i}>
+              <div key={i} className="whitespace-nowrap">
                 {key}: {value}
               </div>
             ))}
