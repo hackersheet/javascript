@@ -8,5 +8,9 @@ export default function KifuTo({ id, ply, label: defaultLabel }: KifuToComponent
   const href = `?ply=${ply}#${fullId}`;
   const label = defaultLabel ?? `${ply}手目`;
 
-  return <Link href={href}>{label}</Link>;
+  return (
+    <Link href={href} prefetch={false}>
+      {label}
+    </Link>
+  );
 }
