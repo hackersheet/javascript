@@ -1,4 +1,3 @@
-import Image from 'next/image';
 import React from 'react';
 
 import type { LinkCardComponentProps } from '@hackersheet/react-document-content';
@@ -29,9 +28,9 @@ export default function LinkCard({
         </div>
       </div>
       {imageUrl && (
-        <div className="link-card-image">
-          <Image alt={title} src={imageUrl} height={imageHeight} width={imageWidth} />
-        </div>
+        <picture className="link-card-image">
+          <img alt={title} src={imageUrl} height={imageHeight} width={imageWidth} />
+        </picture>
       )}
     </a>
   );
