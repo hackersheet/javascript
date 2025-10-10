@@ -7,7 +7,7 @@ import type { HeadingComponentProps } from '@hackersheet/react-document-content'
 export default function Heading({ HeadingTag, id, children }: HeadingComponentProps) {
   return (
     <HeadingTag id={id} className="heading">
-      <Link href={`#${id}`}>
+      <Link href={`#${id}`} prefetch={false}>
         <span className="heading-label">{children}</span>
         <span className="heading-link-icon">
           <MdLink />

@@ -5,7 +5,7 @@ import type { LinkComponentProps } from '@hackersheet/react-document-content';
 
 export default function Link({ href, id, children }: LinkComponentProps) {
   return (
-    <NextLink href={href} id={id}>
+    <NextLink href={href} id={id} prefetch={false}>
       {children}
     </NextLink>
   );
