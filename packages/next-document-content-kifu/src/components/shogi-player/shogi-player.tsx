@@ -96,7 +96,7 @@ export default function ShogiPlayer(props: ShogiPlayerProps) {
   }, [props.tesuu]);
 
   return (
-    <div className="flex w-fit" tabIndex={1} onKeyDown={handleKeydown}>
+    <div className="flex flex-col md:flex-row w-fit" tabIndex={1} onKeyDown={handleKeydown}>
       <div className="flex flex-col">
         <div className="bg-[#f9d27a] text-black text-xs text-right p-1">
           {isSente ? '☖ ' + player.kifu.header['後手'] : '☗ ' + player.kifu.header['先手']}
@@ -108,11 +108,11 @@ export default function ShogiPlayer(props: ShogiPlayerProps) {
           {isSente ? '☗ ' + player.kifu.header['先手'] : '☖ ' + player.kifu.header['後手']}
         </div>
       </div>
-      <div className="flex flex-col w-fit bg-[#f9d27a] p-4 gap-4">
-        <div className="flex-1 relative w-full">
+      <div className="flex flex-col md:w-fit bg-[#f9d27a] p-4 gap-4">
+        <div className="hidden md:block flex-1 relative w-full">
           <MovesArea moves={moves} tesuu={tesuu} onTesuuChange={handleGoto} />
         </div>
-        <div className="text-black border-black border-2 p-1 text-xs max-h-40 w-0 min-w-full overflow-auto">
+        <div className="hidden md:block text-black border-black border-2 p-1 text-xs max-h-40 w-0 min-w-full overflow-auto">
           {comments.map((comment, index) => (
             <div key={index}>{comment}</div>
           ))}
