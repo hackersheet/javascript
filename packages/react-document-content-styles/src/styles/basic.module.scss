@@ -488,6 +488,9 @@
       border-left-color: var(--github-alert-note-color);
       :global(.markdown-alert-title) {
         color: var(--github-alert-note-color);
+        svg {
+          fill: var(--github-alert-note-color);
+        }
       }
     }
 
@@ -495,6 +498,9 @@
       border-left-color: var(--github-alert-tip-color);
       :global(.markdown-alert-title) {
         color: var(--github-alert-tip-color);
+        svg {
+          fill: var(--github-alert-tip-color);
+        }
       }
     }
 
@@ -502,6 +508,9 @@
       border-left-color: var(--github-alert-important-color);
       :global(.markdown-alert-title) {
         color: var(--github-alert-important-color);
+        svg {
+          fill: var(--github-alert-important-color);
+        }
       }
     }
 
@@ -509,6 +518,9 @@
       border-left-color: var(--github-alert-warning-color);
       :global(.markdown-alert-title) {
         color: var(--github-alert-warning-color);
+        svg {
+          fill: var(--github-alert-warning-color);
+        }
       }
     }
 
@@ -516,6 +528,9 @@
       border-left-color: var(--github-alert-caution-color);
       :global(.markdown-alert-title) {
         color: var(--github-alert-caution-color);
+        svg {
+          fill: var(--github-alert-caution-color);
+        }
       }
     }
   }
