@@ -35,8 +35,8 @@
   "dependencies": {
     "@hackersheet/core": "workspace:*",
     "@hackersheet/react-document-content": "workspace:*",
-    "shogi.js": "^5.4.1",
-    "json-kifu-format": "^5.4.1"
+    "json-kifu-format": "^5.4.1",
+    "shogi.js": "^5.4.1"
   },
   "devDependencies": {
     "@types/react": "^19.2.0",
