@@ -35,7 +35,7 @@
   "dependencies": {
     "@hackersheet/core": "workspace:*",
     "@hackersheet/react-document-content": "workspace:*",
-    "@next/third-parties": "^15.5.4",
+    "@next/third-parties": "^16.0.0",
     "@shikijs/langs": "3.13.0",
     "@shikijs/themes": "3.13.0",
     "@shikijs/transformers": "^3.13.0",
