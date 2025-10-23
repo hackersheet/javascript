@@ -1,4 +1,4 @@
-import { defineConfig } from 'eslint/config';
+import { defineConfig, globalIgnores } from 'eslint/config';
 import * as eslintPluginImport from 'eslint-plugin-import';
 import eslint from '@eslint/js';
 import eslintPluginNext from '@next/eslint-plugin-next';
@@ -6,18 +6,16 @@ import eslintPluginUnusedImports from 'eslint-plugin-unused-imports';
 import tseslint from 'typescript-eslint';
 
 export default defineConfig(
-  {
-    ignores: [
-      '**/node_modules/**',
-      '**/.next/**',
-      '**/out/**',
-      '**/build/**',
-      '**/next-env.d.ts',
-      '**/*.config.*',
-      '**/*.mjs',
-      '**/dist/**',
-    ],
-  },
+  globalIgnores([
+    '**/node_modules/**',
+    '**/.next/**',
+    '**/out/**',
+    '**/build/**',
+    '**/next-env.d.ts',
+    '**/*.config.*',
+    '**/*.mjs',
+    '**/dist/**',
+  ]),
   {
     plugins: {
       import: eslintPluginImport,
