@@ -10,7 +10,6 @@
   },
   "license": "MIT",
   "author": "",
-  "private": true,
   "bin": {
     "hscli": "dist/cli.mjs"
   },
