@@ -1,0 +1,39 @@
+{
+  "name": "@hackersheet/cli",
+  "version": "0.1.0-alpha.1",
+  "description": "Hacker Sheet command line interface.",
+  "keywords": [],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hackersheet/javascript.git",
+    "directory": "packages/cli"
+  },
+  "license": "MIT",
+  "author": "",
+  "bin": {
+    "hscli": "dist/cli.mjs"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "rm -rf ./dist && pnpm tsup",
+    "check": "pnpm tsc && pnpm lint",
+    "format": "pnpm -w format && pnpm lint:fix",
+    "lint": "eslint \"**/*.{ts,tsx}\"",
+    "lint:fix": "eslint --fix \"**/*.{ts,tsx}\"",
+    "pub": "pnpm publish --access=public --tag alpha",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "watch": "tsup --watch"
+  },
+  "dependencies": {
+    "@hackersheet/core": "workspace:*",
+    "@inquirer/prompts": "^7.9.0",
+    "commander": "^14.0.1",
+    "find-up": "^8.0.0",
+    "mustache": "^4.2.0"
+  },
+  "devDependencies": {
+    "@types/mustache": "4.2.6"
+  }
+}
