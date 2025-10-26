@@ -29,6 +29,7 @@
   },
   "dependencies": {
     "@hackersheet/core": "workspace:*",
+    "@inquirer/prompts": "^7.9.0",
     "commander": "^14.0.1",
     "find-up": "^8.0.0"
   }
