@@ -7,6 +7,8 @@ type Config = {
   workspaceSlug: string;
   workspaceAccessKey: string;
   newFilenameTemplate: string;
+  // optional path (relative to project root) to a mustache template used for new file content
+  newFileTemplatePath?: string;
   docsDirs: string[];
 };
 
