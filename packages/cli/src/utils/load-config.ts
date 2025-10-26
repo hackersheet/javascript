@@ -6,12 +6,16 @@ import { findUpSync } from 'find-up';
 type Config = {
   workspaceSlug: string;
   workspaceAccessKey: string;
+  newFilenameTemplate: string;
+  docsDirs: string[];
 };
 
 export function loadConfig(): Config {
   const emptyConfig: Config = {
     workspaceSlug: '',
     workspaceAccessKey: '',
+    newFilenameTemplate: '',
+    docsDirs: [],
   };
 
   const dir = findUpSync('.hackersheet', { cwd: process.cwd(), type: 'directory' });
