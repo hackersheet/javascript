@@ -10,6 +10,7 @@
     "build": "turbo build",
     "build:packages": "turbo build -F @hackersheet/* -F !@hackersheet/sandbox*",
     "codegen": "gql-gen --config codegen.ts",
+    "cli": "pnpm -F cli",
     "core": "pnpm -F core",
     "dev": "pnpm sandbox:next dev",
     "format": "prettier --write --ignore-unknown .",
