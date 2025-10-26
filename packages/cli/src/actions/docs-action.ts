@@ -18,9 +18,9 @@ export async function docsAction(slug?: string) {
 
   const result = await client.getDocument({ slug });
 
-  if (result.error) {
+  if (result.error || result.document?.content === undefined) {
     console.error('Error fetching document.');
-    return;
+    process.exit(1);
   }
 
   console.log(result.document?.content);
