@@ -18,13 +18,13 @@
   ],
   "scripts": {
     "build": "rm -rf ./dist && pnpm tsup",
-    "watch": "tsup --watch",
     "check": "pnpm tsc && pnpm lint",
     "format": "pnpm -w format && pnpm lint:fix",
     "lint": "eslint \"**/*.{ts,tsx}\"",
     "lint:fix": "eslint --fix \"**/*.{ts,tsx}\"",
     "pub": "pnpm publish --access=public --tag alpha",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "watch": "tsup --watch"
   },
   "dependencies": {
     "@hackersheet/core": "workspace:*",
