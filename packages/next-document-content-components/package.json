@@ -12,9 +12,9 @@
   "author": "",
   "exports": {
     ".": {
+      "types": "./dist/esm/index.d.ts",
       "require": "./dist/cjs/index.js",
-      "import": "./dist/esm/index.mjs",
-      "types": "./dist/esm/index.d.ts"
+      "import": "./dist/esm/index.mjs"
     }
   },
   "main": "./dist/cjs/index.js",

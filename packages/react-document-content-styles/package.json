@@ -15,9 +15,9 @@
   ],
   "exports": {
     "./basic": {
+      "types": "./dist/basic.module.scss.d.ts",
       "import": "./dist/basic.module.css",
-      "require": "./dist/basic.module.css",
-      "types": "./dist/basic.module.scss.d.ts"
+      "require": "./dist/basic.module.css"
     }
   },
   "main": "",
