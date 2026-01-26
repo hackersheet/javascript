@@ -8,7 +8,7 @@ import { client } from '@/lib/hackersheet/client';
 export type TreeLayoutProps = PropsWithChildren;
 
 export default async function TreeLayout({ children }: TreeLayoutProps) {
-  const { tree } = await client.getTree({ slug: 'tree' });
+  const { tree } = await client.getTree({ slug: 'docs' });
 
   if (!tree) notFound();
 

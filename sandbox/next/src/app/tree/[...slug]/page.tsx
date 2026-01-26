@@ -26,8 +26,8 @@ export default async function TreeNodePage(props: { params: Promise<{ slug: stri
 
   const fullSlug = slug.join('/');
 
-  const { document } = await client.getTreeNodeDocument({ treeSlug: 'tree', nodeFullSlug: fullSlug });
-  const { tree } = await client.getTree({ slug: 'tree' });
+  const { document } = await client.getTreeNodeDocument({ treeSlug: 'docs', nodeFullSlug: fullSlug });
+  const { tree } = await client.getTree({ slug: 'docs' });
 
   if (!document || !tree) notFound();
 
