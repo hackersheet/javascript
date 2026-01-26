@@ -10,14 +10,6 @@ npm whoami # ログイン状態を確認
 
 npmにログインする。久しぶりに作業する場合は一度ログアウトしておく。
 
-## cd
-
-```bash
-cd packages/next-document-content-components
-```
-
-公開対象のパッケージに移動
-
 ## 公開
 
 ```bash
