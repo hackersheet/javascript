@@ -10,13 +10,13 @@ const baseConfig: Options = {
 export default defineConfig([
   {
     ...baseConfig,
-    entry: ['./src', '!./src/styles'],
+    entry: ['./src/**/*.{ts,tsx}', '!./src/**/*.d.ts', '!./src/styles/**/*'],
     format: ['esm'],
     outDir: './dist/esm',
   },
   {
     ...baseConfig,
-    entry: ['./src', '!./src/styles'],
+    entry: ['./src/**/*.{ts,tsx}', '!./src/**/*.d.ts', '!./src/styles/**/*'],
     format: ['cjs'],
     outDir: './dist/cjs',
   },

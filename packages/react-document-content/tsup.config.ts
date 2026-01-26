@@ -5,6 +5,6 @@ export default defineConfig({
   format: ['cjs', 'esm'],
   clean: true,
   dts: true,
-  minify: 'terser',
-  entry: ['./src', '!./src/styles'],
+  bundle: false,
+  entry: ['./src/**/*.{ts,tsx}', '!./src/**/*.d.ts', '!./src/styles/**/*'],
 });
