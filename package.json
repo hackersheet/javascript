@@ -12,7 +12,7 @@
     "cli": "pnpm -F cli",
     "codegen": "gql-gen --config codegen.ts",
     "core": "pnpm -F core",
-    "dev": "pnpm sandbox:next dev",
+    "dev": "pnpm sandbox:next dev -p 3001",
     "format": "prettier --write --ignore-unknown .",
     "format:package": "NODE_OPTIONS='--no-warnings=ExperimentalWarning' pnpm dlx sort-package-json \"package.json\" \"packages/*/package.json\" \"sandbox/*/package.json\"",
     "lint": "eslint",
