@@ -2,7 +2,7 @@ import { type Tree } from '@hackersheet/core';
 import { Link } from '@hackersheet/next-document-content-components';
 import { notFound } from 'next/navigation';
 
-import HackersheetDocumentContent from '@/components/hackersheet-document-content';
+import HackersheetDocumentContent from '@/components/hackersheet/document-content';
 import { client } from '@/lib/hackersheet/client';
 
 import 'katex/dist/katex.min.css';

@@ -2,7 +2,7 @@ import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { cache } from 'react';
 
-import HackersheetDocumentContent from '@/components/hackersheet-document-content';
+import HackersheetDocumentContent from '@/components/hackersheet/document-content';
 import { client } from '@/lib/hackersheet/client';
 
 import 'katex/dist/katex.min.css';
