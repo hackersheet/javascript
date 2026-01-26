@@ -1,12 +1,10 @@
-import CodeBlock from './components/code-block/code-block';
-import DirectoryTree from './components/code-block/directory-tree';
-import Gist from './components/gist/gist';
-import Heading from './components/heading/heading';
-import Image from './components/image/image';
-import Link from './components/link/link';
-import LinkCard from './components/link-card/link-card';
-import Mermaid from './components/mermaid/mermaid';
-import XPost from './components/x-post/x-post';
-import Youtube from './components/youtube/youtube';
-
-export { CodeBlock, DirectoryTree, Gist, Heading, Link, LinkCard, Mermaid, Image, XPost, Youtube };
+export { default as CodeBlock } from './components/code-block/code-block';
+export { default as DirectoryTree } from './components/code-block/directory-tree';
+export { default as Gist } from './components/gist/gist';
+export { default as Heading } from './components/heading/heading';
+export { default as Image } from './components/image/image';
+export { default as Link } from './components/link/link';
+export { default as LinkCard } from './components/link-card/link-card';
+export { default as Mermaid } from './components/mermaid/mermaid';
+export { default as XPost } from './components/x-post/x-post';
+export { default as Youtube } from './components/youtube/youtube';
