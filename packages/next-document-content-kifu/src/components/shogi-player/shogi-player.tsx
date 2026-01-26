@@ -5,7 +5,7 @@ import { IMoveMoveFormat } from 'json-kifu-format/dist/src/Formats';
 import React, { KeyboardEvent, useCallback, useEffect, useState } from 'react';
 
 import Button from './button';
-import { MovesArea } from './moves-area';
+import MovesArea from './moves-area';
 import ShogiBoardCanvas from './shogi-board-canvas';
 import ShogiHandsCanvas from './shogi-hands-canvas';
 

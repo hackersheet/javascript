@@ -4,7 +4,7 @@ import { KifuComponentProps } from '@hackersheet/react-document-content';
 import { useSearchParams } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 
-import { ShogiPlayer } from '../shogi-player';
+import ShogiPlayer from '../shogi-player/shogi-player';
 
 export default function Kifu({ code, language }: KifuComponentProps) {
   const [ply, setPly] = useState(0);

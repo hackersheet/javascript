@@ -10,7 +10,7 @@ export type MovesAreaProps = {
   onTesuuChange?: (tesuu: number) => void;
 };
 
-export function MovesArea(props: MovesAreaProps) {
+export default function MovesArea(props: MovesAreaProps) {
   const moves = props.moves;
   const scrollRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
