@@ -14,7 +14,7 @@
     "core": "pnpm -F core",
     "dev": "pnpm sandbox:next dev",
     "format": "prettier --write --ignore-unknown .",
-    "format:package": "pnpm dlx sort-package-json \"package.json\" \"packages/*/package.json\" \"sandbox/*/package.json\"",
+    "format:package": "NODE_OPTIONS='--no-warnings=ExperimentalWarning' pnpm dlx sort-package-json \"package.json\" \"packages/*/package.json\" \"sandbox/*/package.json\"",
     "lint": "eslint",
     "ncu:minor": "pnpm ncu --deep -t minor",
     "next-document-content-components": "pnpm -F next-document-content-components",
