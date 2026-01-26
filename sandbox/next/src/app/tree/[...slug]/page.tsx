@@ -1,20 +1,8 @@
 import { type Tree } from '@hackersheet/core';
-import {
-  CodeBlock,
-  Gist,
-  Heading,
-  Image,
-  Link,
-  LinkCard,
-  Mermaid,
-  XPost,
-  Youtube,
-} from '@hackersheet/next-document-content-components';
-import { Kifu, KifuTo } from '@hackersheet/next-document-content-kifu';
-import { DocumentContent } from '@hackersheet/react-document-content';
-import documentContentStyle from '@hackersheet/react-document-content-styles/basic';
+import { Link } from '@hackersheet/next-document-content-components';
 import { notFound } from 'next/navigation';
 
+import HackersheetDocumentContent from '@/components/hackersheet-document-content';
 import { client } from '@/lib/hackersheet/client';
 
 import 'katex/dist/katex.min.css';
@@ -38,24 +26,10 @@ export default async function TreeNodePage(props: { params: Promise<{ slug: stri
     <main className="max-w-screen-sm">
       <h1 className="text-4xl pt-10 pb-20">{document.title}</h1>
 
-      <DocumentContent
+      <HackersheetDocumentContent
         document={document}
         tree={tree ?? undefined}
-        style={documentContentStyle}
         permaLinkFormat="/tree/{{{slug}}}"
-        components={{
-          codeBlock: CodeBlock,
-          gist: Gist,
-          heading: Heading,
-          image: Image,
-          kifu: Kifu,
-          kifuTo: KifuTo,
-          link: Link,
-          linkCard: LinkCard,
-          mermaid: Mermaid,
-          xPost: XPost,
-          youtube: Youtube,
-        }}
       />
 
       <div className="py-12 flex">
