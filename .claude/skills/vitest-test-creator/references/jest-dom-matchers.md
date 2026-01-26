@@ -9,7 +9,7 @@
 1. **vitest.setup.ts** - jest-dom マッチャーを初期化
 
 ```typescript
-import '@testing-library/jest-dom/vitest'
+import '@testing-library/jest-dom/vitest';
 ```
 
 2. **vitest.config.mts** - ブラウザテストプロジェクトで setupFiles を指定
@@ -20,7 +20,7 @@ defineProject({
     setupFiles: ['./vitest.setup.ts'],
     // ... 他の設定
   },
-})
+});
 ```
 
 これでブラウザテスト（`.browser.test.tsx`）で jest-dom マッチャーが使用できます。
@@ -30,55 +30,55 @@ defineProject({
 ### DOM 要素の存在確認（推奨）
 
 ```typescript
-expect(element).toBeInTheDocument() // 要素が DOM に存在
-expect(element).not.toBeInTheDocument() // 要素が DOM に存在しない
+expect(element).toBeInTheDocument(); // 要素が DOM に存在
+expect(element).not.toBeInTheDocument(); // 要素が DOM に存在しない
 ```
 
 ### 属性チェック
 
 ```typescript
-expect(element).toHaveAttribute('name', 'keyword')
-expect(element).toHaveAttribute('href', '/')
-expect(element).toHaveAttribute('aria-label', expect.stringContaining('search'))
+expect(element).toHaveAttribute('name', 'keyword');
+expect(element).toHaveAttribute('href', '/');
+expect(element).toHaveAttribute('aria-label', expect.stringContaining('search'));
 ```
 
 ### クラス名チェック（推奨）
 
 ```typescript
-expect(element).toHaveClass('text-base')
-expect(element).toHaveClass('flex', 'items-center') // 複数クラス
+expect(element).toHaveClass('text-base');
+expect(element).toHaveClass('flex', 'items-center'); // 複数クラス
 ```
 
 ### 表示・可視性
 
 ```typescript
-expect(element).toBeVisible()
-expect(element).toBeDisabled()
-expect(element).toBeChecked()
-expect(element).toBeRequired()
-expect(element).toBeEmptyDOMElement()
+expect(element).toBeVisible();
+expect(element).toBeDisabled();
+expect(element).toBeChecked();
+expect(element).toBeRequired();
+expect(element).toBeEmptyDOMElement();
 ```
 
 ### テキスト内容
 
 ```typescript
-expect(element).toHaveTextContent('Search')
-expect(element).toHaveTextContent(expect.stringContaining('keyword'))
+expect(element).toHaveTextContent('Search');
+expect(element).toHaveTextContent(expect.stringContaining('keyword'));
 ```
 
 ### フォーム関連
 
 ```typescript
-expect(input).toHaveValue('entered text')
-expect(input).toHaveDisplayValue(['Option 1'])
-expect(select).toHaveLength(3) // select の option 数
+expect(input).toHaveValue('entered text');
+expect(input).toHaveDisplayValue(['Option 1']);
+expect(select).toHaveLength(3); // select の option 数
 ```
 
 ### スタイル
 
 ```typescript
-expect(element).toHaveStyle('color: red')
-expect(element).toHaveStyle({ color: 'red' })
+expect(element).toHaveStyle('color: red');
+expect(element).toHaveStyle({ color: 'red' });
 ```
 
 ## 推奨パターン
@@ -184,19 +184,19 @@ jest-dom マッチャーはテストの意図を明確にし、エラーメッ�
 
 ```typescript
 // jest-dom で存在確認、標準で値確認
-const button = container.querySelector('button')
-expect(button).toBeInTheDocument()
-expect(button?.textContent).toMatch(/クリック/i)
+const button = container.querySelector('button');
+expect(button).toBeInTheDocument();
+expect(button?.textContent).toMatch(/クリック/i);
 ```
 
 ### 3. 複数確認は1テストで
 
 ```typescript
 it('入力フィールドが正しく設定されている', () => {
-  const input = container.querySelector('input[type="search"]')
-  expect(input).toBeInTheDocument()
-  expect(input).toHaveAttribute('name', 'q')
-  expect(input).toHaveClass('w-full')
+  const input = container.querySelector('input[type="search"]');
+  expect(input).toBeInTheDocument();
+  expect(input).toHaveAttribute('name', 'q');
+  expect(input).toHaveClass('w-full');
   // 複数の関連確認は1テストでもOK
-})
+});
 ```

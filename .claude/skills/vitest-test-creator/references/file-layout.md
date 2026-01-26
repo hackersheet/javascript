@@ -85,8 +85,8 @@ src/
 
 ```typescript
 // ユニットテスト（Node.js環境）
-include: ['**/__tests__/**/*.unit.{test,spec}.ts']
+include: ['**/__tests__/**/*.unit.{test,spec}.ts'];
 
 // ブラウザテスト（Playwright環境）
-include: ['**/__tests__/**/*.browser.{test,spec}.ts{,x}']
+include: ['**/__tests__/**/*.browser.{test,spec}.ts{,x}'];
 ```

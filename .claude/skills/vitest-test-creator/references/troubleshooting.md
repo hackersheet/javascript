@@ -97,13 +97,13 @@ Timeout of 10000 ms exceeded
 ```typescript
 // Bad
 it('データを取得する', () => {
-  fetchData() // await がない
-})
+  fetchData(); // await がない
+});
 
 // Good
 it('データを取得する', async () => {
-  await fetchData()
-})
+  await fetchData();
+});
 ```
 
 ### 解決策 2：vi.waitFor() を使用
@@ -124,9 +124,9 @@ it('ローディングが完了する', async () => {
 ```typescript
 it('重い処理のテスト', async () => {
   // タイムアウト時間を 20 秒に延長
-  const data = await fetchHeavyData()
-  expect(data).toBeTruthy()
-}, 20000) // ここでミリ秒を指定
+  const data = await fetchHeavyData();
+  expect(data).toBeTruthy();
+}, 20000); // ここでミリ秒を指定
 ```
 
 ---
@@ -148,8 +148,8 @@ state 更新などの副作用が `act()` でラップされていない。
 
 ```typescript
 // Good: userEvent は自動的に act でラップされる
-const user = userEvent.setup()
-await user.click(button!)
+const user = userEvent.setup();
+await user.click(button!);
 ```
 
 ### 解決策 2：vi.waitFor() を使用
@@ -157,24 +157,24 @@ await user.click(button!)
 ```typescript
 // Good: 非同期更新を待つ
 await vi.waitFor(() => {
-  expect(container.querySelector('.loaded')).toBeInTheDocument()
-})
+  expect(container.querySelector('.loaded')).toBeInTheDocument();
+});
 ```
 
 ### 解決策 3：act() でラップ
 
 ```typescript
-import { act } from '@testing-library/react'
+import { act } from '@testing-library/react';
 
 it('state が更新される', () => {
-  const { result } = renderHook(() => useCounter())
+  const { result } = renderHook(() => useCounter());
 
   act(() => {
-    result.current.increment()
-  })
+    result.current.increment();
+  });
 
-  expect(result.current.count).toBe(1)
-})
+  expect(result.current.count).toBe(1);
+});
 ```
 
 ---
@@ -197,10 +197,10 @@ Expected element, but received: null
 
 ```typescript
 // セレクタが正しいか確認
-const button = container.querySelector('button') // null が返る場合もある
+const button = container.querySelector('button'); // null が返る場合もある
 
 // より詳細なセレクタを使用
-const button = container.querySelector('button[type="submit"]')
+const button = container.querySelector('button[type="submit"]');
 ```
 
 ### 解決策 2：props を確認
@@ -245,9 +245,9 @@ TypeError: Cannot read property 'map' of undefined
 // Good: imports の前にモック化
 vi.mock('./api', () => ({
   fetchUser: vi.fn(),
-}))
+}));
 
-import { fetchUser } from './api'
+import { fetchUser } from './api';
 ```
 
 ### 解決策 2：vi.mocked() で型を指定
@@ -265,8 +265,8 @@ vi.mock('./api')
 
 ```typescript
 beforeEach(() => {
-  vi.clearAllMocks()
-})
+  vi.clearAllMocks();
+});
 ```
 
 ---
@@ -319,10 +319,10 @@ Error: Cannot find module './Component'
 
 ```typescript
 // Good: 正しいパスを指定
-import { Component } from '../Component' // 1つ上のディレクトリ
+import { Component } from '../Component'; // 1つ上のディレクトリ
 
 // Bad: パスが間違っている可能性
-import { Component } from './Component' // 同じディレクトリなら '../' は不要
+import { Component } from './Component'; // 同じディレクトリなら '../' は不要
 ```
 
 ---
@@ -341,7 +341,7 @@ import { Component } from './Component' // 同じディレクトリなら '../' 
 // 必要な依存のみモック化
 vi.mock('./api', () => ({
   fetchUser: vi.fn(), // 使用するもののみ
-}))
+}));
 ```
 
 ### 解決策 2：test.concurrent で並列実行
@@ -349,11 +349,11 @@ vi.mock('./api', () => ({
 ```typescript
 it.concurrent('テスト1', () => {
   // 並列実行
-})
+});
 
 it.concurrent('テスト2', () => {
   // 並列実行
-})
+});
 ```
 
 ### 解決策 3：test.skip で不要なテストをスキップ
@@ -361,7 +361,7 @@ it.concurrent('テスト2', () => {
 ```typescript
 it.skip('まだ未実装のテスト', () => {
   // スキップされる
-})
+});
 ```
 
 ---

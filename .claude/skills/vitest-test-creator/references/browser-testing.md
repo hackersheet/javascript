@@ -113,24 +113,24 @@ Hooks は DOM 操作を含むため、ブラウザテストを使用：
 
 ```typescript
 // src/hooks/__tests__/useTheme.browser.test.ts
-import { describe, it, expect } from 'vitest'
-import { renderHook, act } from '@testing-library/react'
-import { useTheme } from '../useTheme'
+import { describe, it, expect } from 'vitest';
+import { renderHook, act } from '@testing-library/react';
+import { useTheme } from '../useTheme';
 
 describe('useTheme', () => {
   it('テーマの状態を返す', () => {
-    const { result } = renderHook(() => useTheme())
-    expect(result.current.theme).toBe('light')
-  })
+    const { result } = renderHook(() => useTheme());
+    expect(result.current.theme).toBe('light');
+  });
 
   it('テーマを切り替える', () => {
-    const { result } = renderHook(() => useTheme())
+    const { result } = renderHook(() => useTheme());
     act(() => {
-      result.current.toggleTheme()
-    })
-    expect(result.current.theme).toBe('dark')
-  })
-})
+      result.current.toggleTheme();
+    });
+    expect(result.current.theme).toBe('dark');
+  });
+});
 ```
 
 ## 推奨される API
@@ -139,37 +139,37 @@ describe('useTheme', () => {
 
 ```typescript
 // ✅ 推奨: CSS セレクタで明確に指定
-const button = container.querySelector('button')
-const inputs = container.querySelectorAll('input[type="search"]')
+const button = container.querySelector('button');
+const inputs = container.querySelectorAll('input[type="search"]');
 ```
 
 ### ユーザーイベント（推奨）
 
 ```typescript
-const user = userEvent.setup()
+const user = userEvent.setup();
 
 // クリック
-await user.click(button!)
+await user.click(button!);
 
 // テキスト入力
-await user.type(input!, 'text')
+await user.type(input!, 'text');
 
 // キーボード操作
-await user.keyboard('{Enter}')
+await user.keyboard('{Enter}');
 
 // フォーム送信
-await user.submit(form!)
+await user.submit(form!);
 ```
 
 ### jest-dom マッチャー（推奨）
 
 ```typescript
-expect(element).toBeInTheDocument() // DOM に存在
-expect(element).toHaveAttribute('name', 'keyword') // 属性確認
-expect(element).toHaveClass('text-base') // クラス名確認
-expect(element).toBeVisible() // 表示状態
-expect(element).toBeDisabled() // disabled 確認
-expect(element).toBeChecked() // checked 確認
+expect(element).toBeInTheDocument(); // DOM に存在
+expect(element).toHaveAttribute('name', 'keyword'); // 属性確認
+expect(element).toHaveClass('text-base'); // クラス名確認
+expect(element).toBeVisible(); // 表示状態
+expect(element).toBeDisabled(); // disabled 確認
+expect(element).toBeChecked(); // checked 確認
 ```
 
 ## ベストプラクティス
@@ -198,36 +198,36 @@ describe('Component', () => {
 
 ```typescript
 // Good: 実際のユーザー操作をシミュレート
-const user = userEvent.setup()
-await user.click(button!)
-await user.type(input!, 'text')
+const user = userEvent.setup();
+await user.click(button!);
+await user.type(input!, 'text');
 
 // Bad: fireEvent はブラウザの実装詳細を無視
-fireEvent.click(button!)
+fireEvent.click(button!);
 ```
 
 ### 3. container.querySelector() で明確に指定
 
 ```typescript
 // Good: 要素が一意に特定される
-const button = container.querySelector('button[data-test="submit"]')
+const button = container.querySelector('button[data-test="submit"]');
 
 // 複数あると失敗する（screen.getByRole で複数見つかる場合の回避）
-const input = container.querySelector('input[type="search"]')
+const input = container.querySelector('input[type="search"]');
 ```
 
 ### 4. jest-dom マッチャーを活用
 
 ```typescript
 // Good: jest-dom マッチャーで可読性向上
-expect(input).toBeInTheDocument()
-expect(input).toHaveAttribute('name', 'keyword')
-expect(input).toHaveClass('text-base')
+expect(input).toBeInTheDocument();
+expect(input).toHaveAttribute('name', 'keyword');
+expect(input).toHaveClass('text-base');
 
 // Bad: 標準マッチャーのみ（冗長）
-expect(input).toBeTruthy()
-expect(input.getAttribute('name')).toBe('keyword')
-expect(input.className).toContain('text-base')
+expect(input).toBeTruthy();
+expect(input.getAttribute('name')).toBe('keyword');
+expect(input.className).toContain('text-base');
 ```
 
 ### 5. Props のバリエーション をテスト

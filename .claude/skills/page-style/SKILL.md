@@ -34,11 +34,11 @@ description: page.tsx のコーディングスタイルガイド
 
 ```tsx
 // Good
-import { Container, PageHeader } from '@/components/layout'
+import { Container, PageHeader } from '@/components/layout';
 
 // Bad
-import { Container } from '@/components/layout'
-import { PageHeader } from '@/components/layout'
+import { Container } from '@/components/layout';
+import { PageHeader } from '@/components/layout';
 ```
 
 ## 定数定義
@@ -46,8 +46,8 @@ import { PageHeader } from '@/components/layout'
 静的ページでは `title` と `description` を定数として定義してください。
 
 ```tsx
-const title = 'About'
-const description = 'naopoyo.comについて説明しているページです。'
+const title = 'About';
+const description = 'naopoyo.comについて説明しているページです。';
 ```
 
 ## metadata エクスポート
@@ -58,7 +58,7 @@ const description = 'naopoyo.comについて説明しているページです。
 export const metadata: Metadata = {
   title: title,
   description: description,
-}
+};
 ```
 
 ## Props 型定義
@@ -68,18 +68,18 @@ export const metadata: Metadata = {
 ```tsx
 // Good
 export type DocsPageProps = {
-  searchParams: Promise<{ keyword?: string }>
-}
+  searchParams: Promise<{ keyword?: string }>;
+};
 
 // Bad
 interface DocsPageProps {
-  searchParams: Promise<{ keyword?: string }>
+  searchParams: Promise<{ keyword?: string }>;
 }
 
 // Bad
 type DocsPageProps = {
-  searchParams: Promise<{ keyword?: string }>
-}
+  searchParams: Promise<{ keyword?: string }>;
+};
 ```
 
 ## dynamic / revalidate 設定
@@ -87,8 +87,8 @@ type DocsPageProps = {
 基本的にすべてのページで設定してください。
 
 ```tsx
-export const dynamic = 'force-static'
-export const revalidate = 60
+export const dynamic = 'force-static';
+export const revalidate = 60;
 ```
 
 ## 関数名
@@ -126,20 +126,20 @@ export const revalidate = 60
 ### 静的ページ（シンプル）
 
 ```tsx
-import { Metadata } from 'next'
+import { Metadata } from 'next';
 
-import { Container, PageHeader } from '@/components/layout'
+import { Container, PageHeader } from '@/components/layout';
 
-const title = 'About'
-const description = 'ページの説明文です。'
+const title = 'About';
+const description = 'ページの説明文です。';
 
 export const metadata: Metadata = {
   title: title,
   description: description,
-}
+};
 
-export const dynamic = 'force-static'
-export const revalidate = 60
+export const dynamic = 'force-static';
+export const revalidate = 60;
 
 export default async function AboutPage() {
   return (
@@ -147,39 +147,39 @@ export default async function AboutPage() {
       <PageHeader title={title} description={description} />
       {/* コンテンツ */}
     </Container>
-  )
+  );
 }
 ```
 
 ### 動的ページ（パラメータあり）
 
 ```tsx
-import { Metadata } from 'next'
-import { notFound } from 'next/navigation'
+import { Metadata } from 'next';
+import { notFound } from 'next/navigation';
 
-import { Container, PageHeader } from '@/components/layout'
-import { client } from '@/lib/hackersheet'
+import { Container, PageHeader } from '@/components/layout';
+import { client } from '@/lib/hackersheet';
 
 export type TagPageProps = {
-  params: Promise<{ tagName: string }>
-}
+  params: Promise<{ tagName: string }>;
+};
 
-export const dynamic = 'force-static'
-export const revalidate = 60
+export const dynamic = 'force-static';
+export const revalidate = 60;
 
 export async function generateMetadata(props: TagPageProps): Promise<Metadata> {
-  const params = await props.params
-  const { tagName } = params
+  const params = await props.params;
+  const { tagName } = params;
 
   // データ取得とメタデータ生成
   return {
     title: `${tagName} - Tags`,
-  }
+  };
 }
 
 export default async function TagPage(props: TagPageProps) {
-  const params = await props.params
-  const { tagName } = params
+  const params = await props.params;
+  const { tagName } = params;
 
   // データ取得
   // if (!data) return notFound()
@@ -189,42 +189,42 @@ export default async function TagPage(props: TagPageProps) {
       <PageHeader title={tagName} />
       {/* コンテンツ */}
     </Container>
-  )
+  );
 }
 ```
 
 ### searchParams を使用するページ
 
 ```tsx
-import { Metadata } from 'next'
-import { Suspense } from 'react'
+import { Metadata } from 'next';
+import { Suspense } from 'react';
 
-import { Container, PageHeader } from '@/components/layout'
+import { Container, PageHeader } from '@/components/layout';
 
-const title = 'Docs'
-const description = 'すべての記事の一覧ページです。'
+const title = 'Docs';
+const description = 'すべての記事の一覧ページです。';
 
 export const metadata: Metadata = {
   title: title,
   description: description,
-}
+};
 
 export type DocsPageProps = {
-  searchParams: Promise<{ keyword?: string }>
-}
+  searchParams: Promise<{ keyword?: string }>;
+};
 
-export const dynamic = 'force-static'
-export const revalidate = 60
+export const dynamic = 'force-static';
+export const revalidate = 60;
 
 export default async function DocsPage(props: DocsPageProps) {
-  const searchParams = await props.searchParams
-  const keyword = searchParams.keyword
+  const searchParams = await props.searchParams;
+  const keyword = searchParams.keyword;
 
   return (
     <Container className="flex flex-col items-center gap-8 pt-16">
       <PageHeader title={title} description={description} />
       <Suspense fallback={<div>Loading...</div>}>{/* 非同期コンテンツ */}</Suspense>
     </Container>
-  )
+  );
 }
 ```

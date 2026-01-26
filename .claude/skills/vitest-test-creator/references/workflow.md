@@ -194,24 +194,24 @@ pnpm check
 
 ```typescript
 // Bad
-const Component = ({ props }: any) => {}
+const Component = ({ props }: any) => {};
 
 // Good - 具体的な型を定義
 interface ComponentProps {
-  prop1: string
-  prop2?: number
+  prop1: string;
+  prop2?: number;
 }
 
-const Component = ({ prop1, prop2 }: ComponentProps) => {}
+const Component = ({ prop1, prop2 }: ComponentProps) => {};
 ```
 
 #### import 順序エラー
 
 ```typescript
 // 正しい順序（ESLint ルールに従う）
-import { render } from '@testing-library/react' // 外部ライブラリ
-import { ReactNode } from 'react' // React
-import { describe } from 'vitest' // テストライブラリ
+import { render } from '@testing-library/react'; // 外部ライブラリ
+import { ReactNode } from 'react'; // React
+import { describe } from 'vitest'; // テストライブラリ
 ```
 
 #### 未使用の変数

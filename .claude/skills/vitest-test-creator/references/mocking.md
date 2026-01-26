@@ -5,12 +5,12 @@
 ### 関数モック
 
 ```typescript
-import { vi } from 'vitest'
+import { vi } from 'vitest';
 
-const mockFn = vi.fn()
-mockFn.mockReturnValue('value')
-mockFn.mockResolvedValue('async value')
-mockFn.mockImplementation((x) => x * 2)
+const mockFn = vi.fn();
+mockFn.mockReturnValue('value');
+mockFn.mockResolvedValue('async value');
+mockFn.mockImplementation((x) => x * 2);
 ```
 
 ### モジュールモック
@@ -18,50 +18,50 @@ mockFn.mockImplementation((x) => x * 2)
 ```typescript
 vi.mock('./api', () => ({
   fetchUser: vi.fn(),
-}))
+}));
 ```
 
 ### スパイ
 
 ```typescript
-const spy = vi.spyOn(object, 'method')
+const spy = vi.spyOn(object, 'method');
 ```
 
 ### リセット
 
 ```typescript
-import { beforeEach } from 'vitest'
+import { beforeEach } from 'vitest';
 
 beforeEach(() => {
-  vi.clearAllMocks() // 呼び出し履歴をクリア
-})
+  vi.clearAllMocks(); // 呼び出し履歴をクリア
+});
 ```
 
 ## ユニットテストでのモック例
 
 ```typescript
 // ユーティリティ関数のユニットテスト（.unit.test.ts）
-import { vi, describe, it, expect, beforeEach } from 'vitest'
-import { fetchUserData } from './fetch-user'
+import { vi, describe, it, expect, beforeEach } from 'vitest';
+import { fetchUserData } from './fetch-user';
 
 // モジュール全体をモック
 vi.mock('./api', () => ({
   fetchFromAPI: vi.fn(),
-}))
+}));
 
 describe('fetchUserData', () => {
   beforeEach(() => {
-    vi.clearAllMocks()
-  })
+    vi.clearAllMocks();
+  });
 
   it('APIからユーザーデータを取得する', async () => {
-    const { fetchFromAPI } = await import('./api')
-    vi.mocked(fetchFromAPI).mockResolvedValueOnce({ id: 1, name: 'Test' })
+    const { fetchFromAPI } = await import('./api');
+    vi.mocked(fetchFromAPI).mockResolvedValueOnce({ id: 1, name: 'Test' });
 
-    const result = await fetchUserData(1)
-    expect(result).toEqual({ id: 1, name: 'Test' })
-  })
-})
+    const result = await fetchUserData(1);
+    expect(result).toEqual({ id: 1, name: 'Test' });
+  });
+});
 ```
 
 ## ブラウザテストでのモック例
@@ -120,23 +120,23 @@ vi.mock('next/link', () => ({
 ### next/navigation hooks のモック
 
 ```typescript
-import { useSelectedLayoutSegment } from 'next/navigation'
+import { useSelectedLayoutSegment } from 'next/navigation';
 
 vi.mock('next/navigation', () => ({
   useSelectedLayoutSegment: vi.fn(),
-}))
+}));
 
-const mockUseSelectedLayoutSegment = vi.mocked(useSelectedLayoutSegment)
+const mockUseSelectedLayoutSegment = vi.mocked(useSelectedLayoutSegment);
 
 describe('Component', () => {
   beforeEach(() => {
-    mockUseSelectedLayoutSegment.mockReturnValue('docs')
-  })
+    mockUseSelectedLayoutSegment.mockReturnValue('docs');
+  });
 
   afterEach(() => {
-    vi.clearAllMocks()
-  })
-})
+    vi.clearAllMocks();
+  });
+});
 ```
 
 ## 非同期テスト
@@ -144,15 +144,15 @@ describe('Component', () => {
 ```typescript
 describe('fetchData', () => {
   it('データを取得する', async () => {
-    const data = await fetchData()
-    expect(data).toEqual({ id: 1, name: 'Test' })
-  })
+    const data = await fetchData();
+    expect(data).toEqual({ id: 1, name: 'Test' });
+  });
 
   it('エラー時に例外をスローする', async () => {
-    vi.mocked(fetch).mockRejectedValueOnce(new Error('Network error'))
-    await expect(fetchData()).rejects.toThrow('Network error')
-  })
-})
+    vi.mocked(fetch).mockRejectedValueOnce(new Error('Network error'));
+    await expect(fetchData()).rejects.toThrow('Network error');
+  });
+});
 ```
 
 ## ベストプラクティス
@@ -163,20 +163,20 @@ describe('fetchData', () => {
 // Good: 必要な依存のみモック
 vi.mock('./api', () => ({
   fetchUser: vi.fn(),
-}))
+}));
 
 // Bad: すべてをモック
-vi.mock('./api')
-vi.mock('./db')
-vi.mock('./logger')
+vi.mock('./api');
+vi.mock('./db');
+vi.mock('./logger');
 ```
 
 ### 2. beforeEach で毎回リセット
 
 ```typescript
 beforeEach(() => {
-  vi.clearAllMocks()
-})
+  vi.clearAllMocks();
+});
 ```
 
 ### 3. vi.mocked() で型付きモック

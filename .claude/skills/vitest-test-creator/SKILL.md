@@ -11,14 +11,14 @@ description: Vitest を使用したテストコード作成・リファクタリ
 
 ```typescript
 // src/utils/__tests__/sum.unit.test.ts
-import { describe, it, expect } from 'vitest'
-import { sum } from '../sum'
+import { describe, it, expect } from 'vitest';
+import { sum } from '../sum';
 
 describe('sum', () => {
   it('2つの数を足す', () => {
-    expect(sum(2, 3)).toBe(5)
-  })
-})
+    expect(sum(2, 3)).toBe(5);
+  });
+});
 ```
 
 ### ブラウザテスト（Reactコンポーネント）
@@ -57,23 +57,23 @@ describe('Button', () => {
 ### ユニットテストの基本
 
 ```typescript
-import { describe, it, expect, beforeEach } from 'vitest'
-import { targetFunction } from '../target'
+import { describe, it, expect, beforeEach } from 'vitest';
+import { targetFunction } from '../target';
 
 describe('targetFunction', () => {
   beforeEach(() => {
     // セットアップ
-  })
+  });
 
   it('期待する動作を説明する', () => {
     // Arrange（準備）
-    const input = 'test'
+    const input = 'test';
     // Act（実行）
-    const result = targetFunction(input)
+    const result = targetFunction(input);
     // Assert（検証）
-    expect(result).toBe('expected')
-  })
-})
+    expect(result).toBe('expected');
+  });
+});
 ```
 
 ### ブラウザテストの基本
@@ -151,22 +151,22 @@ describe('Component', () => {
 ### 基本的なマッチャー
 
 ```typescript
-expect(value).toBe(expected) // 厳密等価
-expect(value).toEqual(expected) // 深い等価
-expect(value).toContain('substring') // 包含
-expect(array).toHaveLength(3) // 配列の長さ
-expect(() => fn()).toThrow() // エラー
-await expect(asyncFn()).resolves.toBe(value) // 非同期
+expect(value).toBe(expected); // 厳密等価
+expect(value).toEqual(expected); // 深い等価
+expect(value).toContain('substring'); // 包含
+expect(array).toHaveLength(3); // 配列の長さ
+expect(() => fn()).toThrow(); // エラー
+await expect(asyncFn()).resolves.toBe(value); // 非同期
 ```
 
 ### jest-dom マッチャー（ブラウザテスト推奨）
 
 ```typescript
-expect(element).toBeInTheDocument() // DOM に存在
-expect(element).toHaveAttribute('name', 'keyword') // 属性確認
-expect(element).toHaveClass('text-base') // クラス名確認
-expect(element).toBeVisible() // 表示状態
-expect(element).toBeDisabled() // disabled 確認
+expect(element).toBeInTheDocument(); // DOM に存在
+expect(element).toHaveAttribute('name', 'keyword'); // 属性確認
+expect(element).toHaveClass('text-base'); // クラス名確認
+expect(element).toBeVisible(); // 表示状態
+expect(element).toBeDisabled(); // disabled 確認
 ```
 
 詳細は [jest-dom-matchers.md](references/jest-dom-matchers.md) を参照。
@@ -178,12 +178,12 @@ expect(element).toBeDisabled() // disabled 確認
 ### 関数モック
 
 ```typescript
-import { vi } from 'vitest'
+import { vi } from 'vitest';
 
-const mockFn = vi.fn()
-mockFn.mockReturnValue('value')
-mockFn.mockResolvedValue('async value')
-mockFn.mockImplementation((x) => x * 2)
+const mockFn = vi.fn();
+mockFn.mockReturnValue('value');
+mockFn.mockResolvedValue('async value');
+mockFn.mockImplementation((x) => x * 2);
 ```
 
 ### モジュールモック
@@ -191,7 +191,7 @@ mockFn.mockImplementation((x) => x * 2)
 ```typescript
 vi.mock('./api', () => ({
   fetchUser: vi.fn(),
-}))
+}));
 ```
 
 ### next/link のモック（Next.js）
