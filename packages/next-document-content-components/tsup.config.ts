@@ -13,6 +13,12 @@ export default defineConfig([
     entry: ['./src/**/*.{ts,tsx}', '!./src/**/*.d.ts', '!./src/styles/**/*'],
     format: ['esm'],
     outDir: './dist/esm',
+    outExtension: () => ({
+      js: '.mjs',
+    }),
+    esbuildOptions: (options) => {
+      options.resolveExtensions = ['.mts', '.mjs', '.ts', '.tsx'];
+    },
   },
   {
     ...baseConfig,
