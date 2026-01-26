@@ -13,18 +13,51 @@ import {
 import { Kifu, KifuTo } from '@hackersheet/next-document-content-kifu';
 import { DocumentContent } from '@hackersheet/react-document-content';
 import documentContentStyle from '@hackersheet/react-document-content-styles/basic';
+import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
+import { cache } from 'react';
 
 import { client } from '@/lib/hackersheet/client';
 
 import 'katex/dist/katex.min.css';
 
-export default async function PostPage(props: { params: Promise<{ documentSlug: string }> }) {
-  const params = await props.params;
+export type PostPageProps = {
+  params: Promise<{ documentSlug: string }>;
+};
 
+export const dynamic = 'force-static';
+export const revalidate = 60;
+
+/**
+ * キャッシュされた document 取得
+ * generateMetadata と default export の両方で共有される
+ */
+const getCachedDocument = cache(async (slug: string) => {
+  return client.getDocument({ slug });
+});
+
+export async function generateMetadata(props: PostPageProps): Promise<Metadata> {
+  const params = await props.params;
   const { documentSlug } = params;
 
-  const { document } = await client.getDocument({ slug: documentSlug });
+  const { document } = await getCachedDocument(documentSlug);
+
+  if (!document) {
+    return {
+      title: 'Not Found',
+    };
+  }
+
+  return {
+    title: document.title,
+  };
+}
+
+export default async function PostPage(props: PostPageProps) {
+  const params = await props.params;
+  const { documentSlug } = params;
+
+  const { document } = await getCachedDocument(documentSlug);
 
   if (!document) notFound();
 
