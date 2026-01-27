@@ -26,11 +26,7 @@ export default async function TreeNodePage(props: { params: Promise<{ slug: stri
     <main className="max-w-screen-sm">
       <h1 className="text-4xl pt-10 pb-20">{document.title}</h1>
 
-      <HackersheetDocumentContent
-        document={document}
-        tree={tree ?? undefined}
-        permaLinkFormat="/tree/{{{slug}}}"
-      />
+      <HackersheetDocumentContent document={document} tree={tree ?? undefined} permaLinkFormat="/tree/{{{slug}}}" />
 
       <div className="py-12 flex">
         {prev && (

@@ -68,9 +68,7 @@ describe('HackersheetDocumentContent', () => {
       websites: [],
     };
 
-    const { container } = render(
-      <HackersheetDocumentContent document={document} permaLinkFormat="/posts/{{slug}}" />
-    );
+    const { container } = render(<HackersheetDocumentContent document={document} permaLinkFormat="/posts/{{slug}}" />);
 
     expect(container.querySelector('[data-testid="document-content"]')).toBeInTheDocument();
     expect(container.querySelector('[data-testid="document-id"]')).toHaveTextContent('doc-1');
@@ -93,13 +91,9 @@ describe('HackersheetDocumentContent', () => {
       websites: [],
     };
 
-    const { container } = render(
-      <HackersheetDocumentContent document={document} permaLinkFormat="/tree/{{{slug}}}" />
-    );
+    const { container } = render(<HackersheetDocumentContent document={document} permaLinkFormat="/tree/{{{slug}}}" />);
 
-    expect(container.querySelector('[data-testid="permalink-format"]')).toHaveTextContent(
-      '/tree/{{{slug}}}'
-    );
+    expect(container.querySelector('[data-testid="permalink-format"]')).toHaveTextContent('/tree/{{{slug}}}');
   });
 
   it('tree が渡された場合、DocumentContent に渡す', () => {
@@ -151,9 +145,7 @@ describe('HackersheetDocumentContent', () => {
       websites: [],
     };
 
-    const { container } = render(
-      <HackersheetDocumentContent document={document} permaLinkFormat="/posts/{{slug}}" />
-    );
+    const { container } = render(<HackersheetDocumentContent document={document} permaLinkFormat="/posts/{{slug}}" />);
 
     expect(container.querySelector('[data-testid="tree-id"]')).not.toBeInTheDocument();
   });
@@ -175,9 +167,7 @@ describe('HackersheetDocumentContent', () => {
       websites: [],
     };
 
-    const { container } = render(
-      <HackersheetDocumentContent document={document} permaLinkFormat="/posts/{{slug}}" />
-    );
+    const { container } = render(<HackersheetDocumentContent document={document} permaLinkFormat="/posts/{{slug}}" />);
 
     // 12個のコンポーネントが渡されることを確認
     expect(container.querySelector('[data-testid="components-count"]')).toHaveTextContent('12');

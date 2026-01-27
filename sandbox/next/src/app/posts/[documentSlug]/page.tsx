@@ -51,10 +51,7 @@ export default async function PostPage(props: PostPageProps) {
     <main className="mx-auto max-w-screen-sm">
       <h1 className="text-4xl pt-10 pb-20">{document.title}</h1>
 
-      <HackersheetDocumentContent
-        document={document}
-        permaLinkFormat="/posts/{{slug}}"
-      />
+      <HackersheetDocumentContent document={document} permaLinkFormat="/posts/{{slug}}" />
     </main>
   );
 }
