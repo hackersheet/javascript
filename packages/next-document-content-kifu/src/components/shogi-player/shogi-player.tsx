@@ -9,6 +9,12 @@ import MovesArea from './moves-area';
 import ShogiBoardCanvas from './shogi-board-canvas';
 import ShogiHandsCanvas from './shogi-hands-canvas';
 
+/**
+ * Props for the ShogiPlayer component
+ * @property kifuText - KIF format kifu (game record) text
+ * @property size - Canvas size in CSS pixels (default: 360)
+ * @property tesuu - Initial move number to display
+ */
 export type ShogiPlayerProps = {
   kifuText: string;
   size?: number;
@@ -28,7 +34,10 @@ export default function ShogiPlayer(props: ShogiPlayerProps) {
 
   const size = props.size ? props.size : 360;
 
-  const updateState = () => {
+  /**
+   * Update all state variables from the current player state
+   */
+  const updateState = useCallback(() => {
     setPieces([...player.shogi.board]);
     setHands([...player.shogi.hands]);
     setMoves([...player.kifu.moves]);
@@ -36,28 +45,34 @@ export default function ShogiPlayer(props: ShogiPlayerProps) {
     setMaxTesuu(player.getMaxTesuu());
     setComments(player.getComments());
     setTesuu(player.tesuu);
-  };
+  }, [player]);
 
-  const handleForward = () => {
+  const handleForward = useCallback(() => {
     player.forward();
     updateState();
-  };
+  }, [updateState]);
 
-  const handleBackward = () => {
+  const handleBackward = useCallback(() => {
     player.backward();
     updateState();
-  };
+  }, [updateState]);
 
-  const handleGoto = (tesuu: number) => {
-    player.goto(tesuu);
-    updateState();
-  };
+  const handleGoto = useCallback(
+    (tesuu: number) => {
+      player.goto(tesuu);
+      updateState();
+    },
+    [updateState]
+  );
 
-  const handeleToggle = () => {
+  const handleToggle = useCallback(() => {
     setIsSente(!isSente);
     updateState();
-  };
+  }, [isSente, updateState]);
 
+  /**
+   * Handle keyboard input for board navigation and actions
+   */
   const handleKeydown = useCallback(
     (event: KeyboardEvent<HTMLDivElement>) => {
       event.preventDefault();
@@ -82,21 +97,30 @@ export default function ShogiPlayer(props: ShogiPlayerProps) {
           handleForward();
           break;
         case 'r':
-          handeleToggle();
+          handleToggle();
           break;
       }
     },
-    [maxTesuu, isSente]
+    [maxTesuu, handleGoto, handleBackward, handleForward, handleToggle]
   );
 
+  /**
+   * Initialize move position based on the initial tesuu prop
+   */
   useEffect(() => {
     if (props.tesuu !== undefined) {
       handleGoto(props.tesuu);
     }
-  }, [props.tesuu]);
+  }, [props.tesuu, handleGoto]);
 
   return (
-    <div className="flex flex-col sm:flex-row w-fit" tabIndex={1} onKeyDown={handleKeydown}>
+    <div
+      className="flex flex-col sm:flex-row w-fit"
+      tabIndex={0}
+      role="application"
+      aria-label="Shogi player - use arrow keys to navigate, space or right arrow to move forward, left arrow to move backward, 'r' to flip board"
+      onKeyDown={handleKeydown}
+    >
       <div className="flex flex-col">
         <div className="bg-[#f9d27a] text-black text-xs text-right p-1">
           {isSente ? '☖ ' + player.kifu.header['後手'] : '☗ ' + player.kifu.header['先手']}
@@ -129,7 +153,7 @@ export default function ShogiPlayer(props: ShogiPlayerProps) {
           <Button onClick={handleBackward}>前</Button>
           <Button onClick={handleForward}>次</Button>
           <Button onClick={() => handleGoto(maxTesuu)}>最後</Button>
-          <Button onClick={handeleToggle}>反転</Button>
+          <Button onClick={handleToggle}>反転</Button>
         </div>
       </div>
     </div>
