@@ -1,6 +1,7 @@
 import { JKFPlayer } from 'json-kifu-format';
-import { IMoveMoveFormat } from 'json-kifu-format/dist/src/Formats';
 import { Piece, Color } from 'shogi.js';
+
+import type { Move } from './types';
 
 /**
  * Draw the board background
@@ -62,7 +63,7 @@ export function drawBoardGrid(
  */
 export function drawBoardPieces(
   ctx: CanvasRenderingContext2D,
-  pieces: Piece[][],
+  pieces: (Piece | null)[][],
   margin: number,
   cell: number,
   fontFamily: string,
@@ -183,7 +184,7 @@ export function drawHighlightedCell(
   margin: number,
   cell: number,
   isSente: boolean,
-  currentMove?: IMoveMoveFormat
+  currentMove?: Move
 ): void {
   if (!currentMove) return;
 

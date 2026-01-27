@@ -1,17 +1,15 @@
 'use client';
 
-import { JKFPlayer } from 'json-kifu-format';
-import { IMoveFormat } from 'json-kifu-format/dist/src/Formats';
 import React, { useEffect, useRef } from 'react';
 
 /**
  * Props for the MovesArea component
- * @property moves - Array of moves in the game record
+ * @property readableMoves - Array of human-readable move strings (e.g., "☗７六歩")
  * @property tesuu - Current move number
  * @property onTesuuChange - Callback when the user selects a different move
  */
 export type MovesAreaProps = {
-  moves: IMoveFormat[];
+  readableMoves: string[];
   tesuu: number;
   onTesuuChange?: (tesuu: number) => void;
 };
@@ -26,8 +24,8 @@ export type MovesAreaProps = {
  * @example
  * ```tsx
  * <MovesArea
- *   moves={gameRecordMoves}
- *   tesuu={currentMove}
+ *   readableMoves={['開始局面', '☗７六歩', '☖３四歩']}
+ *   tesuu={1}
  *   onTesuuChange={(move) => setCurrentMove(move)}
  * />
  * ```
@@ -65,27 +63,26 @@ export default function MovesArea(props: MovesAreaProps) {
           }
         >
           <div>{0 === props.tesuu && <span ref={scrollRef} className="sr-only" aria-hidden="true" />}</div>
-          <div>開始局面</div>
+          <div>{props.readableMoves[0]}</div>
         </div>
-        {props.moves.map((move, index) => {
-          if (index === 0) return null;
-
-          const moveCurrent = index === props.tesuu ? ' bg-amber-600' : '';
+        {props.readableMoves.slice(1).map((moveText, index) => {
+          const moveIndex = index + 1;
+          const moveCurrent = moveIndex === props.tesuu ? ' bg-amber-600' : '';
 
           return (
             <div
-              key={index}
+              key={moveIndex}
               className={
                 'col-span-500 grid grid-cols-subgrid border-black gap-2 border-t py-1 px-2 cursor-pointer hover:bg-amber-100' +
                 moveCurrent
               }
-              onClick={() => props.onTesuuChange && props.onTesuuChange(index)}
+              onClick={() => props.onTesuuChange && props.onTesuuChange(moveIndex)}
             >
               <div className="flex">
-                {index === props.tesuu && <span ref={scrollRef} className="sr-only" aria-hidden="true" />}
-                <div className="tabular-nums text-right flex-auto">{index}</div>
+                {moveIndex === props.tesuu && <span ref={scrollRef} className="sr-only" aria-hidden="true" />}
+                <div className="tabular-nums text-right flex-auto">{moveIndex}</div>
               </div>
-              <div>{JKFPlayer.moveToReadableKifu(move)}</div>
+              <div>{moveText}</div>
             </div>
           );
         })}
