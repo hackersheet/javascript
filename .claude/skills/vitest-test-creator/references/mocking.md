@@ -1,5 +1,26 @@
 # モック完全ガイド
 
+## 目次
+
+- [モック完全ガイド](#モック完全ガイド)
+  - [目次](#目次)
+  - [基本的なモック](#基本的なモック)
+    - [関数モック](#関数モック)
+    - [モジュールモック](#モジュールモック)
+    - [スパイ](#スパイ)
+    - [リセット](#リセット)
+  - [ユニットテストでのモック例](#ユニットテストでのモック例)
+  - [ブラウザテストでのモック例](#ブラウザテストでのモック例)
+  - [Next.js 関連のモック](#nextjs-関連のモック)
+    - [next/link のモック](#nextlink-のモック)
+    - [next/navigation hooks のモック](#nextnavigation-hooks-のモック)
+  - [非同期テスト](#非同期テスト)
+  - [ファクトリーとモックの組み合わせ](#ファクトリーとモックの組み合わせ)
+  - [ベストプラクティス](#ベストプラクティス)
+    - [1. モックは最小限に](#1-モックは最小限に)
+    - [2. beforeEach で毎回リセット](#2-beforeeach-で毎回リセット)
+    - [3. vi.mocked() で型付きモック](#3-vimocked-で型付きモック)
+
 ## 基本的なモック
 
 ### 関数モック
@@ -154,6 +175,42 @@ describe('fetchData', () => {
   });
 });
 ```
+
+## ファクトリーとモックの組み合わせ
+
+テストデータの生成にはファクトリーを、依存関係のモックには`vi.fn()`を使い分け：
+
+```typescript
+import { userFactory } from '@tests/factories/user';
+import { UserService } from './user-service';
+
+describe('UserService', () => {
+  it('ユーザー情報を更新する', async () => {
+    const mockRepository = {
+      save: vi.fn().mockResolvedValue(true),
+    };
+    const service = new UserService(mockRepository);
+
+    // ファクトリーで現実的なテストデータを生成
+    const user = userFactory.build();
+    user.name = 'Updated Name';
+
+    const result = await service.updateUser(user);
+
+    expect(result).toBe(true);
+    expect(mockRepository.save).toHaveBeenCalledWith(user);
+  });
+});
+```
+
+**使い分け:**
+
+- **ファクトリー** - テスト対象のモデル・エンティティ
+- **モック関数** - API呼び出し、データベース操作、外部サービス
+
+詳細は [test-data-factories.md](test-data-factories.md) を参照。
+
+---
 
 ## ベストプラクティス
 

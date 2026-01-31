@@ -188,44 +188,7 @@ pnpm lint src/components/bookmark/__tests__/bookmark-filter.browser.test.tsx
 pnpm check
 ```
 
-### よくある lint エラーと修正方法
-
-#### any 型の使用
-
-```typescript
-// Bad
-const Component = ({ props }: any) => {};
-
-// Good - 具体的な型を定義
-interface ComponentProps {
-  prop1: string;
-  prop2?: number;
-}
-
-const Component = ({ prop1, prop2 }: ComponentProps) => {};
-```
-
-#### import 順序エラー
-
-```typescript
-// 正しい順序（ESLint ルールに従う）
-import { render } from '@testing-library/react'; // 外部ライブラリ
-import { ReactNode } from 'react'; // React
-import { describe } from 'vitest'; // テストライブラリ
-```
-
-#### 未使用の変数
-
-```typescript
-// Bad
-const unusedVar = 'test'
-const { container } = render(<Component />)
-
-// Good - 使用する変数のみ定義
-const { container } = render(<Component />)
-```
-
-## テスト作成完了時の確認
+### テスト作成完了時の確認
 
 - [ ] テストが成功しているか（`pnpm test:run`）
 - [ ] lint エラーがないか（`pnpm lint`）
@@ -234,12 +197,4 @@ const { container } = render(<Component />)
 - [ ] `any` 型を使用していないか
 - [ ] 未使用の変数がないか
 
-## チェックリスト：修正前の確認
-
-修正を開始する前に確認：
-
-- [ ] テストファイルが正しい場所に配置されているか（`__tests__/` ディレクトリ）
-- [ ] ファイル名が正しい命名規則に従っているか（`.unit.test.ts` または `.browser.test.tsx`）
-- [ ] テストが `describe` でグループ化されているか
-- [ ] `afterEach` で `cleanup()` が呼ばれているか（ブラウザテスト）
-- [ ] モックが `beforeEach` でリセットされているか
+lint エラーの詳細は [troubleshooting.md](troubleshooting.md#チェックリストデバッグ時の確認項目) を参照してください。

@@ -1,5 +1,14 @@
 # ユニットテスト完全ガイド
 
+## 目次
+
+- [基本構造](#基本構造)
+- [命名規則](#命名規則)
+- [テストパターン例](#テストパターン例)
+- [モックの基本](#モックの基本)
+- [ベストプラクティス](#ベストプラクティス)
+- [テスト作成チェックリスト](#テスト作成チェックリスト)
+
 ## 基本構造
 
 ```typescript
@@ -105,45 +114,15 @@ describe('fetchData', () => {
 
 ## モックの基本
 
-### 関数モック
+モックの詳細は [mocking.md](mocking.md) を参照してください。
 
-```typescript
-import { vi, describe, it, expect, beforeEach } from 'vitest';
+ユニットテストでよく使用される基本的なパターン：
 
-// 関数モック
-const mockFn = vi.fn();
-mockFn.mockReturnValue('value');
-mockFn.mockResolvedValue('async value');
-mockFn.mockImplementation((x) => x * 2);
+- 関数モック：`vi.fn()` で依存関数をモック化
+- モジュールモック：`vi.mock()` で外部モジュール全体をモック化
+- リセット：`beforeEach` で `vi.clearAllMocks()` を呼び出す
 
-describe('function', () => {
-  beforeEach(() => {
-    vi.clearAllMocks(); // 呼び出し履歴をクリア
-  });
-});
-```
-
-### モジュールモック
-
-```typescript
-vi.mock('./api', () => ({
-  fetchFromAPI: vi.fn(),
-}));
-
-describe('fetchUserData', () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
-
-  it('APIからユーザーデータを取得する', async () => {
-    const { fetchFromAPI } = await import('./api');
-    vi.mocked(fetchFromAPI).mockResolvedValueOnce({ id: 1, name: 'Test' });
-
-    const result = await fetchUserData(1);
-    expect(result).toEqual({ id: 1, name: 'Test' });
-  });
-});
-```
+詳細な使用方法、Next.js ライブラリのモック、ベストプラクティスは [mocking.md](mocking.md) に記載されています。
 
 ## ベストプラクティス
 

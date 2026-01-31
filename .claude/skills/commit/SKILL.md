@@ -5,26 +5,18 @@ description: プロジェクトのコミットメッセージルールに従っ�
 
 # コミット作成スキル
 
-ステージされた変更を分析し、プロジェクトのコミットメッセージルールに従ってコミットを作成します。
-
-## メッセージルール
-
-このプロジェクトは Conventional Commits 形式を使用しています。詳細は [references/commit-rules.md](references/commit-rules.md) を参照してください。
-
 ## 実行フロー
 
 1. `git status` で変更ファイルを確認
 2. `git diff --staged` でステージされた変更を確認（ステージされていない場合は `git diff`）
 3. `git log --oneline -5` で最近のコミットスタイルを確認
-4. 変更内容を分析し、[commit-rules.md](references/commit-rules.md) に従って適切なタイプとスコープを決定
-5. コミットメッセージを作成
-6. 必要に応じて `git add` で追加のファイルをステージ
-7. `git commit` でコミットを実行
-8. `git status` で成功を確認
+4. [commit-rules.md](references/commit-rules.md) を読み、ルールに従ってコミットメッセージを作成
+5. 必要に応じて `git add` で追加のファイルをステージ
+6. `git commit` でコミットを実行
+7. `git status` で成功を確認
 
 ## 注意事項
 
-- **Co-Authored-By は付けない** - このプロジェクトでは Co-Authored-By は使用しません
-- **ステージされていない変更** - ステージされていないファイルがある場合は、コミット対象を明確にしてから実行してください
-- **スコープは一つに** - 複数のスコープが必要な場合は、コミットを分けることを検討してください
-- **メッセージは簡潔に** - 説明は1行で完結させ、詳細な説明が必要な場合は本文に記述してください
+- **Co-Authored-By は付けない**
+- **本文は原則必須** - 省略条件は [commit-rules.md](references/commit-rules.md) を参照
+- **スコープは一つに** - 複数のスコープが必要な場合はコミットを分ける
