@@ -3,39 +3,49 @@
 import React, { useState } from 'react';
 import { HiOutlineClipboardDocumentList, HiCheck } from 'react-icons/hi2';
 
+/**
+ * Props for the CodeBlockCopyButton component.
+ */
 export type CodeBlockCopyButtonProps = {
+  /**
+   * The code string to copy (may contain Shiki annotations).
+   */
   code: string;
 };
 
 /**
- * Shiki の注釈付きコード行（例: // ...[!code ...]）を除去して、先頭末尾の空白を削除した文字列を返します。
+ * Removes Shiki annotation lines (e.g., `// ...[!code ...]`) from code
+ * and trims leading/trailing whitespace.
  *
- * @param code 元のコード文字列。複数行を含むことができます。
- * @returns 注釈行を削除しトリムしたコード文字列。
+ * @param code - The original code string, which may contain multiple lines.
+ * @returns The code string with annotation lines removed and trimmed.
  *
  * @remarks
- * 対象の注釈は正規表現 / *\/\/.*\[!code[^\]]+\]/gm にマッチする行として扱われます。
+ * Annotations are matched by the regex `/ *\/\/.*\[!code[^\]]+\]/gm`.
  */
 const removeShikiCode = (code: string) => code.replace(/ *\/\/.*\[!code[^\]]+\]/gm, '').trim();
 
 /**
- * コードブロック用のコピー ボタンコンポーネント。
+ * A copy-to-clipboard button component for code blocks.
  *
- * 与えられた code をクリップボードに書き込み、コピー完了時にアイコンをチェックに切り替えます。
+ * Copies the provided code to the clipboard when clicked, temporarily
+ * switching the icon to a checkmark to indicate success.
  *
- * @param props.code コピー対象のコード文字列（Shiki 注釈が含まれている可能性あり）。
- * @returns コピー用ボタンの React 要素。
+ * @param props - The component props
+ * @param props.code - The code string to copy (Shiki annotations will be removed)
+ * @returns The rendered copy button element
  *
  * @remarks
- * ブラウザの navigator.clipboard を使用します。ユーザーの環境によっては権限や HTTPS が必要です。
+ * Uses the browser's `navigator.clipboard` API. Some environments may require
+ * HTTPS or user permissions.
  */
 export default function CodeBlockCopyButton({ code }: CodeBlockCopyButtonProps) {
   const [copied, setCopied] = useState(false);
 
   /**
-   * ボタンがクリックされたときに呼ばれるハンドラ。
-   * removeShikiCode で注釈を除去したコードをクリップボードに書き込み、
-   * 書き込み成功時に短時間だけ copied 状態を true にします。
+   * Click handler that copies the code to clipboard.
+   * Removes Shiki annotations before copying and briefly shows
+   * a success indicator.
    */
   const handleClick = () => {
     navigator.clipboard.writeText(removeShikiCode(code)).then(() => {

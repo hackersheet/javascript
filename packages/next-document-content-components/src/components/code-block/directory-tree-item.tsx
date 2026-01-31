@@ -3,24 +3,29 @@ import { LuFolder, LuFile } from 'react-icons/lu';
 
 import type { TreeNode } from './parse-tree-output';
 
-type DirectoryTreeItemProps = {
+/**
+ * Props for the DirectoryTreeItem component.
+ */
+export type DirectoryTreeItemProps = {
+  /**
+   * The tree node to render (directory or file).
+   */
   node: TreeNode;
 };
 
 /**
- * 単一のツリーノード（ディレクトリまたはファイル）をレンダリングするコンポーネント。
- * 再帰的に自身を呼び出して子ノードを描画します。
+ * A component that renders a single tree node (directory or file).
+ * Recursively renders child nodes for directories.
  *
- * @param props.node - 表示対象の TreeNode
+ * @param props - The component props
+ * @param props.node - The TreeNode to display
+ * @returns The rendered list item element
  */
 export default function DirectoryTreeItem({ node }: DirectoryTreeItemProps) {
   return (
-    <li key={node.id} className={`${node.type === 'directory' ? 'directory-tree-directory' : 'directory-tree-file'}`}>
+    <li className={`${node.type === 'directory' ? 'directory-tree-directory' : 'directory-tree-file'}`}>
       <div className="directory-tree-node-content">
-        <div className="directory-tree-icon">
-          {node.type === 'directory' && <LuFolder />}
-          {node.type === 'file' && <LuFile />}
-        </div>
+        <div className="directory-tree-icon">{node.type === 'directory' ? <LuFolder /> : <LuFile />}</div>
         <div>{node.name}</div>
       </div>
 

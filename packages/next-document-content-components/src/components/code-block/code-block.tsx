@@ -1,11 +1,25 @@
 import React from 'react';
 
-import CodeBlockCopyButton from './code-block-copy-button';
+import CodeBlockHeader from './code-block-header';
 import CodeBlockIcon from './code-block-icon';
 import { highlighteCode } from './shiki';
 
 import type { CodeBlockComponentProps } from '@hackersheet/react-document-content';
 
+/**
+ * A component that renders a syntax-highlighted code block.
+ *
+ * The header displays a language icon, optional filename (extracted from the
+ * colon-delimited language string), and a copy button.
+ *
+ * Uses Shiki for syntax highlighting. Falls back to a plain `<pre>` block
+ * if highlighting fails.
+ *
+ * @param props - The component props
+ * @param props.code - The source code to display
+ * @param props.language - Language identifier, optionally with filename (e.g., "typescript:example.ts")
+ * @returns The rendered code block element
+ */
 export default async function CodeBlock({ code, ...props }: CodeBlockComponentProps) {
   const [language, filename] = props.language.split(':');
 
@@ -13,15 +27,7 @@ export default async function CodeBlock({ code, ...props }: CodeBlockComponentPr
 
   return (
     <div className="code-block">
-      <div className="code-block-header">
-        <div>
-          <CodeBlockIcon language={language} />
-        </div>
-        <div className="code-block-filename">{filename}</div>
-        <div>
-          <CodeBlockCopyButton code={code} />
-        </div>
-      </div>
+      <CodeBlockHeader icon={<CodeBlockIcon language={language} />} filename={filename} code={code} />
       {html && <div dangerouslySetInnerHTML={{ __html: html }} />}
       {!html && <pre>{code}</pre>}
     </div>

@@ -10,45 +10,51 @@ export type TreeNode = {
 };
 
 /**
- * 与えられた文字列の SHA-256 ハッシュを計算して hex 文字列で返します。
- * @param str - ハッシュ化する入力文字列
- * @returns hex 形式の SHA-256 ダイジェスト
+ * Computes the SHA-256 hash of a given string and returns it as a hex string.
+ *
+ * @param str - The input string to hash
+ * @returns The SHA-256 digest in hexadecimal format
  */
-function encryptSha256(str: string) {
+function hashSha256(str: string) {
   const hash = createHash('sha256');
   hash.update(str);
   return hash.digest('hex');
 }
 
 /**
- * `tree` コマンドの出力（box-drawing を含むテキスト）をパースして TreeNode のツリー構造を返します。
+ * Parses the output of a `tree` command (including box-drawing characters)
+ * and returns a TreeNode tree structure.
  *
  * @remarks
- * - 入力は Linux/macOS の `tree` コマンドの標準出力を想定しています。
- * - 行先頭の箱線文字（`│`, `├`, `└`, `─`）や 4 スペースインデントを解析して階層を決定します。
- * - 最後に出力されるサマリ行（例: `3 directories, 5 files`）は自動的に除外します。
- * - 子要素が存在する行のみをディレクトリと見なすルールを採用しています（子要素が無ければファイル）。
- * - 解析中に例外が発生した場合は `null` を返します（呼び出し元でフォールバック処理を行ってください）。
+ * - Expects standard output from the Linux/macOS `tree` command.
+ * - Parses box-drawing characters (`│`, `├`, `└`, `─`) and 4-space indentation
+ *   to determine hierarchy levels.
+ * - Automatically excludes summary lines at the end (e.g., `3 directories, 5 files`).
+ * - Uses the rule that only lines with children are considered directories
+ *   (lines without children are treated as files).
+ * - Returns `null` if an exception occurs during parsing
+ *   (callers should handle fallback rendering).
  *
- * @param treeOutput - `tree` コマンドで得られたテキスト全体
- * @returns 解析に成功した場合はルート `TreeNode`、失敗または空入力の場合は `null`
+ * @param treeOutput - The complete text output from the `tree` command
+ * @returns The root `TreeNode` on success, or `null` on failure or empty input
  *
- * @complexity O(n) - 入力行数 n に対して一度の走査で処理します（追加で逆順集計を行うためメモリは O(n)）。
+ * @complexity O(n) - Processes in a single pass over n input lines
+ *   (with an additional reverse pass, so memory usage is O(n)).
  */
 export function parseTreeOutput(treeOutput: string): TreeNode | null {
-  // 入力を正規化して行に分割する
+  // Normalize input and split into lines
   const raw = treeOutput.replace(/\r/g, '').trim();
   if (!raw) return null;
   const lines = raw.split('\n');
 
-  // `tree` コマンドが末尾に出力するサマリ行（"3 directories, 5 files" 等）を除外する
+  // Filter out summary lines output by the `tree` command (e.g., "3 directories, 5 files")
   const filteredLines = lines.filter(
     (l) => !/^\s*(?:\d+\s+directories?,\s*\d+\s+files?|\d+\s+directories?|\d+\s+files?)\s*$/i.test(l)
   );
 
-  const idPrefix = 'tree-' + encryptSha256(raw) + '-';
+  const idPrefix = 'tree-' + hashSha256(raw) + '-';
 
-  // ルートノードを初期化
+  // Initialize root node
   const rootNode: TreeNode = {
     id: idPrefix + 'root',
     name: '',
@@ -64,13 +70,13 @@ export function parseTreeOutput(treeOutput: string): TreeNode | null {
 
   try {
     /**
-     * `tree` の一般的な行フォーマットを処理するための正規表現。
-     * - prefix: '│   ' または 4 スペースの繰り返し
-     * - connector: '├── ' または '└── '
+     * Regular expression for parsing standard `tree` command line format.
+     * - prefix: repetitions of '│   ' or 4 spaces
+     * - connector: '├── ' or '└── '
      */
     const treeLineRegex = /^(?<prefix>(?:│\s{3}|\s{4})*)(?<connector>├── |└── )?(?<name>.*)$/;
 
-    // 各行から名前とレベルを計算して事前に格納する（後方参照のため）
+    // Pre-compute name and level for each line (for backward reference)
     const lineInfos = filteredLines.map((ln) => {
       const normalized = ln.replace(/\t/g, '    ');
       const m = normalized.match(treeLineRegex);
@@ -82,12 +88,12 @@ export function parseTreeOutput(treeOutput: string): TreeNode | null {
         const level = (groupMatches ? groupMatches.length : 0) + (connector ? 1 : 0);
         return { rawLine: normalized, level, cleanedName: cleanNodeName(name) };
       }
-      // フォーマットに合わない行はレベル0 の単独行として扱う
+      // Lines not matching the format are treated as level 0 standalone lines
       return { rawLine: normalized, level: 0, cleanedName: cleanNodeName(normalized.trim()) };
     });
 
-    // 各行について、次に出現する非空行のレベルを事前計算することで
-    // per-node のルックアヘッドループを排除し O(n) の振る舞いにする
+    // Pre-compute the next non-empty line's level for each line
+    // to eliminate per-node lookahead loops and achieve O(n) behavior
     const reduceResult = lineInfos.reduceRight(
       (acc, info) => ({
         lastLevel: info.rawLine.trim() ? info.level : acc.lastLevel,
@@ -97,18 +103,18 @@ export function parseTreeOutput(treeOutput: string): TreeNode | null {
     );
     const nextNonEmptyLevel = reduceResult.nextLevels;
 
-    // 事前計算した情報からツリーを構築する（forEach で可読性を保つ）
+    // Build the tree from pre-computed info (using forEach for readability)
     lineInfos.forEach((info, index) => {
       const level = info.level;
       const cleanedLine = info.cleanedName;
 
-      // 最初に出てくるレベル0 の行をルート名として扱う
+      // Treat the first level 0 line as the root name
       if (level === 0 && rootNode.name === '') {
         rootNode.name = cleanedLine;
         return;
       }
 
-      // 新ルール: 下位レベル（子）が存在する場合のみディレクトリと判定する
+      // Rule: only treat as directory if a child (lower level) exists
       const nextLevelForLine = nextNonEmptyLevel[index];
       const isDirectory = nextLevelForLine != null && nextLevelForLine > level;
 
@@ -121,7 +127,7 @@ export function parseTreeOutput(treeOutput: string): TreeNode | null {
         children: isDirectory ? [] : undefined,
       };
 
-      // スタックを使って親ノードを決定する
+      // Use stack to determine parent node
       while (stack.length > 0 && stack[stack.length - 1].level >= level) {
         stack.pop();
       }
@@ -134,7 +140,7 @@ export function parseTreeOutput(treeOutput: string): TreeNode | null {
       parentNode.children = parentNode.children || [];
       parentNode.children.push(newNode);
 
-      // ディレクトリならスタックに積む（子を受け入れるため）
+      // Push directories onto stack (to receive children)
       if (newNode.type === 'directory') {
         stack.push({ node: newNode, level });
       }
