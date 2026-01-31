@@ -39,69 +39,99 @@ function normalizeTabs(line: string): string {
 }
 
 /**
- * Pattern for 4-character prefix units before the connector.
- * Unicode: "│   " or "    "
- * ASCII: "|   " or "    "
- */
-const PREFIX_UNIT_PATTERN = /^(│ {3}|\| {3}| {4})/;
-
-/**
- * Patterns for tree connectors.
+ * Patterns for tree connectors (branch and last-branch indicators).
+ * Supports both Unicode box-drawing characters and ASCII equivalents.
  */
 const CONNECTOR_PATTERNS = [
-  /^├── ?/, // Unicode branch
-  /^└── ?/, // Unicode last branch
-  /^├─ ?/, // Shorter Unicode variant
-  /^└─ ?/, // Shorter Unicode variant
-  /^\+-- ?/, // ASCII branch
-  /^\\-- ?/, // ASCII last branch
+  /├──? ?/, // Unicode branch (├── or ├─)
+  /└──? ?/, // Unicode last branch (└── or └─)
+  /\+--? ?/, // ASCII branch (+-- or +-)
+  /\\--? ?/, // ASCII last branch (\-- or \-)
 ];
 
 /**
- * Recursively counts and removes prefix units from the beginning of a line.
+ * Finds the first connector in the line and returns its position and length.
+ * Returns null if no connector is found.
  */
-function countAndRemovePrefixes(line: string, count: number = 0): { remaining: string; prefixCount: number } {
-  const match = line.match(PREFIX_UNIT_PATTERN);
-  if (match) {
-    return countAndRemovePrefixes(line.slice(match[0].length), count + 1);
+function findConnector(line: string): { index: number; length: number } | null {
+  for (const pattern of CONNECTOR_PATTERNS) {
+    const match = line.match(pattern);
+    if (match && match.index !== undefined) {
+      return { index: match.index, length: match[0].length };
+    }
   }
-  return { remaining: line, prefixCount: count };
+  return null;
 }
 
 /**
- * Checks if the line starts with a connector and removes it.
+ * Counts the number of vertical line characters in the prefix portion.
+ * Supports both Unicode (│) and ASCII (|) vertical lines.
  */
-function checkAndRemoveConnector(line: string): { remaining: string; hasConnector: boolean } {
-  const matchingPattern = CONNECTOR_PATTERNS.find((pattern) => pattern.test(line));
-  if (matchingPattern) {
-    const match = line.match(matchingPattern);
-    return { remaining: line.slice(match![0].length), hasConnector: true };
-  }
-  return { remaining: line, hasConnector: false };
+function countVerticalLines(prefix: string): number {
+  const matches = prefix.match(/[│|]/g);
+  return matches ? matches.length : 0;
+}
+
+/**
+ * Counts prefix units in a string.
+ * A prefix unit is typically 4 characters wide and can be:
+ * - A vertical line (│ or |) followed by spaces (e.g., "│   ")
+ * - 4 consecutive spaces (e.g., "    ")
+ *
+ * The algorithm uses the maximum of:
+ * - Number of vertical lines (for standard tree output)
+ * - Total prefix length / 4 (for space-based indentation)
+ *
+ * This handles various cases:
+ * - "│   │   " → 2 units (2 vertical lines)
+ * - "        " → 2 units (8 chars / 4)
+ * - "│       " → 2 units (8 chars / 4, even with only 1 vertical line)
+ */
+function countPrefixUnits(prefix: string): number {
+  const verticalLineCount = countVerticalLines(prefix);
+  const lengthBasedCount = Math.floor(prefix.length / 4);
+
+  // Use the maximum to handle cases where vertical lines are sparse
+  // (e.g., "│       " should be 2 units, not 1)
+  return Math.max(verticalLineCount, lengthBasedCount);
 }
 
 /**
  * Parses a single line from tree command output.
  * Returns the indentation level and the node name.
  *
- * Standard tree format:
- * - Root: no prefix
- * - Level 1: ├── or └── (preceded by nothing)
- * - Level 2: │   ├── or │   └── or     ├── or     └── (one 4-char prefix)
- * - Level 3: │   │   ├── etc. (two 4-char prefixes)
+ * The level is determined by analyzing the prefix portion before the connector:
+ * - Count vertical line characters (│ or |) when present
+ * - Fall back to counting 4-space units for indentation-only formats
+ *
+ * @example
+ * - "root" → level 0
+ * - "├── file" → level 1 (0 prefix units + connector)
+ * - "│   ├── file" → level 2 (1 vertical line + connector)
+ * - "    └── file" → level 2 (4 spaces = 1 unit + connector)
+ * - "│   │   └── file" → level 3 (2 vertical lines + connector)
  */
 function parseLine(line: string): { level: number; name: string } {
   const normalized = normalizeTabs(line);
-  const { remaining: afterPrefixes, prefixCount } = countAndRemovePrefixes(normalized);
-  const { remaining: afterConnector, hasConnector } = checkAndRemoveConnector(afterPrefixes);
+  const connectorInfo = findConnector(normalized);
 
-  // Calculate level: prefix count + 1 if there's a connector
-  const level = hasConnector ? prefixCount + 1 : prefixCount;
+  if (connectorInfo) {
+    const prefix = normalized.slice(0, connectorInfo.index);
+    const afterConnector = normalized.slice(connectorInfo.index + connectorInfo.length);
+    const prefixUnits = countPrefixUnits(prefix);
 
-  // Clean any remaining box-drawing characters and trim
-  const name = afterConnector.replace(/^[│├└─|+\\\-\s]+/, '').trim() || afterConnector.trim();
+    // Level = number of prefix units + 1 (for the connector itself)
+    const level = prefixUnits + 1;
+    const name = afterConnector.trim();
 
-  return { level, name };
+    return { level, name };
+  }
+
+  // No connector found - this is likely the root or a line with only indentation
+  const prefixUnits = countPrefixUnits(normalized);
+  const name = normalized.replace(/^[│├└─|+\\\-\s]+/, '').trim() || normalized.trim();
+
+  return { level: prefixUnits, name };
 }
 
 type ParsedLine = { level: number; name: string };
