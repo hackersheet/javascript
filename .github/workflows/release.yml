@@ -8,8 +8,48 @@ on:
 concurrency: ${{ github.workflow }}-${{ github.ref }}
 
 jobs:
+  check:
+    name: Check for unpublished packages
+    runs-on: ubuntu-latest
+    outputs:
+      has_unpublished: ${{ steps.check.outputs.has_unpublished }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'pnpm'
+
+      - name: Check unpublished packages
+        id: check
+        run: |
+          HAS_UNPUBLISHED=false
+          for dir in packages/*/; do
+            if [ -f "$dir/package.json" ]; then
+              PKG_NAME=$(jq -r .name "$dir/package.json")
+              PKG_VERSION=$(jq -r .version "$dir/package.json")
+              # Skip sandbox packages
+              if [[ "$PKG_NAME" == *"sandbox"* ]]; then
+                continue
+              fi
+              if ! npm view "$PKG_NAME@$PKG_VERSION" version 2>/dev/null; then
+                echo "Unpublished: $PKG_NAME@$PKG_VERSION"
+                HAS_UNPUBLISHED=true
+              fi
+            fi
+          done
+          echo "has_unpublished=$HAS_UNPUBLISHED" >> $GITHUB_OUTPUT
+
   release:
     name: Release
+    needs: check
+    if: needs.check.outputs.has_unpublished == 'true'
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -39,5 +79,17 @@ jobs:
         uses: changesets/action@v1
         with:
           publish: pnpm run release
+          createGithubReleases: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Summary
+        if: steps.changesets.outputs.published == 'true'
+        run: |
+          echo "## Published successfully! :rocket:" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Packages" >> $GITHUB_STEP_SUMMARY
+          echo '${{ steps.changesets.outputs.publishedPackages }}' | jq -r '.[] | "- **\(.name)@\(.version)** - [npm](https://www.npmjs.com/package/\(.name))"' >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- **Tag:** alpha" >> $GITHUB_STEP_SUMMARY
+          echo "- **Auth:** Trusted Publishing (OIDC)" >> $GITHUB_STEP_SUMMARY

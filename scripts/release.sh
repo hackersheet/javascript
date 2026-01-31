@@ -5,6 +5,7 @@ set -euo pipefail
 # Used by changesets/action in GitHub Actions
 
 PACKAGES=$(pnpm -r --filter '@hackersheet/*' --filter '!@hackersheet/sandbox-*' exec pwd)
+PUBLISHED=""
 
 for dir in $PACKAGES; do
   cd "$dir"
@@ -19,5 +20,19 @@ for dir in $PACKAGES; do
     pnpm pack
     npm publish *.tgz --access=public --tag alpha --provenance
     rm -f *.tgz
+
+    if [ -n "$PUBLISHED" ]; then
+      PUBLISHED="$PUBLISHED,$PKG_NAME@$PKG_VERSION"
+    else
+      PUBLISHED="$PKG_NAME@$PKG_VERSION"
+    fi
   fi
 done
+
+echo ""
+echo "Published packages: ${PUBLISHED:-none}"
+
+# Create git tags for changesets/action to detect and create GitHub releases
+if [ -n "$PUBLISHED" ]; then
+  pnpm changeset tag
+fi
