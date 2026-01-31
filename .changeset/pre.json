@@ -11,6 +11,7 @@
     "@hackersheet/sandbox-next": "0.0.0"
   },
   "changesets": [
+    "eager-hotels-shave",
     "good-shrimps-swim",
     "red-cycles-smash"
   ]
