@@ -5,7 +5,7 @@ set -euo pipefail
 # Used by changesets/action in GitHub Actions
 
 ROOT_DIR=$(pwd)
-PACKAGES=$(pnpm -r --filter '@hackersheet/*' --filter '!@hackersheet/sandbox-*' exec pwd)
+PACKAGES=$(pnpm -r --filter './packages/*' --filter '!@hackersheet/sandbox-*' exec pwd)
 PUBLISHED=""
 
 for dir in $PACKAGES; do
