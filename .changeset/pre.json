@@ -10,5 +10,7 @@
     "@hackersheet/react-document-content-styles": "0.1.0-alpha.14",
     "@hackersheet/sandbox-next": "0.0.0"
   },
-  "changesets": []
+  "changesets": [
+    "good-shrimps-swim"
+  ]
 }
