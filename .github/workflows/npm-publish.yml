@@ -110,11 +110,14 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
 
-      # Trusted Publishing: npm を直接使用（pnpm は OIDC 非対応のため）
+      # Trusted Publishing: pnpm pack + npm publish
+      # pnpm pack で workspace:* を実際のバージョンに解決した tarball を作成
       # 参考: https://github.com/pnpm/pnpm/issues/9812
       - name: Publish to npm (Trusted Publishing)
         working-directory: ${{ steps.package-dir.outputs.dir }}
-        run: npm publish --access=public --tag alpha --provenance
+        run: |
+          pnpm pack
+          npm publish *.tgz --access=public --tag alpha --provenance
 
       - name: Summary
         run: |
