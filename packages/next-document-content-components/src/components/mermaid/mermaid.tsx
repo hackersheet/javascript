@@ -105,13 +105,16 @@ export default function Mermaid({ code }: MermaidComponentProps) {
       // Fallback to original mermaid library
       const mermaidTheme = isDark ? 'dark' : 'default';
       mermaid.initialize({ startOnLoad: false, theme: mermaidTheme });
+      const uniqueId = `${id}-${++renderCountRef.current}`;
       try {
-        const uniqueId = `${id}-${++renderCountRef.current}`;
         // Wrap in withSafeJsonStringify to handle circular references in block-beta etc.
         const { svg: renderedSvg } = await withSafeJsonStringify(() => mermaid.render(uniqueId, code));
         setSvg(renderedSvg);
       } catch {
         setSvg('Mermaid Syntax Error');
+      } finally {
+        // Remove temporary container element that mermaid creates in body
+        document.getElementById(`d${uniqueId}`)?.remove();
       }
     };
     render();
