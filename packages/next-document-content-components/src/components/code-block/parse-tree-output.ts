@@ -15,10 +15,177 @@ export type TreeNode = {
  * @param str - The input string to hash
  * @returns The SHA-256 digest in hexadecimal format
  */
-function hashSha256(str: string) {
+function hashSha256(str: string): string {
   const hash = createHash('sha256');
   hash.update(str);
   return hash.digest('hex');
+}
+
+/**
+ * Checks if a line is a tree summary line (e.g., "3 directories, 5 files").
+ */
+function isSummaryLine(line: string): boolean {
+  const trimmed = line.trim();
+  return /^(?:\d+\s+directories?,\s*\d+\s+files?|\d+\s+directories?|\d+\s+files?)$/i.test(trimmed);
+}
+
+/**
+ * Normalizes tab characters in a line.
+ * - Replaces │\t or |\t with vertical line + 3 spaces (4 chars total)
+ * - Replaces remaining tabs with 4 spaces
+ */
+function normalizeTabs(line: string): string {
+  return line.replace(/│\t/g, '│   ').replace(/\|\t/g, '|   ').replace(/\t/g, '    ');
+}
+
+/**
+ * Pattern for 4-character prefix units before the connector.
+ * Unicode: "│   " or "    "
+ * ASCII: "|   " or "    "
+ */
+const PREFIX_UNIT_PATTERN = /^(│ {3}|\| {3}| {4})/;
+
+/**
+ * Patterns for tree connectors.
+ */
+const CONNECTOR_PATTERNS = [
+  /^├── ?/, // Unicode branch
+  /^└── ?/, // Unicode last branch
+  /^├─ ?/, // Shorter Unicode variant
+  /^└─ ?/, // Shorter Unicode variant
+  /^\+-- ?/, // ASCII branch
+  /^\\-- ?/, // ASCII last branch
+];
+
+/**
+ * Recursively counts and removes prefix units from the beginning of a line.
+ */
+function countAndRemovePrefixes(line: string, count: number = 0): { remaining: string; prefixCount: number } {
+  const match = line.match(PREFIX_UNIT_PATTERN);
+  if (match) {
+    return countAndRemovePrefixes(line.slice(match[0].length), count + 1);
+  }
+  return { remaining: line, prefixCount: count };
+}
+
+/**
+ * Checks if the line starts with a connector and removes it.
+ */
+function checkAndRemoveConnector(line: string): { remaining: string; hasConnector: boolean } {
+  const matchingPattern = CONNECTOR_PATTERNS.find((pattern) => pattern.test(line));
+  if (matchingPattern) {
+    const match = line.match(matchingPattern);
+    return { remaining: line.slice(match![0].length), hasConnector: true };
+  }
+  return { remaining: line, hasConnector: false };
+}
+
+/**
+ * Parses a single line from tree command output.
+ * Returns the indentation level and the node name.
+ *
+ * Standard tree format:
+ * - Root: no prefix
+ * - Level 1: ├── or └── (preceded by nothing)
+ * - Level 2: │   ├── or │   └── or     ├── or     └── (one 4-char prefix)
+ * - Level 3: │   │   ├── etc. (two 4-char prefixes)
+ */
+function parseLine(line: string): { level: number; name: string } {
+  const normalized = normalizeTabs(line);
+  const { remaining: afterPrefixes, prefixCount } = countAndRemovePrefixes(normalized);
+  const { remaining: afterConnector, hasConnector } = checkAndRemoveConnector(afterPrefixes);
+
+  // Calculate level: prefix count + 1 if there's a connector
+  const level = hasConnector ? prefixCount + 1 : prefixCount;
+
+  // Clean any remaining box-drawing characters and trim
+  const name = afterConnector.replace(/^[│├└─|+\\\-\s]+/, '').trim() || afterConnector.trim();
+
+  return { level, name };
+}
+
+type ParsedLine = { level: number; name: string };
+
+/**
+ * Computes the next non-empty line's level for each line.
+ * Used to determine if a node is a directory (has children).
+ */
+function computeNextLevels(parsedLines: ParsedLine[]): (number | null)[] {
+  return parsedLines.map((_, index) => {
+    const nextLineWithName = parsedLines.slice(index + 1).find((line) => line.name);
+    return nextLineWithName?.level ?? null;
+  });
+}
+
+/**
+ * Gets file extension from a filename.
+ */
+function getExtension(filename: string): string | undefined {
+  return filename.match(/\.(\w+)$/)?.[1];
+}
+
+/**
+ * Creates a TreeNode from parsed line data.
+ */
+function createNode(parsedLine: ParsedLine, index: number, idPrefix: string, isDirectory: boolean): TreeNode {
+  return {
+    id: index === 0 ? idPrefix + 'root' : idPrefix + 'node-' + index,
+    name: parsedLine.name,
+    type: isDirectory ? 'directory' : 'file',
+    extension: isDirectory ? undefined : getExtension(parsedLine.name),
+    level: parsedLine.level,
+    children: isDirectory ? [] : undefined,
+  };
+}
+
+/**
+ * Finds the parent node for a given level by traversing the stack.
+ * Returns a new stack with nodes popped until we find the correct parent.
+ */
+function findParentStack(
+  stack: Array<{ node: TreeNode; level: number }>,
+  level: number
+): Array<{ node: TreeNode; level: number }> {
+  if (stack.length <= 1 || stack[stack.length - 1].level < level) {
+    return stack;
+  }
+  return findParentStack(stack.slice(0, -1), level);
+}
+
+/**
+ * Builds the tree structure from parsed lines using reduce.
+ */
+function buildTree(parsedLines: ParsedLine[], nextLevels: (number | null)[], idPrefix: string): TreeNode {
+  const rootLine = parsedLines[0];
+  const rootNode = createNode({ ...rootLine, level: 0 }, 0, idPrefix, true);
+
+  const result = parsedLines.slice(1).reduce(
+    (acc, parsedLine, idx) => {
+      const index = idx + 1; // Adjust for slice(1)
+      if (!parsedLine.name) return acc;
+
+      const nextLevel = nextLevels[index];
+      const isDirectory = nextLevel !== null && nextLevel > parsedLine.level;
+      const newNode = createNode(parsedLine, index, idPrefix, isDirectory);
+
+      // Find the correct parent
+      const newStack = findParentStack(acc.stack, parsedLine.level);
+      const parent = newStack[newStack.length - 1].node;
+
+      // Add to parent's children (mutating children array is acceptable here
+      // since we're building the tree and the node is not yet exposed)
+      parent.children = parent.children ?? [];
+      parent.children.push(newNode);
+
+      // Update stack if this is a directory
+      const updatedStack = isDirectory ? [...newStack, { node: newNode, level: parsedLine.level }] : newStack;
+
+      return { ...acc, stack: updatedStack };
+    },
+    { root: rootNode, stack: [{ node: rootNode, level: 0 }] as Array<{ node: TreeNode; level: number }> }
+  );
+
+  return result.root;
 }
 
 /**
@@ -26,10 +193,10 @@ function hashSha256(str: string) {
  * and returns a TreeNode tree structure.
  *
  * @remarks
- * - Expects standard output from the Linux/macOS `tree` command.
- * - Parses box-drawing characters (`│`, `├`, `└`, `─`) and 4-space indentation
- *   to determine hierarchy levels.
+ * - Supports both Unicode box-drawing (│, ├, └, ─) and ASCII (|, +, \, -) formats.
+ * - Handles mixed tabs and spaces in indentation.
  * - Automatically excludes summary lines at the end (e.g., `3 directories, 5 files`).
+ * - Automatically excludes empty lines.
  * - Uses the rule that only lines with children are considered directories
  *   (lines without children are treated as files).
  * - Returns `null` if an exception occurs during parsing
@@ -42,111 +209,30 @@ function hashSha256(str: string) {
  *   (with an additional reverse pass, so memory usage is O(n)).
  */
 export function parseTreeOutput(treeOutput: string): TreeNode | null {
-  // Normalize input and split into lines
+  // Normalize input: remove carriage returns and trim
   const raw = treeOutput.replace(/\r/g, '').trim();
   if (!raw) return null;
+
   const lines = raw.split('\n');
 
-  // Filter out summary lines output by the `tree` command (e.g., "3 directories, 5 files")
-  const filteredLines = lines.filter(
-    (l) => !/^\s*(?:\d+\s+directories?,\s*\d+\s+files?|\d+\s+directories?|\d+\s+files?)\s*$/i.test(l)
-  );
+  // Filter out empty lines and summary lines
+  const filteredLines = lines.filter((line) => {
+    const trimmed = line.trim();
+    return trimmed !== '' && !isSummaryLine(line);
+  });
+
+  if (filteredLines.length === 0) return null;
 
   const idPrefix = 'tree-' + hashSha256(raw) + '-';
 
-  // Initialize root node
-  const rootNode: TreeNode = {
-    id: idPrefix + 'root',
-    name: '',
-    type: 'directory',
-    level: 0,
-    children: [],
-  };
-  const stack: { node: TreeNode; level: number }[] = [{ node: rootNode, level: 0 }];
+  // Parse all lines to extract level and name
+  const parsedLines = filteredLines.map(parseLine);
 
-  const getExtension = (filename: string): string | undefined => filename.match(/\.(\w+)$/)?.[1];
-
-  const cleanNodeName = (name: string): string => name.replace(/^[\s│├└─]+/, '').trim();
+  // Pre-compute next line's level for directory detection
+  const nextLevels = computeNextLevels(parsedLines);
 
   try {
-    /**
-     * Regular expression for parsing standard `tree` command line format.
-     * - prefix: repetitions of '│   ' or 4 spaces
-     * - connector: '├── ' or '└── '
-     */
-    const treeLineRegex = /^(?<prefix>(?:│\s{3}|\s{4})*)(?<connector>├── |└── )?(?<name>.*)$/;
-
-    // Pre-compute name and level for each line (for backward reference)
-    const lineInfos = filteredLines.map((ln) => {
-      const normalized = ln.replace(/\t/g, '    ');
-      const m = normalized.match(treeLineRegex);
-      if (m && m.groups) {
-        const prefix = m.groups['prefix'] || '';
-        const connector = m.groups['connector'] || '';
-        const name = (m.groups['name'] || '').trim();
-        const groupMatches = prefix.match(/(?:│\s{3}|\s{4})/g);
-        const level = (groupMatches ? groupMatches.length : 0) + (connector ? 1 : 0);
-        return { rawLine: normalized, level, cleanedName: cleanNodeName(name) };
-      }
-      // Lines not matching the format are treated as level 0 standalone lines
-      return { rawLine: normalized, level: 0, cleanedName: cleanNodeName(normalized.trim()) };
-    });
-
-    // Pre-compute the next non-empty line's level for each line
-    // to eliminate per-node lookahead loops and achieve O(n) behavior
-    const reduceResult = lineInfos.reduceRight(
-      (acc, info) => ({
-        lastLevel: info.rawLine.trim() ? info.level : acc.lastLevel,
-        nextLevels: [acc.lastLevel, ...acc.nextLevels],
-      }),
-      { lastLevel: null as number | null, nextLevels: [] as (number | null)[] }
-    );
-    const nextNonEmptyLevel = reduceResult.nextLevels;
-
-    // Build the tree from pre-computed info (using forEach for readability)
-    lineInfos.forEach((info, index) => {
-      const level = info.level;
-      const cleanedLine = info.cleanedName;
-
-      // Treat the first level 0 line as the root name
-      if (level === 0 && rootNode.name === '') {
-        rootNode.name = cleanedLine;
-        return;
-      }
-
-      // Rule: only treat as directory if a child (lower level) exists
-      const nextLevelForLine = nextNonEmptyLevel[index];
-      const isDirectory = nextLevelForLine != null && nextLevelForLine > level;
-
-      const newNode: TreeNode = {
-        id: idPrefix + 'node-' + index,
-        name: cleanedLine,
-        type: isDirectory ? 'directory' : 'file',
-        extension: isDirectory ? undefined : getExtension(cleanedLine),
-        level,
-        children: isDirectory ? [] : undefined,
-      };
-
-      // Use stack to determine parent node
-      while (stack.length > 0 && stack[stack.length - 1].level >= level) {
-        stack.pop();
-      }
-
-      if (stack[stack.length - 1] === undefined) {
-        throw new Error('Tree parsing failed');
-      }
-
-      const parentNode = stack[stack.length - 1].node;
-      parentNode.children = parentNode.children || [];
-      parentNode.children.push(newNode);
-
-      // Push directories onto stack (to receive children)
-      if (newNode.type === 'directory') {
-        stack.push({ node: newNode, level });
-      }
-    });
-
-    return rootNode;
+    return buildTree(parsedLines, nextLevels, idPrefix);
   } catch {
     return null;
   }
