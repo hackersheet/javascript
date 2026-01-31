@@ -1,8 +1,0 @@
-{
-  "enabledPlugins": {
-    "example-skills@anthropic-agent-skills": true
-  },
-  "permissions": {
-    "allow": ["Bash(git add:*)"]
-  }
-}
