@@ -1,5 +1,11 @@
 # @hackersheet/next-document-content-components
 
+## 0.1.0-alpha.30
+
+### Patch Changes
+
+- 9084efc: Fix memory leak by cleaning up temporary DOM elements (`d{id}`) that mermaid.render() creates in document body during fallback rendering
+
 ## 0.1.0-alpha.29
 
 ### Patch Changes
