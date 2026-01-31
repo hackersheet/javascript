@@ -10,6 +10,25 @@ import { newAction } from './actions/new-action';
 import { setupAction } from './actions/setup-action';
 
 /**
+ * Checks if an error is a prompt cancellation error.
+ *
+ * @param error - The error to check.
+ * @returns True if the error is a prompt cancellation.
+ */
+function isPromptCancelled(error: unknown): boolean {
+  return error instanceof Error && error.name === 'ExitPromptError';
+}
+
+// Global error handler for prompt cancellation (Ctrl+C)
+process.on('uncaughtException', (error) => {
+  if (isPromptCancelled(error)) {
+    console.log('\nCancelled.');
+    process.exit(0);
+  }
+  throw error;
+});
+
+/**
  * Reads the version from package.json.
  *
  * @returns The version string from package.json.
