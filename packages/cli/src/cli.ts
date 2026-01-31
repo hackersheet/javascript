@@ -1,14 +1,29 @@
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
 import { Command } from 'commander';
 
 import { docsAction } from './actions/docs-action';
 import { genTreeAction } from './actions/gen-tree-action';
 import { newAction } from './actions/new-action';
-import { sandboxAction } from './actions/sandbox-action';
 import { setupAction } from './actions/setup-action';
+
+/**
+ * Reads the version from package.json.
+ *
+ * @returns The version string from package.json.
+ */
+function getVersion(): string {
+  const __dirname = path.dirname(fileURLToPath(import.meta.url));
+  const packagePath = path.resolve(__dirname, '..', 'package.json');
+  const packageJson = JSON.parse(fs.readFileSync(packagePath, 'utf8'));
+  return packageJson.version;
+}
 
 const program = new Command();
 
-program.name('hscli').description('Hacker Sheet command line interface.').version('0.1.0');
+program.name('hscli').description('Hacker Sheet command line interface.').version(getVersion());
 
 program.command('setup').description('Setup Hacker Sheet in the current project.').action(setupAction);
 program.command('docs <slug>').description('Fetch document content by slug.').action(docsAction);
@@ -17,6 +32,5 @@ program
   .command('gen:tree')
   .description('Generate document tree.')
   .action(() => genTreeAction());
-program.command('sandbox').description('Sandbox action.').action(sandboxAction);
 
 program.parse();

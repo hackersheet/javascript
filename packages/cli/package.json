@@ -23,7 +23,8 @@
     "lint": "eslint \"**/*.{ts,tsx}\"",
     "lint:fix": "eslint --fix \"**/*.{ts,tsx}\"",
     "pub": "pnpm publish --access=public --tag alpha",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "vitest",
+    "test:run": "vitest run",
     "watch": "tsup --watch"
   },
   "dependencies": {
