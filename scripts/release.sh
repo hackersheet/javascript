@@ -4,6 +4,7 @@ set -euo pipefail
 # Publish packages that have not been published yet
 # Used by changesets/action in GitHub Actions
 
+ROOT_DIR=$(pwd)
 PACKAGES=$(pnpm -r --filter '@hackersheet/*' --filter '!@hackersheet/sandbox-*' exec pwd)
 PUBLISHED=""
 
@@ -28,6 +29,8 @@ for dir in $PACKAGES; do
     fi
   fi
 done
+
+cd "$ROOT_DIR"
 
 echo ""
 echo "Published packages: ${PUBLISHED:-none}"
