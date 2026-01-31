@@ -25,7 +25,7 @@
     "test": "vitest",
     "test:coverage": "vitest run --coverage",
     "test:run": "vitest run",
-    "watch": "turbo watch build -F @hackersheet/*"
+    "watch": "turbo watch build -F @hackersheet/* -F !@hackersheet/sandbox*"
   },
   "devDependencies": {
     "@eslint/eslintrc": "3.3.1",
