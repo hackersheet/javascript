@@ -21,6 +21,7 @@
     "next-document-content-kifu": "pnpm -F next-document-content-kifu",
     "react-document-content": "pnpm -F react-document-content",
     "react-document-content-styles": "pnpm -F react-document-content-styles",
+    "release": "pnpm -r --filter '@hackersheet/*' --filter '!@hackersheet/sandbox-*' exec bash -c 'pnpm pack && npm publish *.tgz --access=public --tag alpha --provenance'",
     "sandbox:next": "pnpm -F @hackersheet/sandbox-next",
     "test": "vitest",
     "test:coverage": "vitest run --coverage",
@@ -28,6 +29,7 @@
     "watch": "turbo watch build -F @hackersheet/* -F !@hackersheet/sandbox*"
   },
   "devDependencies": {
+    "@changesets/cli": "2.29.8",
     "@eslint/eslintrc": "3.3.1",
     "@eslint/js": "9.37.0",
     "@faker-js/faker": "10.2.0",
