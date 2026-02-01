@@ -18,13 +18,14 @@
   h4,
   h5,
   h6 {
-    margin: 4rem 0 1.5rem 0;
-    padding: 0.5rem 0;
+    margin: 4.5rem 0 1.5rem 0;
     font-weight: 700;
-    border-bottom: 1px solid var(--hsdc-border);
+    line-height: 1.4;
   }
 
   h1 {
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--hsdc-border);
     font-size: 2rem;
   }
 
@@ -48,8 +49,49 @@
     font-size: 0.7rem;
   }
 
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    a:before {
+      margin-right: 0.5rem;
+      color: var(--hsdc-muted-foreground);
+      font-weight: 400;
+      font-size: 0.8em;
+      vertical-align: baseline;
+      transition: color 0.15s;
+    }
+
+    a:hover:before {
+      color: var(--hsdc-link);
+    }
+  }
+
+  h2 a:before {
+    content: '##';
+  }
+
+  h3 a:before {
+    content: '###';
+  }
+
+  h4 a:before {
+    content: '####';
+  }
+
+  h5 a:before {
+    content: '#####';
+  }
+
+  h6 a:before {
+    content: '######';
+  }
+
   p {
-    margin: 1.8rem 0;
+    margin: 1.75rem 0;
+    line-height: 2;
+    letter-spacing: 0.02em;
   }
 
   strong {
@@ -57,26 +99,26 @@
   }
 
   hr {
-    margin: 4rem 0;
-  }
-
-  p {
-    line-height: 2.2;
-    letter-spacing: 0.04em;
+    margin: 3rem 0;
+    border: none;
+    border-top: 1px solid var(--hsdc-border);
   }
 
   ol,
   ul {
+    margin: 1.75rem 0;
     padding-left: 1.5rem;
 
     ol,
     ul {
+      margin: 0.75rem 0;
       padding-left: 1rem;
     }
 
     li {
-      line-height: 2rem;
-      padding-left: 0.5rem;
+      line-height: 1.9;
+      padding-left: 0.25rem;
+      margin: 0.5rem 0;
     }
   }
 
@@ -101,7 +143,7 @@
   }
 
   table:not(:global(.gist-block) table) {
-    margin: 1.5rem 0;
+    margin: 2rem 0;
     width: 100%;
     table-layout: fixed;
     border-collapse: separate;
@@ -158,9 +200,11 @@
   }
 
   blockquote {
-    margin: 1.8rem 0;
-    padding: 0.5rem 1rem;
-    border-left: 0.25em solid var(--hsdc-border);
+    margin: 2rem 0;
+    padding: 1rem 1.25rem;
+    border-left: 3px solid var(--hsdc-border);
+    background-color: oklch(from var(--hsdc-muted) l c h / 0.3);
+    border-radius: 0 0.25rem 0.25rem 0;
     color: var(--hsdc-muted-foreground);
 
     > :first-child {
@@ -172,7 +216,7 @@
     }
 
     blockquote {
-      margin: 0 0.75em;
+      margin: 0.75rem 0;
     }
   }
 
@@ -194,28 +238,17 @@
 
 .main {
   :global(.heading) {
-    &:has(a) {
-      padding: 0;
-    }
     a {
-      display: block;
-      padding: 0.5rem 0;
       color: inherit;
+      text-decoration: none;
 
-      :global(.heading-link-icon) {
-        margin-left: 0.5rem;
-        display: none;
-        line-height: 1.1;
-        width: 1em;
-        height: 1em;
-        vertical-align: middle;
-        color: var(--hsdc-muted-foreground);
+      &:hover {
+        text-decoration: none;
       }
     }
-    &:hover {
-      :global(.heading-link-icon) {
-        display: inline-block;
-      }
+
+    :global(.heading-link-icon) {
+      display: none;
     }
   }
 
@@ -263,7 +296,7 @@
   }
 
   :global(.code-block) {
-    margin: 1.5rem 0;
+    margin: 2rem 0;
     border: 1px solid var(--hsdc-border);
     border-radius: 0.25rem;
     overflow: hidden;
@@ -380,7 +413,7 @@
     color: inherit;
     width: 100%;
     max-height: 144px;
-    margin: 1.8rem 0;
+    margin: 2rem 0;
 
     &:hover {
       text-decoration: none;
@@ -464,16 +497,18 @@
   }
 
   :global(.markdown-alert) {
-    padding: 0.5rem 1rem;
-    margin-bottom: 1.8rem;
-    border-left: 0.25em solid var(--github-alert-default-color);
+    padding: 1rem 1.25rem;
+    margin: 2rem 0;
+    border-left: 3px solid var(--github-alert-default-color);
+    border-radius: 0 0.375rem 0.375rem 0;
+    background-color: oklch(from var(--github-alert-default-color) l c h / 0.08);
 
     > :first-child {
       margin-top: 0;
     }
 
     > :nth-child(2) {
-      margin-top: 0.25rem;
+      margin-top: 0.5rem;
     }
 
     > :last-child {
@@ -482,16 +517,22 @@
 
     :global(.markdown-alert-title) {
       display: flex;
-      margin-bottom: 0.25rem;
       align-items: center;
+      font-size: 0.875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.025em;
     }
 
     :global(.markdown-alert-title) > svg {
       margin-right: 0.5rem;
+      width: 1em;
+      height: 1em;
     }
 
     &:global(.markdown-alert-note) {
       border-left-color: var(--github-alert-note-color);
+      background-color: oklch(from var(--github-alert-note-color) l c h / 0.08);
       :global(.markdown-alert-title) {
         color: var(--github-alert-note-color);
         svg {
@@ -502,6 +543,7 @@
 
     &:global(.markdown-alert-tip) {
       border-left-color: var(--github-alert-tip-color);
+      background-color: oklch(from var(--github-alert-tip-color) l c h / 0.08);
       :global(.markdown-alert-title) {
         color: var(--github-alert-tip-color);
         svg {
@@ -512,6 +554,7 @@
 
     &:global(.markdown-alert-important) {
       border-left-color: var(--github-alert-important-color);
+      background-color: oklch(from var(--github-alert-important-color) l c h / 0.08);
       :global(.markdown-alert-title) {
         color: var(--github-alert-important-color);
         svg {
@@ -522,6 +565,7 @@
 
     &:global(.markdown-alert-warning) {
       border-left-color: var(--github-alert-warning-color);
+      background-color: oklch(from var(--github-alert-warning-color) l c h / 0.08);
       :global(.markdown-alert-title) {
         color: var(--github-alert-warning-color);
         svg {
@@ -532,6 +576,7 @@
 
     &:global(.markdown-alert-caution) {
       border-left-color: var(--github-alert-caution-color);
+      background-color: oklch(from var(--github-alert-caution-color) l c h / 0.08);
       :global(.markdown-alert-title) {
         color: var(--github-alert-caution-color);
         svg {
@@ -542,8 +587,13 @@
   }
 
   :global(.mermaid-block) {
-    margin: 1.5rem 0;
+    margin: 2rem 0;
+    overflow-x: auto;
 
+    svg {
+      margin-right: auto;
+      margin-left: auto;
+    }
     &:global(.mermaid-loading) {
       width: 100%;
       height: 8em;
@@ -646,7 +696,7 @@
   }
 
   :global(.youtube-block) {
-    margin: 1.5rem 0;
+    margin: 2rem 0;
 
     div > lite-youtube {
       margin-right: auto;
@@ -655,7 +705,7 @@
   }
 
   :global(.kifu-block) {
-    margin: 1.5rem 0;
+    margin: 2rem 0;
 
     svg {
       margin-right: auto;
@@ -664,7 +714,7 @@
   }
 
   :global(.gist-block) {
-    margin: 1.5rem 0;
+    margin: 2rem 0;
 
     :global(.gist-file) {
       border-radius: 0.25rem;
