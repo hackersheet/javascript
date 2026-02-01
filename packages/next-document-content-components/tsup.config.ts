@@ -50,7 +50,7 @@ const createAddExtensionPlugin = () => ({
 export default defineConfig([
   {
     ...baseConfig,
-    entry: ['./src/**/*.{ts,tsx}', '!./src/**/*.d.ts', '!./src/styles/**/*'],
+    entry: ['./src/**/*.{ts,tsx}', '!./src/**/*.d.ts', '!./src/styles/**/*', '!./src/**/__tests__/**/*'],
     format: ['esm'],
     outDir: './dist/esm',
     outExtension: () => ({
@@ -60,7 +60,7 @@ export default defineConfig([
   },
   {
     ...baseConfig,
-    entry: ['./src/**/*.{ts,tsx}', '!./src/**/*.d.ts', '!./src/styles/**/*'],
+    entry: ['./src/**/*.{ts,tsx}', '!./src/**/*.d.ts', '!./src/styles/**/*', '!./src/**/__tests__/**/*'],
     format: ['cjs'],
     outDir: './dist/cjs',
   },
