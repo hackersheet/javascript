@@ -16,6 +16,7 @@
 ## React コンポーネント
 
 - 新規コンポーネント作成・変更時は `vercel-react-best-practices` スキルで検証する
+- JSX を使用するファイルでは `import React from 'react'` を明示的に記述する
 
 ## コミットに関するルール
 
