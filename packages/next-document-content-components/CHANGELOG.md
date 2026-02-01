@@ -1,5 +1,11 @@
 # @hackersheet/next-document-content-components
 
+## 0.1.0-alpha.32
+
+### Patch Changes
+
+- b7c7797: Fix cross-origin error in mermaid component when rendering diagrams on pages with cross-origin iframes
+
 ## 0.1.0-alpha.31
 
 ### Patch Changes
