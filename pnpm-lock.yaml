@@ -206,10 +206,10 @@ importers:
         specifier: workspace:*
         version: link:../react-document-content
       json-kifu-format:
-        specifier: ^5.4.1
+        specifier: 5.4.1
         version: 5.4.1
       shogi.js:
-        specifier: ^5.4.1
+        specifier: 5.4.1
         version: 5.4.1
     devDependencies:
       '@types/react':
