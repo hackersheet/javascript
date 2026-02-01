@@ -4,6 +4,7 @@ import { fileURLToPath } from 'url';
 
 import { Command } from 'commander';
 
+import { configListAction, configGetAction, configSetAction, configInitAction } from './actions/config';
 import { docsAction } from './actions/docs-action';
 import { genTreeAction } from './actions/gen-tree-action';
 import { newAction } from './actions/new-action';
@@ -55,5 +56,34 @@ program
   .command('gen:tree')
   .description('Generate document tree.')
   .action(() => genTreeAction());
+
+const configCommand = program.command('config').description('Manage CLI configuration.');
+
+configCommand
+  .command('list')
+  .description('List all configuration values.')
+  .option('-g, --global', 'Show only user configuration')
+  .option('-l, --local', 'Show only project configuration')
+  .option('--json', 'Output as JSON')
+  .action((options) => configListAction(options));
+
+configCommand
+  .command('get <key>')
+  .description('Get a configuration value.')
+  .option('-g, --global', 'Get from user configuration')
+  .option('-l, --local', 'Get from project configuration')
+  .action((key, options) => configGetAction(key, options));
+
+configCommand
+  .command('set <key> <value>')
+  .description('Set a configuration value.')
+  .option('-g, --global', 'Set in user configuration')
+  .action((key, value, options) => configSetAction(key, value, options));
+
+configCommand
+  .command('init')
+  .description('Initialize configuration interactively.')
+  .option('-g, --global', 'Initialize user configuration')
+  .action((options) => configInitAction(options));
 
 program.parse();

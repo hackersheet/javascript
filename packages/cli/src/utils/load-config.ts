@@ -164,18 +164,32 @@ export function loadUserConfig(): Partial<Config> {
 }
 
 /**
+ * Returns the project config file path.
+ *
+ * Searches for `.hackersheet/cli.config.json` starting from the current
+ * directory and traversing up.
+ *
+ * @returns The path to the project configuration file, or null if not found.
+ */
+export function getProjectConfigPath(): string | null {
+  const dir = findUpSync('.hackersheet', { cwd: process.cwd(), type: 'directory' });
+  if (!dir) {
+    return null;
+  }
+  return path.join(dir, 'cli.config.json');
+}
+
+/**
  * Loads the project configuration from `.hackersheet/cli.config.json`.
  *
  * @returns The parsed partial configuration, or an empty object if not found.
  * @throws {ConfigError} If the file exists but is invalid.
  */
 export function loadProjectConfig(): Partial<Config> {
-  const dir = findUpSync('.hackersheet', { cwd: process.cwd(), type: 'directory' });
-  if (!dir) {
+  const configPath = getProjectConfigPath();
+  if (!configPath) {
     return {};
   }
-
-  const configPath = path.join(dir, 'cli.config.json');
   return loadConfigFromPath(configPath) ?? {};
 }
 
