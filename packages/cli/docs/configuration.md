@@ -208,23 +208,26 @@ hscli config <subcommand> [options]
 
 ### サブコマンド一覧
 
-| サブコマンド              | 説明                         |
-| ------------------------- | ---------------------------- |
-| `config list`             | 設定一覧を表示               |
-| `config get <key>`        | 指定キーの値を取得           |
-| `config set <key> <value>`| 設定値を変更                 |
-| `config init`             | インタラクティブ設定ウィザード |
+| サブコマンド               | 説明                           |
+| -------------------------- | ------------------------------ |
+| `config list`              | 設定一覧を表示                 |
+| `config get <key>`         | 指定キーの値を取得             |
+| `config set <key> <value>` | 設定値を変更                   |
+| `config delete <key>`      | 設定値を削除                   |
+| `config path`              | 設定ファイルのパスを表示       |
+| `config init`              | インタラクティブ設定ウィザード |
 
 ### 共通オプション
 
-| オプション     | 説明                                                   |
-| -------------- | ------------------------------------------------------ |
+| オプション     | 説明                                                          |
+| -------------- | ------------------------------------------------------------- |
 | `-g, --global` | ユーザー設定 (`~/.config/hackersheet/cli.config.json`) を対象 |
-| `-l, --local`  | プロジェクト設定 (`.hackersheet/cli.config.json`) を対象   |
+| `-l, --local`  | プロジェクト設定 (`.hackersheet/cli.config.json`) を対象      |
 
 **デフォルト動作**:
-- `set` は `--local`（プロジェクト設定）に書き込み
-- `list` / `get` はマージされた設定を表示
+
+- `set` / `delete` は `--local`（プロジェクト設定）を対象
+- `list` / `get` / `path` はマージされた設定またはすべてのパスを表示
 
 ### config list
 
@@ -246,7 +249,7 @@ hscli config list --json
 
 **出力例**:
 
-```
+```sh
 Configuration (merged):
 
   defaultWorkspace = my-workspace
@@ -334,15 +337,63 @@ hscli config init --global
 3. ファイル名テンプレート
 4. ドキュメントディレクトリ
 
+### config delete
+
+設定値を削除します。
+
+```bash
+# プロジェクト設定から削除（デフォルト）
+hscli config delete defaultWorkspace
+
+# ユーザー設定から削除
+hscli config delete defaultWorkspace --global
+
+# ネストされたキーを削除
+hscli config delete workspaces.my-workspace
+```
+
+**出力例**:
+
+```bash
+$ hscli config delete defaultWorkspace
+Deleted defaultWorkspace from project configuration (.hackersheet/cli.config.json)
+```
+
+### config path
+
+設定ファイルのパスを表示します。
+
+```bash
+# 両方のパスを表示（デフォルト）
+hscli config path
+
+# ユーザー設定のパスのみ表示
+hscli config path --global
+
+# プロジェクト設定のパスのみ表示
+hscli config path --local
+```
+
+**出力例**:
+
+```bash
+$ hscli config path
+User:    ~/.config/hackersheet/cli.config.json
+Project: .hackersheet/cli.config.json
+
+$ hscli config path --global
+~/.config/hackersheet/cli.config.json
+```
+
 ### サポートするキー
 
-| キー                            | 説明                     | 型       | set での入力形式         |
-| ------------------------------- | ------------------------ | -------- | ------------------------ |
-| `defaultWorkspace`              | デフォルトワークスペース | string   | そのまま                 |
-| `newFilenameTemplate`           | ファイル名テンプレート   | string   | そのまま                 |
-| `newFileTemplatePath`           | テンプレートファイルパス | string   | そのまま                 |
-| `docsDirs`                      | ドキュメントディレクトリ | string[] | カンマ区切り             |
-| `workspaces.<slug>.accessKey`   | ワークスペースのアクセスキー | string | そのまま             |
+| キー                          | 説明                         | 型       | set での入力形式 |
+| ----------------------------- | ---------------------------- | -------- | ---------------- |
+| `defaultWorkspace`            | デフォルトワークスペース     | string   | そのまま         |
+| `newFilenameTemplate`         | ファイル名テンプレート       | string   | そのまま         |
+| `newFileTemplatePath`         | テンプレートファイルパス     | string   | そのまま         |
+| `docsDirs`                    | ドキュメントディレクトリ     | string[] | カンマ区切り     |
+| `workspaces.<slug>.accessKey` | ワークスペースのアクセスキー | string   | そのまま         |
 
 ### setup コマンドとの関係
 

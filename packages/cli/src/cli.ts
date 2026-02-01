@@ -4,7 +4,14 @@ import { fileURLToPath } from 'url';
 
 import { Command } from 'commander';
 
-import { configListAction, configGetAction, configSetAction, configInitAction } from './actions/config';
+import {
+  configListAction,
+  configGetAction,
+  configSetAction,
+  configDeleteAction,
+  configPathAction,
+  configInitAction,
+} from './actions/config';
 import { docsAction } from './actions/docs-action';
 import { genTreeAction } from './actions/gen-tree-action';
 import { newAction } from './actions/new-action';
@@ -85,5 +92,18 @@ configCommand
   .description('Initialize configuration interactively.')
   .option('-g, --global', 'Initialize user configuration')
   .action((options) => configInitAction(options));
+
+configCommand
+  .command('delete <key>')
+  .description('Delete a configuration value.')
+  .option('-g, --global', 'Delete from user configuration')
+  .action((key, options) => configDeleteAction(key, options));
+
+configCommand
+  .command('path')
+  .description('Show configuration file paths.')
+  .option('-g, --global', 'Show only user configuration path')
+  .option('-l, --local', 'Show only project configuration path')
+  .action((options) => configPathAction(options));
 
 program.parse();
