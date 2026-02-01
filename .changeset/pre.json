@@ -11,10 +11,13 @@
     "@hackersheet/sandbox-next": "0.0.0"
   },
   "changesets": [
+    "cuddly-cars-accept",
     "eager-hotels-shave",
     "good-shrimps-swim",
+    "happy-dingos-sneeze",
     "honest-rivers-press",
     "nice-hornets-learn",
-    "red-cycles-smash"
+    "red-cycles-smash",
+    "tangy-singers-add"
   ]
 }
