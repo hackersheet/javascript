@@ -7,7 +7,7 @@
   "access": "public",
   "baseBranch": "main",
   "updateInternalDependencies": "patch",
-  "ignore": ["@hackersheet/sandbox-*"],
+  "ignore": ["@hackersheet/javascript", "@hackersheet/sandbox-*"],
   "privatePackages": {
     "version": false,
     "tag": false
