@@ -1,9 +1,9 @@
-import React from 'react';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { cleanup, render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import React from 'react';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import Mermaid from '../mermaid';
+import MermaidClient from '../mermaid-client';
 
 // Mock next-themes
 const mockUseTheme = vi.fn(() => ({
@@ -41,7 +41,7 @@ vi.mock('../../code-block/code-block-icon', () => ({
   default: ({ language }: { language: string }) => <span data-testid="code-block-icon">{language}</span>,
 }));
 
-describe('Mermaid', () => {
+describe('MermaidClient', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockUseTheme.mockReturnValue({
@@ -55,14 +55,34 @@ describe('Mermaid', () => {
   });
 
   describe('initial rendering', () => {
-    it('shows loading state initially', () => {
+    it('shows code view with highlighted HTML during loading', () => {
+      mockRenderWithBeautifulMermaid.mockImplementation(() => new Promise(() => {}));
+      const highlightedHtml = '<pre class="shiki"><code><span>graph TD;</span></code></pre>';
+
+      const { container } = render(<MermaidClient code="graph TD; A-->B;" highlightedHtml={highlightedHtml} />);
+
+      expect(container.querySelector('.mermaid-code-view')).toBeInTheDocument();
+      expect(container.querySelector('.is-loading')).toBeInTheDocument();
+      expect(container.querySelector('.shiki')).toBeInTheDocument();
+    });
+
+    it('shows fallback code during loading when no highlighted HTML', () => {
       mockRenderWithBeautifulMermaid.mockImplementation(() => new Promise(() => {}));
 
-      const { container } = render(<Mermaid code="graph TD; A-->B;" />);
+      const { container } = render(<MermaidClient code="graph TD; A-->B;" />);
 
-      const loadingDiv = container.querySelector('.mermaid-loading');
-      expect(loadingDiv).toBeInTheDocument();
-      expect(loadingDiv?.textContent).toContain('Loading...');
+      expect(container.querySelector('.mermaid-code-view')).toBeInTheDocument();
+      expect(container.querySelector('.is-loading')).toBeInTheDocument();
+      expect(container.querySelector('pre code')?.textContent).toBe('graph TD; A-->B;');
+    });
+
+    it('disables diagram toggle button during loading', () => {
+      mockRenderWithBeautifulMermaid.mockImplementation(() => new Promise(() => {}));
+
+      const { container } = render(<MermaidClient code="graph TD; A-->B;" />);
+
+      const toggleBtn = container.querySelector('.mermaid-toggle-btn');
+      expect(toggleBtn).toBeDisabled();
     });
   });
 
@@ -70,7 +90,7 @@ describe('Mermaid', () => {
     it('renders SVG when beautiful-mermaid succeeds', async () => {
       mockRenderWithBeautifulMermaid.mockResolvedValue('<svg width="100" height="100"><text>Diagram</text></svg>');
 
-      const { container } = render(<Mermaid code="graph TD; A-->B;" />);
+      const { container } = render(<MermaidClient code="graph TD; A-->B;" />);
 
       await waitFor(() => {
         expect(container.querySelector('.mermaid-diagram')).toBeInTheDocument();
@@ -83,7 +103,7 @@ describe('Mermaid', () => {
     it('shows diagram view by default', async () => {
       mockRenderWithBeautifulMermaid.mockResolvedValue('<svg width="100" height="100"></svg>');
 
-      const { container } = render(<Mermaid code="graph TD; A-->B;" />);
+      const { container } = render(<MermaidClient code="graph TD; A-->B;" />);
 
       await waitFor(() => {
         expect(container.querySelector('.mermaid-diagram-view')).toBeInTheDocument();
@@ -93,7 +113,7 @@ describe('Mermaid', () => {
     it('renders Code toggle button in diagram view', async () => {
       mockRenderWithBeautifulMermaid.mockResolvedValue('<svg width="100" height="100"></svg>');
 
-      const { container } = render(<Mermaid code="graph TD; A-->B;" />);
+      const { container } = render(<MermaidClient code="graph TD; A-->B;" />);
 
       await waitFor(() => {
         expect(container.querySelector('.mermaid-toggle-btn')).toBeInTheDocument();
@@ -112,7 +132,7 @@ describe('Mermaid', () => {
         svg: '<svg width="200" height="200"><text>Fallback</text></svg>',
       });
 
-      const { container } = render(<Mermaid code="gantt; task1: 2024-01-01, 7d;" />);
+      const { container } = render(<MermaidClient code="gantt; task1: 2024-01-01, 7d;" />);
 
       await waitFor(() => {
         expect(container.querySelector('.mermaid-diagram')).toBeInTheDocument();
@@ -130,7 +150,7 @@ describe('Mermaid', () => {
         svg: '<svg width="200" height="200"></svg>',
       });
 
-      const { container } = render(<Mermaid code="invalid mermaid" />);
+      const { container } = render(<MermaidClient code="invalid mermaid" />);
 
       await waitFor(() => {
         expect(container.querySelector('.mermaid-diagram')).toBeInTheDocument();
@@ -148,7 +168,7 @@ describe('Mermaid', () => {
         error: 'Syntax error at line 1',
       });
 
-      const { container } = render(<Mermaid code="completely invalid" />);
+      const { container } = render(<MermaidClient code="completely invalid" />);
 
       await waitFor(() => {
         expect(container.querySelector('.has-error')).toBeInTheDocument();
@@ -166,7 +186,7 @@ describe('Mermaid', () => {
         error: 'Parse error',
       });
 
-      const { container } = render(<Mermaid code="invalid code" />);
+      const { container } = render(<MermaidClient code="invalid code" />);
 
       await waitFor(() => {
         expect(container.querySelector('.mermaid-code-view')).toBeInTheDocument();
@@ -182,7 +202,7 @@ describe('Mermaid', () => {
         error: 'Error',
       });
 
-      const { container } = render(<Mermaid code="error" />);
+      const { container } = render(<MermaidClient code="error" />);
 
       await waitFor(() => {
         expect(container.querySelector('.mermaid-toggle-btn')).toBeInTheDocument();
@@ -198,7 +218,7 @@ describe('Mermaid', () => {
       const user = userEvent.setup();
       mockRenderWithBeautifulMermaid.mockResolvedValue('<svg width="100" height="100"></svg>');
 
-      const { container } = render(<Mermaid code="graph TD; A-->B;" />);
+      const { container } = render(<MermaidClient code="graph TD; A-->B;" />);
 
       await waitFor(() => {
         expect(container.querySelector('.mermaid-diagram-view')).toBeInTheDocument();
@@ -215,7 +235,7 @@ describe('Mermaid', () => {
       const user = userEvent.setup();
       mockRenderWithBeautifulMermaid.mockResolvedValue('<svg width="100" height="100"></svg>');
 
-      const { container } = render(<Mermaid code="graph TD; A-->B;" />);
+      const { container } = render(<MermaidClient code="graph TD; A-->B;" />);
 
       await waitFor(() => {
         expect(container.querySelector('.mermaid-diagram-view')).toBeInTheDocument();
@@ -231,6 +251,24 @@ describe('Mermaid', () => {
       await user.click(codeToggleBtn!);
       expect(container.querySelector('.mermaid-diagram-view')).toBeInTheDocument();
     });
+
+    it('shows highlighted HTML when provided', async () => {
+      const user = userEvent.setup();
+      mockRenderWithBeautifulMermaid.mockResolvedValue('<svg width="100" height="100"></svg>');
+      const highlightedHtml = '<pre class="shiki"><code><span>graph TD; A--&gt;B;</span></code></pre>';
+
+      const { container } = render(<MermaidClient code="graph TD; A-->B;" highlightedHtml={highlightedHtml} />);
+
+      await waitFor(() => {
+        expect(container.querySelector('.mermaid-diagram-view')).toBeInTheDocument();
+      });
+
+      const toggleBtn = container.querySelector('.mermaid-toggle-btn');
+      await user.click(toggleBtn!);
+
+      expect(container.querySelector('.mermaid-code-view')).toBeInTheDocument();
+      expect(container.querySelector('.shiki')).toBeInTheDocument();
+    });
   });
 
   describe('theme handling', () => {
@@ -241,7 +279,7 @@ describe('Mermaid', () => {
       });
       mockRenderWithBeautifulMermaid.mockResolvedValue('<svg width="100" height="100"></svg>');
 
-      render(<Mermaid code="graph TD; A-->B;" />);
+      render(<MermaidClient code="graph TD; A-->B;" />);
 
       await waitFor(() => {
         expect(mockRenderWithBeautifulMermaid).toHaveBeenCalledWith('graph TD; A-->B;', true);
@@ -255,7 +293,7 @@ describe('Mermaid', () => {
       });
       mockRenderWithBeautifulMermaid.mockResolvedValue('<svg width="100" height="100"></svg>');
 
-      render(<Mermaid code="graph TD; A-->B;" />);
+      render(<MermaidClient code="graph TD; A-->B;" />);
 
       await waitFor(() => {
         expect(mockRenderWithBeautifulMermaid).toHaveBeenCalledWith('graph TD; A-->B;', false);
@@ -269,7 +307,7 @@ describe('Mermaid', () => {
       });
       mockRenderWithBeautifulMermaid.mockResolvedValue('<svg width="100" height="100"></svg>');
 
-      render(<Mermaid code="graph TD; A-->B;" />);
+      render(<MermaidClient code="graph TD; A-->B;" />);
 
       await waitFor(() => {
         expect(mockRenderWithBeautifulMermaid).toHaveBeenCalledWith('graph TD; A-->B;', true);
@@ -281,7 +319,7 @@ describe('Mermaid', () => {
     it('has aria-label on toggle button in diagram view', async () => {
       mockRenderWithBeautifulMermaid.mockResolvedValue('<svg width="100" height="100"></svg>');
 
-      const { container } = render(<Mermaid code="graph TD; A-->B;" />);
+      const { container } = render(<MermaidClient code="graph TD; A-->B;" />);
 
       await waitFor(() => {
         expect(container.querySelector('.mermaid-toggle-btn')).toBeInTheDocument();
@@ -294,7 +332,7 @@ describe('Mermaid', () => {
     it('has title attribute on toggle buttons', async () => {
       mockRenderWithBeautifulMermaid.mockResolvedValue('<svg width="100" height="100"></svg>');
 
-      const { container } = render(<Mermaid code="graph TD; A-->B;" />);
+      const { container } = render(<MermaidClient code="graph TD; A-->B;" />);
 
       await waitFor(() => {
         expect(container.querySelector('.mermaid-toggle-btn')).toBeInTheDocument();
@@ -307,7 +345,7 @@ describe('Mermaid', () => {
     it('has type="button" on toggle buttons', async () => {
       mockRenderWithBeautifulMermaid.mockResolvedValue('<svg width="100" height="100"></svg>');
 
-      const { container } = render(<Mermaid code="graph TD; A-->B;" />);
+      const { container } = render(<MermaidClient code="graph TD; A-->B;" />);
 
       await waitFor(() => {
         expect(container.querySelector('.mermaid-toggle-btn')).toBeInTheDocument();

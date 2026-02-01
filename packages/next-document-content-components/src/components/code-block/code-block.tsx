@@ -1,5 +1,6 @@
 import React from 'react';
 
+import CodeBlockCode from './code-block-code';
 import CodeBlockHeader from './code-block-header';
 import CodeBlockIcon from './code-block-icon';
 import { highlighteCode } from './shiki';
@@ -28,8 +29,7 @@ export default async function CodeBlock({ code, ...props }: CodeBlockComponentPr
   return (
     <div className="code-block">
       <CodeBlockHeader icon={<CodeBlockIcon language={language} />} filename={filename} code={code} />
-      {html && <div dangerouslySetInnerHTML={{ __html: html }} />}
-      {!html && <pre>{code}</pre>}
+      <CodeBlockCode code={code} highlightedHtml={html} />
     </div>
   );
 }

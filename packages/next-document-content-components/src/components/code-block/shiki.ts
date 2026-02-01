@@ -34,10 +34,16 @@ export async function highlighteCode(code: string, language: string) {
   return html;
 }
 
+/**
+ * Additional languages not included in the web bundle.
+ * These are loaded dynamically to keep the initial bundle size small.
+ */
+const additionalLanguages = [import('shiki/langs/mermaid.mjs')];
+
 const getShikiHighlighter = cache(async () => {
   return getSingletonHighlighterCore({
     themes: [import('@shikijs/themes/github-light'), import('@shikijs/themes/github-dark-dimmed')],
-    langs: Object.values(bundledLanguages),
+    langs: [...Object.values(bundledLanguages), ...additionalLanguages],
     engine: createJavaScriptRegexEngine(),
   });
 });

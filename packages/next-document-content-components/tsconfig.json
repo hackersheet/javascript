@@ -13,7 +13,7 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": false,
-    "types": ["node", "react/canary"]
+    "types": ["node", "react/canary", "@testing-library/jest-dom"]
   },
   "include": ["**/*.ts", "**/*.tsx", "**/*.scss"],
   "exclude": ["node_modules"]
