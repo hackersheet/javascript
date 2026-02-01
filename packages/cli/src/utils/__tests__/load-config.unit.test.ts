@@ -62,16 +62,20 @@ describe('loadConfigFromPath', () => {
     vi.mocked(fs.existsSync).mockReturnValue(true);
     vi.mocked(fs.readFileSync).mockReturnValue(
       JSON.stringify({
-        workspaceSlug: 'my-workspace',
-        workspaceAccessKey: 'secret-key',
+        workspaces: {
+          'my-workspace': { accessKey: 'secret-key' },
+        },
+        defaultWorkspace: 'my-workspace',
       })
     );
 
     const result = loadConfigFromPath('/some/path/cli.config.json');
 
     expect(result).toEqual({
-      workspaceSlug: 'my-workspace',
-      workspaceAccessKey: 'secret-key',
+      workspaces: {
+        'my-workspace': { accessKey: 'secret-key' },
+      },
+      defaultWorkspace: 'my-workspace',
     });
   });
 
@@ -113,16 +117,20 @@ describe('loadUserConfig', () => {
     vi.mocked(fs.existsSync).mockReturnValue(true);
     vi.mocked(fs.readFileSync).mockReturnValue(
       JSON.stringify({
-        workspaceSlug: 'user-workspace',
-        workspaceAccessKey: 'user-key',
+        workspaces: {
+          'user-workspace': { accessKey: 'user-key' },
+        },
+        defaultWorkspace: 'user-workspace',
       })
     );
 
     const result = loadUserConfig();
 
     expect(result).toEqual({
-      workspaceSlug: 'user-workspace',
-      workspaceAccessKey: 'user-key',
+      workspaces: {
+        'user-workspace': { accessKey: 'user-key' },
+      },
+      defaultWorkspace: 'user-workspace',
     });
     expect(fs.existsSync).toHaveBeenCalledWith('/home/user/.config/hackersheet/cli.config.json');
   });
@@ -159,7 +167,9 @@ describe('loadProjectConfig', () => {
     vi.mocked(fs.existsSync).mockReturnValue(true);
     vi.mocked(fs.readFileSync).mockReturnValue(
       JSON.stringify({
-        workspaceSlug: 'project-workspace',
+        workspaces: {
+          'project-workspace': { accessKey: 'project-key' },
+        },
         docsDirs: ['docs'],
       })
     );
@@ -167,7 +177,9 @@ describe('loadProjectConfig', () => {
     const result = loadProjectConfig();
 
     expect(result).toEqual({
-      workspaceSlug: 'project-workspace',
+      workspaces: {
+        'project-workspace': { accessKey: 'project-key' },
+      },
       docsDirs: ['docs'],
     });
   });
@@ -198,8 +210,10 @@ describe('loadConfig', () => {
     });
     vi.mocked(fs.readFileSync).mockReturnValue(
       JSON.stringify({
-        workspaceSlug: 'user-workspace',
-        workspaceAccessKey: 'user-key',
+        workspaces: {
+          'user-workspace': { accessKey: 'user-key' },
+        },
+        defaultWorkspace: 'user-workspace',
         newFilenameTemplate: 'user-template',
         docsDirs: ['user-docs'],
       })
@@ -208,8 +222,10 @@ describe('loadConfig', () => {
     const result = loadConfig();
 
     expect(result).toEqual({
-      workspaceSlug: 'user-workspace',
-      workspaceAccessKey: 'user-key',
+      workspaces: {
+        'user-workspace': { accessKey: 'user-key' },
+      },
+      defaultWorkspace: 'user-workspace',
       newFilenameTemplate: 'user-template',
       docsDirs: ['user-docs'],
     });
@@ -222,8 +238,10 @@ describe('loadConfig', () => {
     });
     vi.mocked(fs.readFileSync).mockReturnValue(
       JSON.stringify({
-        workspaceSlug: 'project-workspace',
-        workspaceAccessKey: 'project-key',
+        workspaces: {
+          'project-workspace': { accessKey: 'project-key' },
+        },
+        defaultWorkspace: 'project-workspace',
         newFilenameTemplate: 'project-template',
         docsDirs: ['project-docs'],
       })
@@ -232,8 +250,10 @@ describe('loadConfig', () => {
     const result = loadConfig();
 
     expect(result).toEqual({
-      workspaceSlug: 'project-workspace',
-      workspaceAccessKey: 'project-key',
+      workspaces: {
+        'project-workspace': { accessKey: 'project-key' },
+      },
+      defaultWorkspace: 'project-workspace',
       newFilenameTemplate: 'project-template',
       docsDirs: ['project-docs'],
     });
@@ -245,15 +265,20 @@ describe('loadConfig', () => {
     vi.mocked(fs.readFileSync).mockImplementation((p) => {
       if (p === '/home/user/.config/hackersheet/cli.config.json') {
         return JSON.stringify({
-          workspaceSlug: 'user-workspace',
-          workspaceAccessKey: 'user-key',
+          workspaces: {
+            'user-workspace': { accessKey: 'user-key' },
+          },
+          defaultWorkspace: 'user-workspace',
           newFilenameTemplate: 'user-template',
           newFileTemplatePath: 'user-path',
           docsDirs: ['user-docs'],
         });
       }
       return JSON.stringify({
-        workspaceSlug: 'project-workspace',
+        workspaces: {
+          'project-workspace': { accessKey: 'project-key' },
+        },
+        defaultWorkspace: 'project-workspace',
         docsDirs: ['project-docs'],
       });
     });
@@ -261,8 +286,10 @@ describe('loadConfig', () => {
     const result = loadConfig();
 
     expect(result).toEqual({
-      workspaceSlug: 'project-workspace',
-      workspaceAccessKey: 'user-key',
+      workspaces: {
+        'project-workspace': { accessKey: 'project-key' },
+      },
+      defaultWorkspace: 'project-workspace',
       newFilenameTemplate: 'user-template',
       newFileTemplatePath: 'user-path',
       docsDirs: ['project-docs'],

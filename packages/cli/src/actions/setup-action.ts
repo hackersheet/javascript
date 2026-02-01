@@ -50,9 +50,7 @@ const defaultDeps: SetupActionDeps = {
 /**
  * Default configuration template.
  */
-const DEFAULT_CONFIG: Config = {
-  workspaceSlug: '',
-  workspaceAccessKey: '',
+const DEFAULT_CONFIG: Omit<Config, 'workspaces' | 'defaultWorkspace'> = {
   newFilenameTemplate: '{{yyyy}}-{{mm}}-{{dd}}-{{title}}.md',
   docsDirs: ['docs'],
 };
@@ -95,7 +93,7 @@ export async function setupAction(deps: Partial<SetupActionDeps> = {}): Promise<
     default: '',
   });
 
-  const workspaceAccessKey = await prompts.input({
+  const accessKey = await prompts.input({
     message: 'Workspace access key (optional, for API access)',
     default: '',
   });
@@ -116,9 +114,17 @@ export async function setupAction(deps: Partial<SetupActionDeps> = {}): Promise<
     .filter((d) => d.length > 0);
 
   // Build configuration
+  const workspaces: Config['workspaces'] = {};
+  let defaultWorkspace: string | undefined;
+
+  if (workspaceSlug && accessKey) {
+    workspaces[workspaceSlug] = { accessKey };
+    defaultWorkspace = workspaceSlug;
+  }
+
   const config: Config = {
-    workspaceSlug: workspaceSlug || '',
-    workspaceAccessKey: workspaceAccessKey || '',
+    workspaces,
+    ...(defaultWorkspace && { defaultWorkspace }),
     newFilenameTemplate: newFilenameTemplate || DEFAULT_CONFIG.newFilenameTemplate,
     docsDirs: docsDirs.length > 0 ? docsDirs : DEFAULT_CONFIG.docsDirs,
   };

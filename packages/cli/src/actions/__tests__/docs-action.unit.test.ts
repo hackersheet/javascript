@@ -8,8 +8,10 @@ describe('docsAction', () => {
     logger: { log: vi.fn(), error: vi.fn() },
     exitHandler: { exit: vi.fn() },
     loadConfigFn: vi.fn().mockReturnValue({
-      workspaceSlug: 'test-workspace',
-      workspaceAccessKey: 'test-key',
+      workspaces: {
+        'test-workspace': { accessKey: 'test-key' },
+      },
+      defaultWorkspace: 'test-workspace',
       newFilenameTemplate: '',
       docsDirs: [],
     } as Config),
@@ -28,7 +30,7 @@ describe('docsAction', () => {
   it('shows error when slug is not provided', async () => {
     const deps = createMockDeps();
 
-    await docsAction(undefined, deps);
+    await docsAction(undefined as unknown as string, {}, deps);
 
     expect(deps.logger.error).toHaveBeenCalledWith('Error: Missing required argument <slug>');
     expect(deps.exitHandler.exit).toHaveBeenCalledWith(1);
@@ -41,43 +43,62 @@ describe('docsAction', () => {
       }),
     });
 
-    await docsAction('test-slug', deps);
+    await docsAction('test-slug', {}, deps);
 
     expect(deps.logger.error).toHaveBeenCalledWith('Configuration error: Invalid JSON');
     expect(deps.logger.error).toHaveBeenCalledWith('  File: /path/to/config.json');
     expect(deps.exitHandler.exit).toHaveBeenCalledWith(1);
   });
 
-  it('shows error when workspace slug is not configured', async () => {
+  it('shows error when no workspaces configured', async () => {
     const deps = createMockDeps({
       loadConfigFn: vi.fn().mockReturnValue({
-        workspaceSlug: '',
-        workspaceAccessKey: 'key',
+        workspaces: {},
         newFilenameTemplate: '',
         docsDirs: [],
       }),
     });
 
-    await docsAction('test-slug', deps);
+    await docsAction('test-slug', {}, deps);
 
-    expect(deps.logger.error).toHaveBeenCalledWith('Error: Workspace slug is not configured.');
+    expect(deps.logger.error).toHaveBeenCalledWith('Error: No workspaces configured.');
     expect(deps.logger.error).toHaveBeenCalledWith('Run "hscli setup" to configure your workspace.');
     expect(deps.exitHandler.exit).toHaveBeenCalledWith(1);
   });
 
-  it('shows error when workspace access key is not configured', async () => {
+  it('shows error when multiple workspaces configured but no default set', async () => {
     const deps = createMockDeps({
       loadConfigFn: vi.fn().mockReturnValue({
-        workspaceSlug: 'workspace',
-        workspaceAccessKey: '',
+        workspaces: {
+          workspace1: { accessKey: 'key1' },
+          workspace2: { accessKey: 'key2' },
+        },
         newFilenameTemplate: '',
         docsDirs: [],
       }),
     });
 
-    await docsAction('test-slug', deps);
+    await docsAction('test-slug', {}, deps);
 
-    expect(deps.logger.error).toHaveBeenCalledWith('Error: Workspace access key is not configured.');
+    expect(deps.logger.error).toHaveBeenCalledWith('Error: Multiple workspaces configured but no default set.');
+    expect(deps.logger.error).toHaveBeenCalledWith('Use --workspace <slug> to specify which workspace to use,');
+    expect(deps.exitHandler.exit).toHaveBeenCalledWith(1);
+  });
+
+  it('shows error when specified workspace is not configured', async () => {
+    const deps = createMockDeps({
+      loadConfigFn: vi.fn().mockReturnValue({
+        workspaces: {
+          'existing-workspace': { accessKey: 'key' },
+        },
+        newFilenameTemplate: '',
+        docsDirs: [],
+      }),
+    });
+
+    await docsAction('test-slug', { workspace: 'non-existent' }, deps);
+
+    expect(deps.logger.error).toHaveBeenCalledWith('Error: Workspace "non-existent" is not configured.');
     expect(deps.exitHandler.exit).toHaveBeenCalledWith(1);
   });
 
@@ -88,7 +109,7 @@ describe('docsAction', () => {
       }),
     });
 
-    await docsAction('test-slug', deps);
+    await docsAction('test-slug', {}, deps);
 
     expect(deps.logger.error).toHaveBeenCalledWith('Error: Failed to connect to the API.');
     expect(deps.exitHandler.exit).toHaveBeenCalledWith(1);
@@ -103,7 +124,7 @@ describe('docsAction', () => {
       }),
     });
 
-    await docsAction('test-slug', deps);
+    await docsAction('test-slug', {}, deps);
 
     expect(deps.logger.error).toHaveBeenCalledWith('Error: API returned an error.');
     expect(deps.exitHandler.exit).toHaveBeenCalledWith(1);
@@ -118,7 +139,7 @@ describe('docsAction', () => {
       }),
     });
 
-    await docsAction('test-slug', deps);
+    await docsAction('test-slug', {}, deps);
 
     expect(deps.logger.error).toHaveBeenCalledWith('Error: Document not found with slug "test-slug".');
     expect(deps.exitHandler.exit).toHaveBeenCalledWith(1);
@@ -127,7 +148,7 @@ describe('docsAction', () => {
   it('outputs document content on success', async () => {
     const deps = createMockDeps();
 
-    await docsAction('test-slug', deps);
+    await docsAction('test-slug', {}, deps);
 
     expect(deps.logger.log).toHaveBeenCalledWith('Document content');
     expect(deps.exitHandler.exit).not.toHaveBeenCalled();
@@ -136,11 +157,72 @@ describe('docsAction', () => {
   it('creates client with correct URL and access key', async () => {
     const deps = createMockDeps();
 
-    await docsAction('test-slug', deps);
+    await docsAction('test-slug', {}, deps);
 
     expect(deps.createClientFn).toHaveBeenCalledWith({
       url: 'https://api.hackersheet.com/test-workspace/v1/graphql',
       accessKey: 'test-key',
+    });
+  });
+
+  it('uses workspace from --workspace option', async () => {
+    const deps = createMockDeps({
+      loadConfigFn: vi.fn().mockReturnValue({
+        workspaces: {
+          'default-workspace': { accessKey: 'default-key' },
+          'other-workspace': { accessKey: 'other-key' },
+        },
+        defaultWorkspace: 'default-workspace',
+        newFilenameTemplate: '',
+        docsDirs: [],
+      }),
+    });
+
+    await docsAction('test-slug', { workspace: 'other-workspace' }, deps);
+
+    expect(deps.createClientFn).toHaveBeenCalledWith({
+      url: 'https://api.hackersheet.com/other-workspace/v1/graphql',
+      accessKey: 'other-key',
+    });
+  });
+
+  it('uses defaultWorkspace when no --workspace option', async () => {
+    const deps = createMockDeps({
+      loadConfigFn: vi.fn().mockReturnValue({
+        workspaces: {
+          'default-workspace': { accessKey: 'default-key' },
+          'other-workspace': { accessKey: 'other-key' },
+        },
+        defaultWorkspace: 'default-workspace',
+        newFilenameTemplate: '',
+        docsDirs: [],
+      }),
+    });
+
+    await docsAction('test-slug', {}, deps);
+
+    expect(deps.createClientFn).toHaveBeenCalledWith({
+      url: 'https://api.hackersheet.com/default-workspace/v1/graphql',
+      accessKey: 'default-key',
+    });
+  });
+
+  it('auto-selects single workspace when no default set', async () => {
+    const deps = createMockDeps({
+      loadConfigFn: vi.fn().mockReturnValue({
+        workspaces: {
+          'only-workspace': { accessKey: 'only-key' },
+        },
+        newFilenameTemplate: '',
+        docsDirs: [],
+      }),
+    });
+
+    await docsAction('test-slug', {}, deps);
+
+    expect(deps.createClientFn).toHaveBeenCalledWith({
+      url: 'https://api.hackersheet.com/only-workspace/v1/graphql',
+      accessKey: 'only-key',
     });
   });
 });

@@ -42,16 +42,13 @@ describe('setupAction', () => {
 
     await setupAction(deps);
 
-    expect(deps.fsApi.writeFile).toHaveBeenCalledWith(
-      '/project/.hackersheet/cli.config.json',
-      expect.stringContaining('"workspaceSlug": "my-workspace"'),
-      'utf8'
-    );
-    expect(deps.fsApi.writeFile).toHaveBeenCalledWith(
-      '/project/.hackersheet/cli.config.json',
-      expect.stringContaining('"workspaceAccessKey": "secret-key"'),
-      'utf8'
-    );
+    const writeCall = vi.mocked(deps.fsApi.writeFile).mock.calls[0];
+    const config = JSON.parse(writeCall[1] as string);
+
+    expect(config.workspaces).toEqual({
+      'my-workspace': { accessKey: 'secret-key' },
+    });
+    expect(config.defaultWorkspace).toBe('my-workspace');
   });
 
   it('parses comma-separated docsDirs', async () => {
@@ -126,6 +123,8 @@ describe('setupAction', () => {
 
     expect(config.newFilenameTemplate).toBe('{{yyyy}}-{{mm}}-{{dd}}-{{title}}.md');
     expect(config.docsDirs).toEqual(['docs']);
+    expect(config.workspaces).toEqual({});
+    expect(config.defaultWorkspace).toBeUndefined();
   });
 
   it('handles empty docsDirs input', async () => {
@@ -145,6 +144,52 @@ describe('setupAction', () => {
     const config = JSON.parse(writeCall[1] as string);
 
     expect(config.docsDirs).toEqual(['docs']);
+  });
+
+  it('does not set workspace when only slug is provided', async () => {
+    const deps = createMockDeps({
+      prompts: {
+        input: vi.fn().mockImplementation(({ message }) => {
+          if (message.includes('slug')) return Promise.resolve('my-workspace');
+          if (message.includes('access key')) return Promise.resolve('');
+          if (message.includes('template')) return Promise.resolve('');
+          if (message.includes('directories')) return Promise.resolve('docs');
+          return Promise.resolve('');
+        }),
+        confirm: vi.fn().mockResolvedValue(true),
+      },
+    });
+
+    await setupAction(deps);
+
+    const writeCall = vi.mocked(deps.fsApi.writeFile).mock.calls[0];
+    const config = JSON.parse(writeCall[1] as string);
+
+    expect(config.workspaces).toEqual({});
+    expect(config.defaultWorkspace).toBeUndefined();
+  });
+
+  it('does not set workspace when only access key is provided', async () => {
+    const deps = createMockDeps({
+      prompts: {
+        input: vi.fn().mockImplementation(({ message }) => {
+          if (message.includes('slug')) return Promise.resolve('');
+          if (message.includes('access key')) return Promise.resolve('secret-key');
+          if (message.includes('template')) return Promise.resolve('');
+          if (message.includes('directories')) return Promise.resolve('docs');
+          return Promise.resolve('');
+        }),
+        confirm: vi.fn().mockResolvedValue(true),
+      },
+    });
+
+    await setupAction(deps);
+
+    const writeCall = vi.mocked(deps.fsApi.writeFile).mock.calls[0];
+    const config = JSON.parse(writeCall[1] as string);
+
+    expect(config.workspaces).toEqual({});
+    expect(config.defaultWorkspace).toBeUndefined();
   });
 
   it('prompts for all configuration fields', async () => {

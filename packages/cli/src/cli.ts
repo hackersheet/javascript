@@ -45,7 +45,11 @@ const program = new Command();
 program.name('hscli').description('Hacker Sheet command line interface.').version(getVersion());
 
 program.command('setup').description('Setup Hacker Sheet in the current project.').action(setupAction);
-program.command('docs <slug>').description('Fetch document content by slug.').action(docsAction);
+program
+  .command('docs <slug>')
+  .description('Fetch document content by slug.')
+  .option('-w, --workspace <slug>', 'Workspace to use')
+  .action((slug, options) => docsAction(slug, options));
 program.command('new').description('Create a new document.').action(newAction);
 program
   .command('gen:tree')

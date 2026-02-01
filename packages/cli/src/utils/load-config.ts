@@ -7,13 +7,21 @@ import { findUpSync } from 'find-up';
 const paths = envPaths('hackersheet', { suffix: '' });
 
 /**
+ * Configuration object for a single workspace.
+ */
+export type WorkspaceConfig = {
+  /** The access key for authenticating with the workspace API. */
+  accessKey: string;
+};
+
+/**
  * Configuration object for the Hacker Sheet CLI.
  */
 export type Config = {
-  /** The workspace slug for API access. */
-  workspaceSlug: string;
-  /** The access key for authenticating with the workspace API. */
-  workspaceAccessKey: string;
+  /** Registered workspaces keyed by slug. */
+  workspaces: Record<string, WorkspaceConfig>;
+  /** The default workspace slug to use when not specified. */
+  defaultWorkspace?: string;
   /** Mustache template for generating new document filenames. */
   newFilenameTemplate: string;
   /** Optional path (relative to project root) to a mustache template used for new file content. */
@@ -39,8 +47,7 @@ export class ConfigError extends Error {
  * Default empty configuration.
  */
 export const EMPTY_CONFIG: Config = {
-  workspaceSlug: '',
-  workspaceAccessKey: '',
+  workspaces: {},
   newFilenameTemplate: '',
   docsDirs: [],
 };
@@ -62,6 +69,32 @@ export function getUserConfigPath(): string {
  * @returns The validated partial configuration.
  * @throws {ConfigError} If validation fails.
  */
+/**
+ * Validates and extracts a workspaces object from an unknown value.
+ *
+ * @param value - The value to validate.
+ * @returns The validated workspaces record, or undefined if invalid.
+ */
+function validateWorkspaces(value: unknown): Record<string, WorkspaceConfig> | undefined {
+  if (typeof value !== 'object' || value === null) {
+    return undefined;
+  }
+
+  const obj = value as Record<string, unknown>;
+  const result: Record<string, WorkspaceConfig> = {};
+
+  for (const [key, workspace] of Object.entries(obj)) {
+    if (typeof workspace === 'object' && workspace !== null) {
+      const ws = workspace as Record<string, unknown>;
+      if (typeof ws.accessKey === 'string') {
+        result[key] = { accessKey: ws.accessKey };
+      }
+    }
+  }
+
+  return Object.keys(result).length > 0 ? result : undefined;
+}
+
 function validatePartialConfig(value: unknown, configPath: string): Partial<Config> {
   if (typeof value !== 'object' || value === null) {
     throw new ConfigError(`Invalid configuration: expected object, got ${typeof value}`, configPath);
@@ -70,11 +103,12 @@ function validatePartialConfig(value: unknown, configPath: string): Partial<Conf
   const obj = value as Record<string, unknown>;
   const result: Partial<Config> = {};
 
-  if (typeof obj.workspaceSlug === 'string') {
-    result.workspaceSlug = obj.workspaceSlug;
+  const workspaces = validateWorkspaces(obj.workspaces);
+  if (workspaces !== undefined) {
+    result.workspaces = workspaces;
   }
-  if (typeof obj.workspaceAccessKey === 'string') {
-    result.workspaceAccessKey = obj.workspaceAccessKey;
+  if (typeof obj.defaultWorkspace === 'string') {
+    result.defaultWorkspace = obj.defaultWorkspace;
   }
   if (typeof obj.newFilenameTemplate === 'string') {
     result.newFilenameTemplate = obj.newFilenameTemplate;
