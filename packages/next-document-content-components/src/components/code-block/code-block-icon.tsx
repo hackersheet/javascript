@@ -1,21 +1,23 @@
-import React, { JSX } from 'react';
-import { FaTerminal, FaReact } from 'react-icons/fa6';
+import React from 'react';
+import { FaDiagramProject, FaReact, FaTerminal } from 'react-icons/fa6';
 import { HiCodeBracket } from 'react-icons/hi2';
 import {
-  SiTypescript,
-  SiTerraform,
+  SiGo,
+  SiJavascript,
+  SiKotlin,
   SiMarkdown,
   SiPhp,
-  SiRuby,
-  SiYaml,
-  SiJavascript,
   SiPython,
-  SiKotlin,
-  SiGo,
+  SiRuby,
   SiRust,
+  SiTerraform,
+  SiTypescript,
+  SiYaml,
 } from 'react-icons/si';
 import { TbTxt } from 'react-icons/tb';
 import { VscJson } from 'react-icons/vsc';
+
+import type { JSX } from 'react';
 
 /**
  * Props for the CodeBlockIcon component.
@@ -46,6 +48,7 @@ export type CodeBlockIconProps = {
  * - 'tsx' - React icon
  * - 'json' - JSON icon
  * - 'markdown' - Markdown icon
+ * - 'mermaid' - Diagram icon
  * - 'hcl' - Terraform icon
  * - 'php', 'ruby', 'yaml', 'text', etc.
  *
@@ -88,6 +91,8 @@ export default function CodeBlockIcon({ language }: CodeBlockIconProps): JSX.Ele
       return <VscJson />;
     case 'text':
       return <TbTxt />;
+    case 'mermaid':
+      return <FaDiagramProject />;
     default:
       return <HiCodeBracket />;
   }

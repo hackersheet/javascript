@@ -297,6 +297,12 @@
     :global(.code-block-filename) {
       flex: 1 1 auto;
     }
+
+    :global(.code-block-actions) {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
   }
 
   :global(.shiki) {
@@ -538,10 +544,6 @@
   :global(.mermaid-block) {
     margin: 1.5rem 0;
 
-    svg {
-      margin-right: auto;
-      margin-left: auto;
-    }
     &:global(.mermaid-loading) {
       width: 100%;
       height: 8em;
@@ -552,6 +554,93 @@
       > div {
         margin-left: auto;
         margin-right: auto;
+      }
+    }
+
+    &:global(.mermaid-diagram-view) {
+      position: relative;
+
+      :global(.mermaid-diagram) {
+        overflow-x: auto;
+
+        svg {
+          display: block;
+          margin-right: auto;
+          margin-left: auto;
+        }
+      }
+
+      > :global(.mermaid-toggle-btn) {
+        position: absolute;
+        top: 0;
+        right: 0;
+        opacity: 0;
+        transition: opacity 0.15s;
+      }
+
+      &:hover > :global(.mermaid-toggle-btn) {
+        opacity: 1;
+      }
+    }
+
+    &:global(.mermaid-code-view) {
+      :global(.mermaid-code) {
+        pre {
+          margin: 0;
+
+          code {
+            display: block;
+            white-space: pre;
+          }
+        }
+      }
+
+      :global(.mermaid-error-message) {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+        padding: 0.75rem 1rem;
+        background-color: oklch(from var(--github-alert-caution-color) l c h / 0.1);
+        border-left: 0.25em solid var(--github-alert-caution-color);
+
+        strong {
+          font-size: 0.75rem;
+          color: var(--github-alert-caution-color);
+        }
+
+        span {
+          font-size: 0.75rem;
+          color: var(--hsdc-muted-foreground);
+          word-break: break-word;
+        }
+      }
+
+      &:global(.has-error) :global(.mermaid-code) pre {
+        border-top: 1px solid var(--hsdc-border);
+      }
+    }
+
+    :global(.mermaid-toggle-btn) {
+      padding: 0.125rem 0.5rem;
+      font-size: 0.625rem;
+      font-family: inherit;
+      color: var(--hsdc-muted-foreground);
+      background: transparent;
+      border: 1px solid transparent;
+      border-radius: 0.25rem;
+      cursor: pointer;
+      transition:
+        background-color 0.15s,
+        border-color 0.15s,
+        color 0.15s;
+
+      &:hover:not(:disabled) {
+        background-color: oklch(from var(--hsdc-border) l c h / 0.5);
+      }
+
+      &:disabled {
+        cursor: not-allowed;
+        opacity: 0.5;
       }
     }
   }

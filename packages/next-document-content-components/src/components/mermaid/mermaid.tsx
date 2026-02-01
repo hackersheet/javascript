@@ -1,74 +1,50 @@
 'use client';
 
-import { renderMermaid as renderBeautifulMermaid, THEMES } from 'beautiful-mermaid';
-import mermaid from 'mermaid';
 import { useTheme } from 'next-themes';
-import React, { useEffect, useId, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useId, useRef, useState } from 'react';
+
+import { renderWithBeautifulMermaid, renderWithMermaidFallback } from './mermaid-renderer';
+import CodeBlockHeader from '../code-block/code-block-header';
+import CodeBlockIcon from '../code-block/code-block-icon';
 
 import type { MermaidComponentProps } from '@hackersheet/react-document-content';
 
-/**
- * Normalize mermaid code for beautiful-mermaid compatibility.
- * - Removes trailing semicolons from each line
- * - Adds spaces around arrows (e.g., A-->B becomes A --> B)
- */
-function normalizeCode(code: string): string {
-  return code
-    .split('\n')
-    .map((line) =>
-      line
-        .replace(/;(\s*)$/, '$1')
-        .replace(/(\w)-->/g, '$1 -->')
-        .replace(/-->(\w)/g, '--> $1')
-    )
-    .join('\n');
-}
 
 /**
- * Check if an SVG string has valid dimensions.
- * beautiful-mermaid returns invalid SVGs with negative/infinite dimensions for unsupported diagrams.
+ * Render state for the mermaid component.
  */
-function hasValidSvgDimensions(svg: string): boolean {
-  const widthMatch = svg.match(/width="([^"]+)"/);
-  const heightMatch = svg.match(/height="([^"]+)"/);
-  if (!widthMatch || !heightMatch) return false;
-  const width = parseFloat(widthMatch[1]);
-  const height = parseFloat(heightMatch[1]);
-  return Number.isFinite(width) && Number.isFinite(height) && width > 0 && height > 0;
-}
+type RenderState = { status: 'loading' } | { status: 'success'; svg: string } | { status: 'error'; message: string };
 
 /**
- * Run a function with a patched JSON.stringify that handles circular references.
- * This is needed because mermaid's block-beta renderer tries to stringify DOM elements.
+ * View mode for the mermaid component.
  */
-async function withSafeJsonStringify<T>(fn: () => Promise<T>): Promise<T> {
-  const originalStringify = JSON.stringify;
-  JSON.stringify = function (value, replacer, space) {
-    const seen = new WeakSet();
-    const safeReplacer = (_key: string, val: unknown) => {
-      if (typeof val === 'object' && val !== null) {
-        if (seen.has(val)) return undefined;
-        seen.add(val);
-      }
-      return val;
-    };
-    return originalStringify(value, safeReplacer, space);
-  };
-  try {
-    return await fn();
-  } finally {
-    JSON.stringify = originalStringify;
-  }
-}
+type ViewMode = 'diagram' | 'code';
+
+/**
+ * Hoisted static loading fallback to prevent recreation on each render.
+ */
+const LoadingFallback = (
+  <div className="mermaid-block mermaid-loading">
+    <div>Loading...</div>
+  </div>
+);
 
 /**
  * Mermaid diagram component that renders diagrams using beautiful-mermaid.
  * Falls back to the original mermaid library if beautiful-mermaid fails.
  * Automatically switches between light and dark themes based on the current theme.
+ *
+ * @remarks
+ * - Uses dynamic imports to reduce initial bundle size
+ * - Handles hydration mismatch by showing loading state until mounted
+ * - Supports toggling between diagram and code view
+ * - Diagram view shows only the rendered diagram without borders
+ * - Code view shows the source code in a code block style
  */
 export default function Mermaid({ code }: MermaidComponentProps) {
   const [mounted, setMounted] = useState(false);
-  const [svg, setSvg] = useState('');
+  const [renderState, setRenderState] = useState<RenderState>({ status: 'loading' });
+  const [viewMode, setViewMode] = useState<ViewMode>('diagram');
   const { theme, systemTheme } = useTheme();
   const renderCountRef = useRef(0);
   const id = useId();
@@ -77,56 +53,90 @@ export default function Mermaid({ code }: MermaidComponentProps) {
     setMounted(true);
   }, []);
 
+  const renderDiagram = useCallback(async () => {
+    const currentTheme = theme === 'system' ? systemTheme : theme;
+    const isDark = currentTheme === 'dark';
+
+    try {
+      const result = await renderWithBeautifulMermaid(code, isDark);
+      if (result) {
+        setRenderState({ status: 'success', svg: result });
+        return;
+      }
+    } catch {
+      // Fall through to mermaid fallback
+    }
+
+    const uniqueId = `${id}-${++renderCountRef.current}`;
+    const result = await renderWithMermaidFallback(code, isDark, uniqueId);
+    if (result.success) {
+      setRenderState({ status: 'success', svg: result.svg });
+    } else {
+      setRenderState({ status: 'error', message: result.error });
+    }
+  }, [code, id, theme, systemTheme]);
+
   useEffect(() => {
     if (!mounted) {
       return;
     }
+    renderDiagram();
+  }, [mounted, renderDiagram]);
 
-    const render = async () => {
-      const currentTheme = theme === 'system' ? systemTheme : theme;
-      const isDark = currentTheme === 'dark';
+  const toggleViewMode = useCallback(() => {
+    setViewMode((prev) => (prev === 'diagram' ? 'code' : 'diagram'));
+  }, []);
 
-      // Try beautiful-mermaid first
-      try {
-        const colors = isDark ? THEMES['github-dark'] : THEMES['github-light'];
-        const normalizedCode = normalizeCode(code);
-        const result = await renderBeautifulMermaid(normalizedCode, {
-          ...colors,
-          transparent: true,
-        });
-        if (result && hasValidSvgDimensions(result)) {
-          setSvg(result);
-          return;
-        }
-      } catch {
-        // Fall through to mermaid fallback
-      }
+  if (!mounted || renderState.status === 'loading') {
+    return LoadingFallback;
+  }
 
-      // Fallback to original mermaid library
-      const mermaidTheme = isDark ? 'dark' : 'default';
-      mermaid.initialize({ startOnLoad: false, theme: mermaidTheme });
-      const uniqueId = `${id}-${++renderCountRef.current}`;
-      try {
-        // Wrap in withSafeJsonStringify to handle circular references in block-beta etc.
-        const { svg: renderedSvg } = await withSafeJsonStringify(() => mermaid.render(uniqueId, code));
-        setSvg(renderedSvg);
-      } catch {
-        setSvg('Mermaid Syntax Error');
-      } finally {
-        // Remove temporary container element that mermaid creates in body
-        document.getElementById(`d${uniqueId}`)?.remove();
-      }
-    };
-    render();
-  }, [mounted, code, id, theme, systemTheme]);
+  const hasError = renderState.status === 'error';
+  const showDiagram = viewMode === 'diagram' && !hasError;
 
-  if (!mounted) {
+  if (showDiagram) {
     return (
-      <div className="mermaid-block mermaid-loading">
-        <div>Loading...</div>
+      <div className="mermaid-block mermaid-diagram-view">
+        <div className="mermaid-diagram" dangerouslySetInnerHTML={{ __html: renderState.svg }} />
+        <button
+          type="button"
+          onClick={toggleViewMode}
+          className="mermaid-toggle-btn"
+          title="Show code"
+          aria-label="Show code"
+        >
+          Code
+        </button>
       </div>
     );
   }
 
-  return <div className="mermaid-block" dangerouslySetInnerHTML={{ __html: svg }} />;
+  const toggleButton = (
+    <button
+      type="button"
+      onClick={toggleViewMode}
+      className="mermaid-toggle-btn"
+      title="Show diagram"
+      disabled={hasError}
+    >
+      Diagram
+    </button>
+  );
+
+  return (
+    <div className={`code-block mermaid-block mermaid-code-view ${hasError ? 'has-error' : ''}`}>
+      <CodeBlockHeader icon={<CodeBlockIcon language="mermaid" />} code={code} actions={toggleButton} />
+      <div className="mermaid-code">
+        {hasError && (
+          <div className="mermaid-error-message">
+            <strong>Syntax Error</strong>
+            <span>{renderState.message}</span>
+          </div>
+        )}
+        <pre>
+          <code>{code}</code>
+        </pre>
+      </div>
+    </div>
+  );
 }
