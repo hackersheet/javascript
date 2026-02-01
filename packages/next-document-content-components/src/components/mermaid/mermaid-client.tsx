@@ -3,9 +3,9 @@
 import { useTheme } from 'next-themes';
 import React, { useCallback, useEffect, useState } from 'react';
 
+import { MermaidDiagramView } from './mermaid-diagram-view';
 import { renderWithIframe } from './mermaid-iframe-renderer';
 import { renderWithBeautifulMermaid } from './mermaid-renderer';
-import { usePanZoom } from './use-pan-zoom';
 import CodeBlockCode from '../code-block/code-block-code';
 import CodeBlockHeader from '../code-block/code-block-header';
 import CodeBlockIcon from '../code-block/code-block-icon';
@@ -33,19 +33,19 @@ type ViewMode = 'diagram' | 'code';
 /**
  * Client component for rendering Mermaid diagrams with interactive features.
  *
+ * @remarks
  * This component handles:
  * - Diagram rendering using beautiful-mermaid with iframe fallback
  * - Theme switching (light/dark)
  * - Toggle between diagram and code view
  * - Syntax-highlighted code display during loading
  *
- * @remarks
- * - Uses dynamic imports to reduce initial bundle size
- * - Shows syntax-highlighted code while diagram is loading (no hydration mismatch)
- * - Uses sandboxed iframe for fallback to avoid cross-origin issues
- * - Supports toggling between diagram and code view
- * - Diagram view shows only the rendered diagram without borders
- * - Code view shows the source code with Shiki syntax highlighting
+ * Component architecture:
+ * - MermaidClient: Main controller for rendering and state management
+ * - MermaidDiagramView: Diagram display with pan/zoom (separate file)
+ * - MermaidFullscreenModal: Fullscreen view (separate file)
+ * - MermaidZoomControls: Reusable zoom buttons (memoized)
+ * - MermaidDiagramContent: SVG renderer (memoized)
  *
  * @param props - The component props
  * @param props.code - The mermaid diagram code
@@ -103,10 +103,54 @@ export default function MermaidClient({ code, highlightedHtml }: MermaidClientPr
     return <MermaidDiagramView svg={renderState.svg} onToggleViewMode={toggleViewMode} />;
   }
 
+  return (
+    <MermaidCodeView
+      code={code}
+      highlightedHtml={highlightedHtml}
+      hasError={hasError}
+      isLoading={isLoading}
+      errorMessage={renderState.status === 'error' ? renderState.message : undefined}
+      onToggleViewMode={toggleViewMode}
+    />
+  );
+}
+
+/**
+ * Props for the MermaidCodeView component.
+ */
+type MermaidCodeViewProps = {
+  /** The mermaid diagram code */
+  code: string;
+  /** Pre-rendered HTML from Shiki highlighter */
+  highlightedHtml?: string | null;
+  /** Whether there is an error */
+  hasError: boolean;
+  /** Whether the diagram is loading */
+  isLoading: boolean;
+  /** Error message if hasError is true */
+  errorMessage?: string;
+  /** Callback to toggle view mode */
+  onToggleViewMode: () => void;
+};
+
+/**
+ * Code view for Mermaid diagrams with syntax highlighting.
+ *
+ * @param props - The component props
+ * @returns The code view component
+ */
+function MermaidCodeView({
+  code,
+  highlightedHtml,
+  hasError,
+  isLoading,
+  errorMessage,
+  onToggleViewMode,
+}: MermaidCodeViewProps) {
   const toggleButton = (
     <button
       type="button"
-      onClick={toggleViewMode}
+      onClick={onToggleViewMode}
       className="mermaid-toggle-btn"
       title="Show diagram"
       disabled={hasError || isLoading}
@@ -121,95 +165,13 @@ export default function MermaidClient({ code, highlightedHtml }: MermaidClientPr
     >
       <CodeBlockHeader icon={<CodeBlockIcon language="mermaid" />} code={code} actions={toggleButton} />
       <div className="mermaid-code">
-        {hasError ? (
+        {hasError && errorMessage ? (
           <div className="mermaid-error-message">
             <strong>Syntax Error</strong>
-            <span>{renderState.message}</span>
+            <span>{errorMessage}</span>
           </div>
         ) : null}
         <CodeBlockCode code={code} highlightedHtml={highlightedHtml} />
-      </div>
-    </div>
-  );
-}
-
-/**
- * Props for the MermaidDiagramView component.
- */
-type MermaidDiagramViewProps = {
-  /** The rendered SVG string */
-  svg: string;
-  /** Callback to toggle between diagram and code view */
-  onToggleViewMode: () => void;
-};
-
-/**
- * Component for displaying Mermaid diagrams with pan and zoom functionality.
- *
- * @remarks
- * This component provides:
- * - Zoom in/out using mouse wheel (Ctrl/Cmd + wheel) or buttons
- * - Pan by dragging when zoomed in
- * - Double-click to reset zoom
- * - Keyboard shortcuts (+/- for zoom, Ctrl+0 for reset)
- *
- * @param props - The component props
- * @param props.svg - The rendered SVG string
- * @param props.onToggleViewMode - Callback to toggle view mode
- * @returns The rendered diagram view with pan/zoom controls
- */
-function MermaidDiagramView({ svg, onToggleViewMode }: MermaidDiagramViewProps) {
-  const { containerRef, contentRef, state, zoomIn, zoomOut, reset, isDragging, isZoomed } = usePanZoom();
-
-  const cursorStyle = isDragging ? 'grabbing' : isZoomed ? 'grab' : 'default';
-
-  return (
-    <div className="mermaid-block mermaid-diagram-view">
-      <div ref={containerRef} className="mermaid-pan-zoom-container" tabIndex={0} style={{ cursor: cursorStyle }}>
-        <div
-          ref={contentRef}
-          className="mermaid-pan-zoom-content"
-          style={{
-            transform: `translate(${state.position.x}px, ${state.position.y}px) scale(${state.scale})`,
-          }}
-        >
-          <div className="mermaid-diagram" dangerouslySetInnerHTML={{ __html: svg }} />
-        </div>
-      </div>
-      <div className="mermaid-controls">
-        <div className="mermaid-zoom-controls">
-          <button type="button" onClick={zoomIn} className="mermaid-zoom-btn" title="Zoom in (+)" aria-label="Zoom in">
-            +
-          </button>
-          <button
-            type="button"
-            onClick={zoomOut}
-            className="mermaid-zoom-btn"
-            title="Zoom out (-)"
-            aria-label="Zoom out"
-          >
-            −
-          </button>
-          <button
-            type="button"
-            onClick={reset}
-            className="mermaid-zoom-btn mermaid-zoom-reset-btn"
-            title="Reset zoom (Ctrl+0)"
-            aria-label="Reset zoom"
-            disabled={!isZoomed}
-          >
-            ⟳
-          </button>
-        </div>
-        <button
-          type="button"
-          onClick={onToggleViewMode}
-          className="mermaid-toggle-btn"
-          title="Show code"
-          aria-label="Show code"
-        >
-          Code
-        </button>
       </div>
     </div>
   );

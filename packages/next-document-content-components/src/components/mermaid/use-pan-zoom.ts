@@ -23,6 +23,11 @@ const SCALE_STEP = 0.25;
 const WHEEL_SCALE_STEP = 0.1;
 
 /**
+ * Speed multiplier for pan operations.
+ */
+const PAN_SPEED = 1.5;
+
+/**
  * Position coordinates for pan operations.
  */
 export interface Position {
@@ -130,8 +135,10 @@ export function usePanZoom(): UsePanZoomReturn {
 
   const dragStartRef = useRef<Position | null>(null);
   const lastPositionRef = useRef<Position>({ x: 0, y: 0 });
+  const stateRef = useRef(state);
+  stateRef.current = state;
 
-  const isZoomed = state.scale > 1;
+  const isZoomed = state.scale !== 1;
 
   /**
    * Constrains position to keep content visible within container bounds.
@@ -211,12 +218,12 @@ export function usePanZoom(): UsePanZoomReturn {
   );
 
   const zoomIn = useCallback(() => {
-    zoomTo(state.scale + SCALE_STEP);
-  }, [state.scale, zoomTo]);
+    zoomTo(stateRef.current.scale + SCALE_STEP);
+  }, [zoomTo]);
 
   const zoomOut = useCallback(() => {
-    zoomTo(state.scale - SCALE_STEP);
-  }, [state.scale, zoomTo]);
+    zoomTo(stateRef.current.scale - SCALE_STEP);
+  }, [zoomTo]);
 
   const reset = useCallback(() => {
     setState({
@@ -232,7 +239,7 @@ export function usePanZoom(): UsePanZoomReturn {
 
     const handleWheel = (e: WheelEvent) => {
       // Only zoom with Ctrl/Cmd key or if already zoomed
-      if (!e.ctrlKey && !e.metaKey && state.scale === 1) {
+      if (!e.ctrlKey && !e.metaKey && stateRef.current.scale === 1) {
         return;
       }
 
@@ -245,36 +252,39 @@ export function usePanZoom(): UsePanZoomReturn {
       };
 
       const delta = e.deltaY > 0 ? -WHEEL_SCALE_STEP : WHEEL_SCALE_STEP;
-      zoomTo(state.scale + delta, centerPoint);
+      zoomTo(stateRef.current.scale + delta, centerPoint);
     };
 
     container.addEventListener('wheel', handleWheel, { passive: false });
     return () => container.removeEventListener('wheel', handleWheel);
-  }, [state.scale, zoomTo]);
+  }, [zoomTo]);
 
   // Handle drag for panning
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
 
+    let dragging = false;
+
     const handleMouseDown = (e: MouseEvent) => {
       // Only allow panning when zoomed in
-      if (state.scale <= 1) return;
+      if (stateRef.current.scale <= 1) return;
 
       // Ignore if clicking on a button
       if ((e.target as HTMLElement).closest('button')) return;
 
       e.preventDefault();
+      dragging = true;
       setIsDragging(true);
       dragStartRef.current = { x: e.clientX, y: e.clientY };
-      lastPositionRef.current = state.position;
+      lastPositionRef.current = stateRef.current.position;
     };
 
     const handleMouseMove = (e: MouseEvent) => {
-      if (!isDragging || !dragStartRef.current) return;
+      if (!dragging || !dragStartRef.current) return;
 
-      const deltaX = e.clientX - dragStartRef.current.x;
-      const deltaY = e.clientY - dragStartRef.current.y;
+      const deltaX = (e.clientX - dragStartRef.current.x) * PAN_SPEED;
+      const deltaY = (e.clientY - dragStartRef.current.y) * PAN_SPEED;
 
       const newPosition = constrainPosition({
         x: lastPositionRef.current.x + deltaX,
@@ -288,6 +298,7 @@ export function usePanZoom(): UsePanZoomReturn {
     };
 
     const handleMouseUp = () => {
+      dragging = false;
       setIsDragging(false);
       dragStartRef.current = null;
     };
@@ -301,7 +312,7 @@ export function usePanZoom(): UsePanZoomReturn {
       document.removeEventListener('mousemove', handleMouseMove);
       document.removeEventListener('mouseup', handleMouseUp);
     };
-  }, [state.scale, state.position, isDragging, constrainPosition]);
+  }, [constrainPosition]);
 
   // Handle double-click to reset
   useEffect(() => {

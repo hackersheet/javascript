@@ -588,7 +588,6 @@
 
   :global(.mermaid-block) {
     margin: 2rem 0;
-    overflow-x: auto;
 
     svg {
       margin-right: auto;
@@ -611,33 +610,9 @@
       position: relative;
 
       :global(.mermaid-pan-zoom-container) {
-        display: flex;
-        align-items: center;
-        justify-content: center;
         overflow: hidden;
         outline: none;
         user-select: none;
-        resize: both;
-        min-width: 200px;
-        min-height: 100px;
-        max-width: 100%;
-
-        &::-webkit-resizer {
-          background: linear-gradient(
-            -45deg,
-            var(--hsdc-muted-foreground) 2px,
-            transparent 2px,
-            transparent 4px,
-            var(--hsdc-muted-foreground) 4px,
-            var(--hsdc-muted-foreground) 6px,
-            transparent 6px,
-            transparent 8px,
-            var(--hsdc-muted-foreground) 8px,
-            var(--hsdc-muted-foreground) 10px,
-            transparent 10px
-          );
-          background-size: 100% 100%;
-        }
 
         &:focus-visible {
           outline: 2px solid var(--hsdc-link);
@@ -646,30 +621,18 @@
       }
 
       :global(.mermaid-pan-zoom-content) {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 100%;
-        height: 100%;
         transform-origin: center center;
         transition: transform 0.1s ease-out;
         will-change: transform;
       }
 
       :global(.mermaid-diagram) {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 100%;
-        height: 100%;
+        overflow-x: auto;
 
         svg {
           display: block;
-          max-width: 100%;
-          max-height: 100%;
           width: auto;
           height: auto;
-          object-fit: contain;
         }
       }
 
@@ -792,6 +755,97 @@
         cursor: not-allowed;
         opacity: 0.5;
       }
+    }
+  }
+
+  :global(.mermaid-fullscreen-modal) {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: oklch(0.1 0 0 / 0.95);
+
+    :global(.mermaid-fullscreen-content) {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    :global(.mermaid-fullscreen-pan-zoom-container) {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      outline: none;
+      user-select: none;
+    }
+
+    :global(.mermaid-fullscreen-controls) {
+      position: fixed;
+      top: 1rem;
+      right: 1rem;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 0.5rem;
+      z-index: 10000;
+    }
+
+    :global(.mermaid-fullscreen-close-btn),
+    :global(.mermaid-zoom-btn) {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 2rem;
+      height: 2rem;
+      padding: 0;
+      font-size: 1rem;
+      font-family: inherit;
+      font-weight: 600;
+      line-height: 1;
+      color: oklch(0.6 0 0);
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      transition: color 0.15s;
+
+      &:hover:not(:disabled) {
+        color: oklch(1 0 0);
+      }
+
+      &:disabled {
+        cursor: not-allowed;
+        opacity: 0.4;
+      }
+    }
+
+    :global(.mermaid-zoom-controls) {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    :global(.mermaid-zoom-reset-btn) {
+      font-size: 0.875rem;
+    }
+
+    :global(.mermaid-pan-zoom-content) {
+      transform-origin: center center;
+      transition: transform 0.1s ease-out;
+      will-change: transform;
+    }
+
+    :global(.mermaid-pan-zoom-content) :global(.mermaid-diagram) svg {
+      width: 100vw;
+      height: 100vh;
     }
   }
 
