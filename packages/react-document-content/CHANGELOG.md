@@ -1,5 +1,12 @@
 # @hackersheet/react-document-content
 
+## 0.1.0-alpha.16
+
+### Patch Changes
+
+- Updated dependencies [bfa925e]
+  - @hackersheet/react-document-content-styles@0.1.0-alpha.16
+
 ## 0.1.0-alpha.15
 
 ### Patch Changes

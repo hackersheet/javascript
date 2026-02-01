@@ -1,5 +1,11 @@
 # @hackersheet/next-document-content-kifu
 
+## 0.1.0-alpha.19
+
+### Patch Changes
+
+- @hackersheet/react-document-content@0.1.0-alpha.16
+
 ## 0.1.0-alpha.18
 
 ### Patch Changes

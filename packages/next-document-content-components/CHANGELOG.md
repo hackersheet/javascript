@@ -1,5 +1,31 @@
 # @hackersheet/next-document-content-components
 
+## 0.1.0-alpha.34
+
+### Patch Changes
+
+- bfa925e: Add pan/zoom and fullscreen functionality to Mermaid diagrams
+  - Add `usePanZoom` hook for zoom (mouse wheel with Ctrl/Cmd) and pan (drag when zoomed) support
+  - Add zoom control buttons (+/-/reset/fullscreen) that appear on hover
+  - Add fullscreen modal view with pan/zoom support
+  - Fix diagram not displaying in fullscreen modal
+  - Improve pan speed for smoother navigation
+
+  Refactored components following React best practices:
+  - Split into smaller single-responsibility components
+  - Add memoization to prevent unnecessary re-renders
+  - Extract reusable hooks (`useBodyScrollLock`, `useEscapeKey`)
+
+- 20df186: feat(mermaid): add Shiki syntax highlighting for code view
+  - Refactor Mermaid component into Server/Client composition pattern
+    - `Mermaid`: Server Component that pre-renders syntax highlighting with Shiki
+    - `MermaidClient`: Client Component that handles interactive features (diagram rendering, theme switching, view toggle)
+  - Add `CodeBlockCode` shared component for displaying highlighted code (used by both CodeBlock and Mermaid)
+  - Show syntax-highlighted code during loading instead of "Loading..." text
+  - Add `mermaid` language to Shiki's bundled languages
+  - Export `MermaidClient` and `MermaidClientProps` from mermaid module
+  - @hackersheet/react-document-content@0.1.0-alpha.16
+
 ## 0.1.0-alpha.33
 
 ### Patch Changes
