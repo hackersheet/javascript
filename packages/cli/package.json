@@ -29,8 +29,8 @@
   },
   "dependencies": {
     "@hackersheet/core": "workspace:*",
-    "@inquirer/prompts": "^7.9.0",
-    "commander": "^14.0.1",
+    "@inquirer/prompts": "^8.2.0",
+    "commander": "^14.0.3",
     "find-up": "^8.0.0",
     "gray-matter": "^4.0.3",
     "mustache": "^4.2.0"
