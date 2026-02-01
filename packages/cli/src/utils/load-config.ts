@@ -1,10 +1,8 @@
 import fs from 'fs';
+import os from 'os';
 import path from 'path';
 
-import envPaths from 'env-paths';
 import { findUpSync } from 'find-up';
-
-const paths = envPaths('hackersheet', { suffix: '' });
 
 /**
  * Configuration object for a single workspace.
@@ -53,12 +51,16 @@ export const EMPTY_CONFIG: Config = {
 };
 
 /**
- * Returns the user config file path.
+ * Returns the user config file path following XDG Base Directory Specification.
+ *
+ * Uses `$XDG_CONFIG_HOME/hackersheet/cli.config.json` if set,
+ * otherwise falls back to `~/.config/hackersheet/cli.config.json`.
  *
  * @returns The path to the user configuration file.
  */
 export function getUserConfigPath(): string {
-  return path.join(paths.config, 'cli.config.json');
+  const configDir = process.env.XDG_CONFIG_HOME || path.join(os.homedir(), '.config');
+  return path.join(configDir, 'hackersheet', 'cli.config.json');
 }
 
 /**

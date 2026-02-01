@@ -17,14 +17,10 @@ vi.mock('find-up', () => ({
   findUpSync: vi.fn(),
 }));
 
-vi.mock('env-paths', () => ({
-  default: vi.fn(() => ({
-    config: '/home/user/.config/hackersheet',
-    data: '/home/user/.local/share/hackersheet',
-    cache: '/home/user/.cache/hackersheet',
-    log: '/home/user/.local/state/hackersheet',
-    temp: '/tmp/hackersheet',
-  })),
+vi.mock('os', () => ({
+  default: {
+    homedir: vi.fn(() => '/home/user'),
+  },
 }));
 
 vi.mock('fs', () => ({
