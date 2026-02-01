@@ -5,6 +5,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 
 import { renderWithIframe } from './mermaid-iframe-renderer';
 import { renderWithBeautifulMermaid } from './mermaid-renderer';
+import { usePanZoom } from './use-pan-zoom';
 import CodeBlockCode from '../code-block/code-block-code';
 import CodeBlockHeader from '../code-block/code-block-header';
 import CodeBlockIcon from '../code-block/code-block-icon';
@@ -99,20 +100,7 @@ export default function MermaidClient({ code, highlightedHtml }: MermaidClientPr
   const showDiagram = viewMode === 'diagram' && !hasError && !isLoading;
 
   if (showDiagram) {
-    return (
-      <div className="mermaid-block mermaid-diagram-view">
-        <div className="mermaid-diagram" dangerouslySetInnerHTML={{ __html: renderState.svg }} />
-        <button
-          type="button"
-          onClick={toggleViewMode}
-          className="mermaid-toggle-btn"
-          title="Show code"
-          aria-label="Show code"
-        >
-          Code
-        </button>
-      </div>
-    );
+    return <MermaidDiagramView svg={renderState.svg} onToggleViewMode={toggleViewMode} />;
   }
 
   const toggleButton = (
@@ -140,6 +128,88 @@ export default function MermaidClient({ code, highlightedHtml }: MermaidClientPr
           </div>
         ) : null}
         <CodeBlockCode code={code} highlightedHtml={highlightedHtml} />
+      </div>
+    </div>
+  );
+}
+
+/**
+ * Props for the MermaidDiagramView component.
+ */
+type MermaidDiagramViewProps = {
+  /** The rendered SVG string */
+  svg: string;
+  /** Callback to toggle between diagram and code view */
+  onToggleViewMode: () => void;
+};
+
+/**
+ * Component for displaying Mermaid diagrams with pan and zoom functionality.
+ *
+ * @remarks
+ * This component provides:
+ * - Zoom in/out using mouse wheel (Ctrl/Cmd + wheel) or buttons
+ * - Pan by dragging when zoomed in
+ * - Double-click to reset zoom
+ * - Keyboard shortcuts (+/- for zoom, Ctrl+0 for reset)
+ *
+ * @param props - The component props
+ * @param props.svg - The rendered SVG string
+ * @param props.onToggleViewMode - Callback to toggle view mode
+ * @returns The rendered diagram view with pan/zoom controls
+ */
+function MermaidDiagramView({ svg, onToggleViewMode }: MermaidDiagramViewProps) {
+  const { containerRef, contentRef, state, zoomIn, zoomOut, reset, isDragging, isZoomed } = usePanZoom();
+
+  const cursorStyle = isDragging ? 'grabbing' : isZoomed ? 'grab' : 'default';
+
+  return (
+    <div className="mermaid-block mermaid-diagram-view">
+      <div ref={containerRef} className="mermaid-pan-zoom-container" tabIndex={0} style={{ cursor: cursorStyle }}>
+        <div
+          ref={contentRef}
+          className="mermaid-pan-zoom-content"
+          style={{
+            transform: `translate(${state.position.x}px, ${state.position.y}px) scale(${state.scale})`,
+          }}
+        >
+          <div className="mermaid-diagram" dangerouslySetInnerHTML={{ __html: svg }} />
+        </div>
+      </div>
+      <div className="mermaid-controls">
+        <div className="mermaid-zoom-controls">
+          <button type="button" onClick={zoomIn} className="mermaid-zoom-btn" title="Zoom in (+)" aria-label="Zoom in">
+            +
+          </button>
+          <button
+            type="button"
+            onClick={zoomOut}
+            className="mermaid-zoom-btn"
+            title="Zoom out (-)"
+            aria-label="Zoom out"
+          >
+            −
+          </button>
+          <button
+            type="button"
+            onClick={reset}
+            className="mermaid-zoom-btn mermaid-zoom-reset-btn"
+            title="Reset zoom (Ctrl+0)"
+            aria-label="Reset zoom"
+            disabled={!isZoomed}
+          >
+            ⟳
+          </button>
+        </div>
+        <button
+          type="button"
+          onClick={onToggleViewMode}
+          className="mermaid-toggle-btn"
+          title="Show code"
+          aria-label="Show code"
+        >
+          Code
+        </button>
       </div>
     </div>
   );
