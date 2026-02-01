@@ -1,14 +1,14 @@
 'use client';
 
 import { useTheme } from 'next-themes';
-import React, { useCallback, useEffect, useId, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 
-import { renderWithBeautifulMermaid, renderWithMermaidFallback } from './mermaid-renderer';
+import { renderWithIframe } from './mermaid-iframe-renderer';
+import { renderWithBeautifulMermaid } from './mermaid-renderer';
 import CodeBlockHeader from '../code-block/code-block-header';
 import CodeBlockIcon from '../code-block/code-block-icon';
 
 import type { MermaidComponentProps } from '@hackersheet/react-document-content';
-
 
 /**
  * Render state for the mermaid component.
@@ -31,12 +31,13 @@ const LoadingFallback = (
 
 /**
  * Mermaid diagram component that renders diagrams using beautiful-mermaid.
- * Falls back to the original mermaid library if beautiful-mermaid fails.
+ * Falls back to a sandboxed iframe renderer if beautiful-mermaid fails.
  * Automatically switches between light and dark themes based on the current theme.
  *
  * @remarks
  * - Uses dynamic imports to reduce initial bundle size
  * - Handles hydration mismatch by showing loading state until mounted
+ * - Uses sandboxed iframe for fallback to avoid cross-origin issues
  * - Supports toggling between diagram and code view
  * - Diagram view shows only the rendered diagram without borders
  * - Code view shows the source code in a code block style
@@ -46,8 +47,6 @@ export default function Mermaid({ code }: MermaidComponentProps) {
   const [renderState, setRenderState] = useState<RenderState>({ status: 'loading' });
   const [viewMode, setViewMode] = useState<ViewMode>('diagram');
   const { theme, systemTheme } = useTheme();
-  const renderCountRef = useRef(0);
-  const id = useId();
 
   useEffect(() => {
     setMounted(true);
@@ -64,17 +63,16 @@ export default function Mermaid({ code }: MermaidComponentProps) {
         return;
       }
     } catch {
-      // Fall through to mermaid fallback
+      // Fall through to iframe fallback
     }
 
-    const uniqueId = `${id}-${++renderCountRef.current}`;
-    const result = await renderWithMermaidFallback(code, isDark, uniqueId);
+    const result = await renderWithIframe(code, isDark);
     if (result.success) {
       setRenderState({ status: 'success', svg: result.svg });
     } else {
       setRenderState({ status: 'error', message: result.error });
     }
-  }, [code, id, theme, systemTheme]);
+  }, [code, theme, systemTheme]);
 
   useEffect(() => {
     if (!mounted) {
@@ -127,12 +125,12 @@ export default function Mermaid({ code }: MermaidComponentProps) {
     <div className={`code-block mermaid-block mermaid-code-view ${hasError ? 'has-error' : ''}`}>
       <CodeBlockHeader icon={<CodeBlockIcon language="mermaid" />} code={code} actions={toggleButton} />
       <div className="mermaid-code">
-        {hasError && (
+        {hasError ? (
           <div className="mermaid-error-message">
             <strong>Syntax Error</strong>
             <span>{renderState.message}</span>
           </div>
-        )}
+        ) : null}
         <pre>
           <code>{code}</code>
         </pre>

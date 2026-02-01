@@ -57,26 +57,3 @@ export function hasValidSvgDimensions(svg: string): boolean {
   const height = parseFloat(heightMatch[1]);
   return Number.isFinite(width) && Number.isFinite(height) && width > 0 && height > 0;
 }
-
-/**
- * Extract error message from an unknown error value.
- *
- * @param error - Unknown error value (Error object, string, or other)
- * @returns Error message string
- *
- * @example
- * ```ts
- * getErrorMessage(new Error('Parse error')) // returns 'Parse error'
- * getErrorMessage('Something went wrong') // returns 'Something went wrong'
- * getErrorMessage(null) // returns 'Unknown error'
- * ```
- */
-export function getErrorMessage(error: unknown): string {
-  if (error instanceof Error) {
-    return error.message;
-  }
-  if (typeof error === 'string') {
-    return error;
-  }
-  return 'Unknown error';
-}

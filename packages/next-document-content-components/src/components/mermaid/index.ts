@@ -5,6 +5,7 @@
 
 export { default } from './mermaid';
 export { default as Mermaid } from './mermaid';
-export { getErrorMessage, hasValidSvgDimensions, normalizeCode } from './mermaid-utils';
-export { renderWithBeautifulMermaid, renderWithMermaidFallback, withSafeJsonStringify } from './mermaid-renderer';
+export { hasValidSvgDimensions, normalizeCode } from './mermaid-utils';
+export { renderWithBeautifulMermaid } from './mermaid-renderer';
+export { destroyIframe, renderWithIframe } from './mermaid-iframe-renderer';
 export type { MermaidRenderResult } from './mermaid-renderer';

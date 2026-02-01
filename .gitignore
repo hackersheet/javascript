@@ -9,3 +9,4 @@ package-lock.json
 .turbo
 /.hackersheet
 /.claude/settings.local.json
+__screenshots__
