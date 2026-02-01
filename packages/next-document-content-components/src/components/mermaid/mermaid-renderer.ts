@@ -27,8 +27,14 @@ export async function withSafeJsonStringify<T>(fn: () => Promise<T>): Promise<T>
     const seen = new WeakSet();
     const safeReplacer = (_key: string, val: unknown) => {
       if (typeof val === 'object' && val !== null) {
-        if (seen.has(val)) return undefined;
-        seen.add(val);
+        try {
+          if (seen.has(val)) return undefined;
+          seen.add(val);
+        } catch {
+          // Cross-origin objects (e.g., Window, iframe) throw security errors
+          // when accessed via WeakSet operations. Skip tracking these objects.
+          return undefined;
+        }
       }
       return val;
     };
