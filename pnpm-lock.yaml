@@ -206,11 +206,11 @@ importers:
         specifier: workspace:*
         version: link:../react-document-content
       json-kifu-format:
-        specifier: ^5.5.0
-        version: 5.5.0
+        specifier: ^5.4.1
+        version: 5.4.1
       shogi.js:
-        specifier: ^5.5.0
-        version: 5.5.0
+        specifier: ^5.4.1
+        version: 5.4.1
     devDependencies:
       '@types/react':
         specifier: ^19.2.10
@@ -4160,8 +4160,8 @@ packages:
   json-buffer@3.0.1:
     resolution: {integrity: sha512-4bV5BfR2mqfQTJm+V5tPPdf+ZpuhiIvTuAB5g8kcrXOZpTT/QwwVRWBywX1ozr6lEuPdbHxwaJlm9G6mI2sfSQ==}
 
-  json-kifu-format@5.5.0:
-    resolution: {integrity: sha512-OWbxiPwtwzlLX85tOFv7BGkQsRzHjLCl3TeNswHLH7pr67rEcdRT9wPgKW2RIEpWCoTh6zyU/c5mWNm9PRM7sw==}
+  json-kifu-format@5.4.1:
+    resolution: {integrity: sha512-XI3kBhYTY2z6SDwfFKvC0Hfi3ESmT1sKgnXIIyhDU2CThGxlcpC74UB4BficHaL9Ac18k8aEGJR5daMmiwFmoQ==}
 
   json-parse-even-better-errors@2.3.1:
     resolution: {integrity: sha512-xyFwyhro/JEof6Ghe2iz2NcXoj2sloNsWr/XsERDK/oiPCfaNhl5ONfp+jQdAZRQQ0IJWNzH9zIZF7li91kh2w==}
@@ -5265,8 +5265,8 @@ packages:
   shiki@3.22.0:
     resolution: {integrity: sha512-LBnhsoYEe0Eou4e1VgJACes+O6S6QC0w71fCSp5Oya79inkwkm15gQ1UF6VtQ8j/taMDh79hAB49WUk8ALQW3g==}
 
-  shogi.js@5.5.0:
-    resolution: {integrity: sha512-Ykki+EeuyHGEv+gvIDMvh8L7GIWmSH8K8J9hF/R6h4fJsS0nFWGPgyMjLCs2AkwTre8eoB+u7Jo51CnbV2i89Q==}
+  shogi.js@5.4.1:
+    resolution: {integrity: sha512-63YlCIN9IMbDvqUaCAKT77KCl7es+KQjXCdFx0nSZ3Fgth71qvZZuDQD9fqGKuVswdX00WFtiM97qzh1ZJ55sA==}
 
   side-channel-list@1.0.0:
     resolution: {integrity: sha512-FCLHtRD/gnpCiCHEiJLOwdmFP+wzCmDEkc9y7NsYxeF4u7Btsn1ZuwgwJGxImImHicJArLP4R0yX4c2KCrMrTA==}
@@ -10130,9 +10130,9 @@ snapshots:
 
   json-buffer@3.0.1: {}
 
-  json-kifu-format@5.5.0:
+  json-kifu-format@5.4.1:
     dependencies:
-      shogi.js: 5.5.0
+      shogi.js: 5.4.1
 
   json-parse-even-better-errors@2.3.1: {}
 
@@ -11597,7 +11597,7 @@ snapshots:
       '@shikijs/vscode-textmate': 10.0.2
       '@types/hast': 3.0.4
 
-  shogi.js@5.5.0: {}
+  shogi.js@5.4.1: {}
 
   side-channel-list@1.0.0:
     dependencies:
