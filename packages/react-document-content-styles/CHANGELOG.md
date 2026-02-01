@@ -1,5 +1,11 @@
 # @hackersheet/react-document-content-styles
 
+## 0.1.0-alpha.17
+
+### Patch Changes
+
+- 8f11932: Prevent list margins from affecting directory tree display
+
 ## 0.1.0-alpha.16
 
 ### Patch Changes

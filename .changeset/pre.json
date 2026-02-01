@@ -11,6 +11,7 @@
     "@hackersheet/sandbox-next": "0.0.0"
   },
   "changesets": [
+    "crisp-queens-battle",
     "cuddly-cars-accept",
     "eager-hotels-shave",
     "few-bottles-mix",

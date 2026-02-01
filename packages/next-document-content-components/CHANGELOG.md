@@ -1,5 +1,11 @@
 # @hackersheet/next-document-content-components
 
+## 0.1.0-alpha.35
+
+### Patch Changes
+
+- @hackersheet/react-document-content@0.1.0-alpha.17
+
 ## 0.1.0-alpha.34
 
 ### Patch Changes
