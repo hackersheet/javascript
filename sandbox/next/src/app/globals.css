@@ -1,6 +1,6 @@
 @import 'tailwindcss';
 
-@source '../../node_modules/@hackersheet/next-document-content-kifu/dist/**/*.{js,ts,jsx,tsx}';
+@source '../../node_modules/@hackersheet/next-document-content-kifu/dist/**/*.{js,mjs,ts,tsx}';
 
 @custom-variant dark (&:is(.dark *));
 
