@@ -4,6 +4,7 @@ import path from 'path';
 import { input, confirm } from '@inquirer/prompts';
 import matter from 'gray-matter';
 
+import { colors, symbols } from '../utils/colors';
 import { findProjectRootPath } from '../utils/find-project-root-path';
 
 import type { Dirent, Stats } from 'fs';
@@ -336,13 +337,13 @@ export async function genTreeAction(
   findRoot: () => string | null = findProjectRootPath
 ): Promise<void> {
   const fail = (message: string, code = 1): never => {
-    logger.error(message);
+    logger.error(`${symbols.error()} ${colors.error(message)}`);
     exitHandler.exit(code);
     throw new Error('unreachable');
   };
 
   const finish = (message: string, code = 0): never => {
-    logger.log(message);
+    logger.log(`${symbols.info()} ${colors.info(message)}`);
     exitHandler.exit(code);
     throw new Error('unreachable');
   };
@@ -378,7 +379,7 @@ export async function genTreeAction(
   try {
     await fsApi.writeFile(tmpFile, data, 'utf8');
     await fsApi.rename(tmpFile, outFile);
-    logger.log('Wrote', outFile);
+    logger.log(`${symbols.success()} ${colors.success('Wrote')} ${colors.path(outFile)}`);
   } catch (err) {
     await fsApi.unlink(tmpFile).catch(() => null);
     fail(`Failed to write ${outFile}: ${String(err)}`);

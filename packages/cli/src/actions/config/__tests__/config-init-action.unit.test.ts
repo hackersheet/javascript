@@ -1,10 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-import {
-  configInitAction,
-  runConfigWizard,
-  type ConfigInitActionDeps,
-} from '../config-init-action';
+import { configInitAction, runConfigWizard, type ConfigInitActionDeps } from '../config-init-action';
 
 describe('runConfigWizard', () => {
   const createMockDeps = (overrides: Partial<ConfigInitActionDeps> = {}): Partial<ConfigInitActionDeps> => ({
@@ -200,9 +196,7 @@ describe('configInitAction', () => {
     await configInitAction({}, deps);
 
     expect(deps.saveConfig).toHaveBeenCalled();
-    expect(deps.logger!.log).toHaveBeenCalledWith(
-      expect.stringContaining('Project configuration initialized')
-    );
+    expect(deps.logger!.log).toHaveBeenCalledWith(expect.stringContaining('Project configuration initialized'));
   });
 
   it('initializes user config with --global option', async () => {
@@ -210,9 +204,7 @@ describe('configInitAction', () => {
 
     await configInitAction({ global: true }, deps);
 
-    expect(deps.logger!.log).toHaveBeenCalledWith(
-      expect.stringContaining('User configuration initialized')
-    );
+    expect(deps.logger!.log).toHaveBeenCalledWith(expect.stringContaining('User configuration initialized'));
   });
 
   it('creates directory before saving', async () => {

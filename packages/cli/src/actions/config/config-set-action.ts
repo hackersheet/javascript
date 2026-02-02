@@ -1,5 +1,6 @@
 import path from 'path';
 
+import { colors, symbols } from '../../utils/colors';
 import { getUserConfigPath, getProjectConfigPath } from '../../utils/load-config';
 import { updateConfigKey } from '../../utils/save-config';
 
@@ -108,5 +109,7 @@ export async function configSetAction(
 
   await update(configPath, key, parsedValue);
 
-  logger.log(`Updated ${key} in ${configType} configuration (${configPath})`);
+  logger.log(
+    `${symbols.success()} ${colors.success('Updated')} ${colors.emphasis(key)} in ${configType} configuration ${colors.dim(`(${configPath})`)}`
+  );
 }

@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-import { docsAction, type DocsActionDeps } from '../docs-action';
 import { ConfigError, type Config } from '../../utils/load-config';
+import { docsAction, type DocsActionDeps } from '../docs-action';
 
 describe('docsAction', () => {
   const createMockDeps = (overrides: Partial<DocsActionDeps> = {}): DocsActionDeps => ({
@@ -32,7 +32,7 @@ describe('docsAction', () => {
 
     await docsAction(undefined as unknown as string, {}, deps);
 
-    expect(deps.logger.error).toHaveBeenCalledWith('Error: Missing required argument <slug>');
+    expect(deps.logger.error).toHaveBeenCalledWith(expect.stringContaining('Missing required argument'));
     expect(deps.exitHandler.exit).toHaveBeenCalledWith(1);
   });
 
@@ -45,8 +45,8 @@ describe('docsAction', () => {
 
     await docsAction('test-slug', {}, deps);
 
-    expect(deps.logger.error).toHaveBeenCalledWith('Configuration error: Invalid JSON');
-    expect(deps.logger.error).toHaveBeenCalledWith('  File: /path/to/config.json');
+    expect(deps.logger.error).toHaveBeenCalledWith(expect.stringContaining('Configuration error'));
+    expect(deps.logger.error).toHaveBeenCalledWith(expect.stringContaining('Invalid JSON'));
     expect(deps.exitHandler.exit).toHaveBeenCalledWith(1);
   });
 
@@ -61,8 +61,8 @@ describe('docsAction', () => {
 
     await docsAction('test-slug', {}, deps);
 
-    expect(deps.logger.error).toHaveBeenCalledWith('Error: No workspaces configured.');
-    expect(deps.logger.error).toHaveBeenCalledWith('Run "hscli setup" to configure your workspace.');
+    expect(deps.logger.error).toHaveBeenCalledWith(expect.stringContaining('No workspaces configured'));
+    expect(deps.logger.error).toHaveBeenCalledWith(expect.stringContaining('hscli setup'));
     expect(deps.exitHandler.exit).toHaveBeenCalledWith(1);
   });
 
@@ -80,8 +80,8 @@ describe('docsAction', () => {
 
     await docsAction('test-slug', {}, deps);
 
-    expect(deps.logger.error).toHaveBeenCalledWith('Error: Multiple workspaces configured but no default set.');
-    expect(deps.logger.error).toHaveBeenCalledWith('Use --workspace <slug> to specify which workspace to use,');
+    expect(deps.logger.error).toHaveBeenCalledWith(expect.stringContaining('Multiple workspaces configured'));
+    expect(deps.logger.error).toHaveBeenCalledWith(expect.stringContaining('--workspace'));
     expect(deps.exitHandler.exit).toHaveBeenCalledWith(1);
   });
 
@@ -98,7 +98,8 @@ describe('docsAction', () => {
 
     await docsAction('test-slug', { workspace: 'non-existent' }, deps);
 
-    expect(deps.logger.error).toHaveBeenCalledWith('Error: Workspace "non-existent" is not configured.');
+    expect(deps.logger.error).toHaveBeenCalledWith(expect.stringContaining('non-existent'));
+    expect(deps.logger.error).toHaveBeenCalledWith(expect.stringContaining('is not configured'));
     expect(deps.exitHandler.exit).toHaveBeenCalledWith(1);
   });
 
@@ -111,7 +112,7 @@ describe('docsAction', () => {
 
     await docsAction('test-slug', {}, deps);
 
-    expect(deps.logger.error).toHaveBeenCalledWith('Error: Failed to connect to the API.');
+    expect(deps.logger.error).toHaveBeenCalledWith(expect.stringContaining('Failed to connect to the API'));
     expect(deps.exitHandler.exit).toHaveBeenCalledWith(1);
   });
 
@@ -126,7 +127,7 @@ describe('docsAction', () => {
 
     await docsAction('test-slug', {}, deps);
 
-    expect(deps.logger.error).toHaveBeenCalledWith('Error: API returned an error.');
+    expect(deps.logger.error).toHaveBeenCalledWith(expect.stringContaining('API returned an error'));
     expect(deps.exitHandler.exit).toHaveBeenCalledWith(1);
   });
 
@@ -141,7 +142,8 @@ describe('docsAction', () => {
 
     await docsAction('test-slug', {}, deps);
 
-    expect(deps.logger.error).toHaveBeenCalledWith('Error: Document not found with slug "test-slug".');
+    expect(deps.logger.error).toHaveBeenCalledWith(expect.stringContaining('Document not found'));
+    expect(deps.logger.error).toHaveBeenCalledWith(expect.stringContaining('test-slug'));
     expect(deps.exitHandler.exit).toHaveBeenCalledWith(1);
   });
 

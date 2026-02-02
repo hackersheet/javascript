@@ -31,13 +31,10 @@ describe('configDeleteAction', () => {
 
     await configDeleteAction('defaultWorkspace', {}, deps);
 
-    expect(deps.deleteConfigKey).toHaveBeenCalledWith(
-      '/project/.hackersheet/cli.config.json',
-      'defaultWorkspace'
-    );
-    expect(deps.logger.log).toHaveBeenCalledWith(
-      'Deleted defaultWorkspace from project configuration (/project/.hackersheet/cli.config.json)'
-    );
+    expect(deps.deleteConfigKey).toHaveBeenCalledWith('/project/.hackersheet/cli.config.json', 'defaultWorkspace');
+    expect(deps.logger.log).toHaveBeenCalledWith(expect.stringContaining('Deleted'));
+    expect(deps.logger.log).toHaveBeenCalledWith(expect.stringContaining('defaultWorkspace'));
+    expect(deps.logger.log).toHaveBeenCalledWith(expect.stringContaining('project configuration'));
   });
 
   it('deletes a key from user config with --global option', async () => {
@@ -49,9 +46,9 @@ describe('configDeleteAction', () => {
       '/home/user/.config/hackersheet/cli.config.json',
       'defaultWorkspace'
     );
-    expect(deps.logger.log).toHaveBeenCalledWith(
-      'Deleted defaultWorkspace from user configuration (/home/user/.config/hackersheet/cli.config.json)'
-    );
+    expect(deps.logger.log).toHaveBeenCalledWith(expect.stringContaining('Deleted'));
+    expect(deps.logger.log).toHaveBeenCalledWith(expect.stringContaining('defaultWorkspace'));
+    expect(deps.logger.log).toHaveBeenCalledWith(expect.stringContaining('user configuration'));
   });
 
   it('displays error when config file is not found', async () => {
@@ -61,9 +58,7 @@ describe('configDeleteAction', () => {
 
     await configDeleteAction('defaultWorkspace', {}, deps);
 
-    expect(deps.logger.error).toHaveBeenCalledWith(
-      'Configuration file not found: /project/.hackersheet/cli.config.json'
-    );
+    expect(deps.logger.error).toHaveBeenCalledWith(expect.stringContaining('Configuration file not found'));
     expect(deps.deleteConfigKey).not.toHaveBeenCalled();
   });
 
@@ -72,9 +67,8 @@ describe('configDeleteAction', () => {
 
     await configDeleteAction('nonExistentKey', {}, deps);
 
-    expect(deps.logger.error).toHaveBeenCalledWith(
-      'Key not found in project configuration: nonExistentKey'
-    );
+    expect(deps.logger.error).toHaveBeenCalledWith(expect.stringContaining('Key not found'));
+    expect(deps.logger.error).toHaveBeenCalledWith(expect.stringContaining('nonExistentKey'));
     expect(deps.deleteConfigKey).not.toHaveBeenCalled();
   });
 
@@ -104,8 +98,7 @@ describe('configDeleteAction', () => {
 
     await configDeleteAction('workspaces.nonexistent.accessKey', {}, deps);
 
-    expect(deps.logger.error).toHaveBeenCalledWith(
-      'Key not found in project configuration: workspaces.nonexistent.accessKey'
-    );
+    expect(deps.logger.error).toHaveBeenCalledWith(expect.stringContaining('Key not found'));
+    expect(deps.logger.error).toHaveBeenCalledWith(expect.stringContaining('workspaces.nonexistent.accessKey'));
   });
 });

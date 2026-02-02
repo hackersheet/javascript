@@ -1,3 +1,4 @@
+import { colors } from '../../utils/colors';
 import {
   type Config,
   getUserConfigPath,
@@ -83,20 +84,20 @@ function displayConfig(config: Partial<Config>, logger: Logger): void {
   }
 
   if (entries.length === 0 && (!config.workspaces || Object.keys(config.workspaces).length === 0)) {
-    logger.log('  (no configuration set)');
+    logger.log(colors.dim('  (no configuration set)'));
     return;
   }
 
   for (const [key, value] of entries) {
-    logger.log(`  ${key} = ${formatValue(value)}`);
+    logger.log(`  ${colors.info(key)} = ${formatValue(value)}`);
   }
 
   if (config.workspaces && Object.keys(config.workspaces).length > 0) {
     logger.log('');
-    logger.log('Workspaces:');
+    logger.log(colors.emphasis('Workspaces:'));
     for (const slug of Object.keys(config.workspaces)) {
       const isDefault = config.defaultWorkspace === slug;
-      logger.log(`  ${slug}${isDefault ? ' (default)' : ''}`);
+      logger.log(`  ${colors.info(slug)}${isDefault ? colors.dim(' (default)') : ''}`);
     }
   }
 }
@@ -141,24 +142,24 @@ export async function configListAction(
 
   if (options.global) {
     logger.log('');
-    logger.log('User configuration:');
+    logger.log(colors.emphasis('User configuration:'));
     logger.log('');
     const config = loadUser();
     displayConfig(config, logger);
     logger.log('');
-    logger.log(`Config file: ${userConfigPath}`);
+    logger.log(`Config file: ${colors.path(userConfigPath)}`);
     logger.log('');
     return;
   }
 
   if (options.local) {
     logger.log('');
-    logger.log('Project configuration:');
+    logger.log(colors.emphasis('Project configuration:'));
     logger.log('');
     const config = loadProject();
     displayConfig(config, logger);
     logger.log('');
-    logger.log(`Config file: ${projectConfigPath ?? '(not found)'}`);
+    logger.log(`Config file: ${projectConfigPath ? colors.path(projectConfigPath) : colors.dim('(not found)')}`);
     logger.log('');
     return;
   }
@@ -167,12 +168,12 @@ export async function configListAction(
   const config = loadMerged();
 
   logger.log('');
-  logger.log('Configuration (merged):');
+  logger.log(colors.emphasis('Configuration (merged):'));
   logger.log('');
   displayConfig(config, logger);
   logger.log('');
-  logger.log('Config files:');
-  logger.log(`  User:    ${userConfigPath}`);
-  logger.log(`  Project: ${projectConfigPath ?? '(not found)'}`);
+  logger.log(colors.emphasis('Config files:'));
+  logger.log(`  User:    ${colors.path(userConfigPath)}`);
+  logger.log(`  Project: ${projectConfigPath ? colors.path(projectConfigPath) : colors.dim('(not found)')}`);
   logger.log('');
 }

@@ -1,3 +1,4 @@
+import { colors, symbols } from '../../utils/colors';
 import { type Config, loadUserConfig, loadProjectConfig, loadConfig } from '../../utils/load-config';
 
 /**
@@ -104,7 +105,7 @@ export async function configGetAction(
   const value = getNestedValue(config as Record<string, unknown>, key);
 
   if (value === undefined) {
-    logger.error(`Key not found: ${key}`);
+    logger.error(`${symbols.error()} ${colors.error('Key not found:')} ${colors.emphasis(key)}`);
     return;
   }
 

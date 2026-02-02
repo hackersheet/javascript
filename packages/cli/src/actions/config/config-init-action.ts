@@ -3,6 +3,7 @@ import path from 'path';
 
 import { input, confirm } from '@inquirer/prompts';
 
+import { colors, symbols } from '../../utils/colors';
 import { type Config, getUserConfigPath, getProjectConfigPath, loadConfigFromPath } from '../../utils/load-config';
 import { saveConfig } from '../../utils/save-config';
 
@@ -121,7 +122,7 @@ export async function runConfigWizard(
   const { fsApi, prompts, logger, loadConfigFromPath: loadFromPath } = { ...defaultDeps, ...deps };
 
   const confirmMessage = options.confirmMessage ?? 'Configuration file already exists. Overwrite?';
-  const headerMessage = options.headerMessage ?? '\n📝 Configuration Setup\n';
+  const headerMessage = options.headerMessage ?? '\nConfiguration Setup\n';
 
   const configExists = await fileExists(configPath, fsApi);
   if (configExists) {
@@ -231,6 +232,7 @@ export async function configInitAction(
 
   await save(configPath, result.config);
 
-  logger.log(`\n✨ ${configType.charAt(0).toUpperCase() + configType.slice(1)} configuration initialized!`);
-  logger.log(`   Config: ${configPath}`);
+  const capitalizedType = configType.charAt(0).toUpperCase() + configType.slice(1);
+  logger.log(`\n${symbols.success()} ${colors.success(`${capitalizedType} configuration initialized!`)}`);
+  logger.log(`   Config: ${colors.path(configPath)}`);
 }

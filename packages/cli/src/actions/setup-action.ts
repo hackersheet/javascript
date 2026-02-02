@@ -4,9 +4,9 @@ import path from 'path';
 import { input, confirm } from '@inquirer/prompts';
 
 import { runConfigWizard, type ConfigInitActionDeps } from './config';
+import { colors, symbols } from '../utils/colors';
 import { loadConfigFromPath } from '../utils/load-config';
 import { saveConfig } from '../utils/save-config';
-
 
 /**
  * Minimal filesystem interface for dependency injection.
@@ -79,13 +79,13 @@ export async function setupAction(deps: Partial<SetupActionDeps> = {}): Promise<
 
   const wizardOptions = {
     confirmMessage: 'Hacker Sheet is already initialized. Overwrite configuration?',
-    headerMessage: '\n📝 Hacker Sheet CLI Setup\n',
+    headerMessage: '\nHacker Sheet CLI Setup\n',
   };
 
   const result = await runConfigWizard(configPath, wizardDeps, wizardOptions);
 
   if (result.cancelled) {
-    logger.log('Setup cancelled.');
+    logger.log(`${symbols.warning()} ${colors.warning('Setup cancelled.')}`);
     return;
   }
 
@@ -97,7 +97,7 @@ export async function setupAction(deps: Partial<SetupActionDeps> = {}): Promise<
   const configJson = JSON.stringify(result.config, null, 2);
   await fsApi.writeFile(configPath, configJson, 'utf8');
 
-  logger.log(`\n✨ Setup completed!`);
-  logger.log(`   Created: ${hackersheetDir}`);
-  logger.log(`   Config:  ${configPath}`);
+  logger.log(`\n${symbols.success()} ${colors.success('Setup completed!')}`);
+  logger.log(`   Created: ${colors.path(hackersheetDir)}`);
+  logger.log(`   Config:  ${colors.path(configPath)}`);
 }

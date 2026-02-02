@@ -1,5 +1,6 @@
 import { createClient } from '@hackersheet/core';
 
+import { colors, symbols } from '../utils/colors';
 import { loadConfig, type Config, ConfigError } from '../utils/load-config';
 
 /**
@@ -109,8 +110,8 @@ export async function docsAction(
   const { logger, exitHandler, loadConfigFn, createClientFn } = { ...defaultDeps, ...deps };
 
   if (!slug) {
-    logger.error('Error: Missing required argument <slug>');
-    logger.error('Usage: hscli docs <slug>');
+    logger.error(`${symbols.error()} ${colors.error('Missing required argument')} ${colors.emphasis('<slug>')}`);
+    logger.error(`${colors.hint('Usage: hscli docs <slug>')}`);
     exitHandler.exit(1);
     return;
   }
@@ -120,12 +121,12 @@ export async function docsAction(
     config = loadConfigFn();
   } catch (err) {
     if (err instanceof ConfigError) {
-      logger.error(`Configuration error: ${err.message}`);
+      logger.error(`${symbols.error()} ${colors.error('Configuration error:')} ${err.message}`);
       if (err.configPath) {
-        logger.error(`  File: ${err.configPath}`);
+        logger.error(`  File: ${colors.path(err.configPath)}`);
       }
     } else {
-      logger.error(`Failed to load configuration: ${String(err)}`);
+      logger.error(`${symbols.error()} ${colors.error('Failed to load configuration:')} ${String(err)}`);
     }
     exitHandler.exit(1);
     return;
@@ -135,15 +136,17 @@ export async function docsAction(
 
   if (!resolved) {
     if (options.workspace) {
-      logger.error(`Error: Workspace "${options.workspace}" is not configured.`);
+      logger.error(
+        `${symbols.error()} ${colors.error('Workspace')} ${colors.emphasis(`"${options.workspace}"`)} ${colors.error('is not configured.')}`
+      );
     } else if (Object.keys(config.workspaces).length === 0) {
-      logger.error('Error: No workspaces configured.');
+      logger.error(`${symbols.error()} ${colors.error('No workspaces configured.')}`);
     } else {
-      logger.error('Error: Multiple workspaces configured but no default set.');
-      logger.error('Use --workspace <slug> to specify which workspace to use,');
-      logger.error('or set "defaultWorkspace" in your configuration.');
+      logger.error(`${symbols.error()} ${colors.error('Multiple workspaces configured but no default set.')}`);
+      logger.error(colors.hint('Use --workspace <slug> to specify which workspace to use,'));
+      logger.error(colors.hint('or set "defaultWorkspace" in your configuration.'));
     }
-    logger.error('Run "hscli setup" to configure your workspace.');
+    logger.error(colors.hint('Run "hscli setup" to configure your workspace.'));
     exitHandler.exit(1);
     return;
   }
@@ -158,21 +161,21 @@ export async function docsAction(
   try {
     result = await client.getDocument({ slug });
   } catch (err) {
-    logger.error(`Error: Failed to connect to the API.`);
-    logger.error(`  Details: ${String(err)}`);
+    logger.error(`${symbols.error()} ${colors.error('Failed to connect to the API.')}`);
+    logger.error(`  ${colors.dim('Details:')} ${String(err)}`);
     exitHandler.exit(1);
     return;
   }
 
   if (result.error) {
-    logger.error(`Error: API returned an error.`);
-    logger.error(`  Details: ${String(result.error)}`);
+    logger.error(`${symbols.error()} ${colors.error('API returned an error.')}`);
+    logger.error(`  ${colors.dim('Details:')} ${String(result.error)}`);
     exitHandler.exit(1);
     return;
   }
 
   if (result.document?.content === undefined) {
-    logger.error(`Error: Document not found with slug "${slug}".`);
+    logger.error(`${symbols.error()} ${colors.error('Document not found with slug')} ${colors.emphasis(`"${slug}"`)}`);
     exitHandler.exit(1);
     return;
   }

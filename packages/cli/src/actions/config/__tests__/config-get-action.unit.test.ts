@@ -53,7 +53,8 @@ describe('configGetAction', () => {
 
     await configGetAction('nonExistentKey', {}, deps);
 
-    expect(deps.logger.error).toHaveBeenCalledWith('Key not found: nonExistentKey');
+    expect(deps.logger.error).toHaveBeenCalledWith(expect.stringContaining('Key not found'));
+    expect(deps.logger.error).toHaveBeenCalledWith(expect.stringContaining('nonExistentKey'));
     expect(deps.logger.log).not.toHaveBeenCalled();
   });
 
@@ -98,6 +99,7 @@ describe('configGetAction', () => {
 
     await configGetAction('workspaces.nonexistent.accessKey', {}, deps);
 
-    expect(deps.logger.error).toHaveBeenCalledWith('Key not found: workspaces.nonexistent.accessKey');
+    expect(deps.logger.error).toHaveBeenCalledWith(expect.stringContaining('Key not found'));
+    expect(deps.logger.error).toHaveBeenCalledWith(expect.stringContaining('workspaces.nonexistent.accessKey'));
   });
 });

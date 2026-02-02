@@ -1,3 +1,4 @@
+import { colors } from '../../utils/colors';
 import { getUserConfigPath, getProjectConfigPath } from '../../utils/load-config';
 
 /**
@@ -49,16 +50,18 @@ export async function configPathAction(
   const projectConfigPath = getProjectPath();
 
   if (options.global) {
-    logger.log(userConfigPath);
+    logger.log(colors.path(userConfigPath));
     return;
   }
 
   if (options.local) {
-    logger.log(projectConfigPath ?? '(not found)');
+    logger.log(projectConfigPath ? colors.path(projectConfigPath) : colors.dim('(not found)'));
     return;
   }
 
   // Default: show both paths
-  logger.log(`User:    ${userConfigPath}`);
-  logger.log(`Project: ${projectConfigPath ?? '(not found)'}`);
+  logger.log(`${colors.info('User:')}    ${colors.path(userConfigPath)}`);
+  logger.log(
+    `${colors.info('Project:')} ${projectConfigPath ? colors.path(projectConfigPath) : colors.dim('(not found)')}`
+  );
 }

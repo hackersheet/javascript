@@ -16,6 +16,7 @@ import { docsAction } from './actions/docs-action';
 import { genTreeAction } from './actions/gen-tree-action';
 import { newAction } from './actions/new-action';
 import { setupAction } from './actions/setup-action';
+import { setNoColor, colors, symbols } from './utils/colors';
 
 /**
  * Checks if an error is a prompt cancellation error.
@@ -27,10 +28,15 @@ function isPromptCancelled(error: unknown): boolean {
   return error instanceof Error && error.name === 'ExitPromptError';
 }
 
+// Check for --no-color flag before parsing
+if (process.argv.includes('--no-color')) {
+  setNoColor(true);
+}
+
 // Global error handler for prompt cancellation (Ctrl+C)
 process.on('uncaughtException', (error) => {
   if (isPromptCancelled(error)) {
-    console.log('\nCancelled.');
+    console.log(`\n${symbols.warning()} ${colors.warning('Cancelled.')}`);
     process.exit(0);
   }
   throw error;
@@ -50,7 +56,11 @@ function getVersion(): string {
 
 const program = new Command();
 
-program.name('hscli').description('Hacker Sheet command line interface.').version(getVersion());
+program
+  .name('hscli')
+  .description('Hacker Sheet command line interface.')
+  .version(getVersion())
+  .option('--no-color', 'Disable colored output');
 
 program.command('setup').description('Setup Hacker Sheet in the current project.').action(setupAction);
 program

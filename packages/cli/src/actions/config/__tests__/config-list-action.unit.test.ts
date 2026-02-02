@@ -80,12 +80,8 @@ describe('configListAction', () => {
     await configListAction({}, deps);
 
     expect(deps.logger.log).toHaveBeenCalledWith('Config files:');
-    expect(deps.logger.log).toHaveBeenCalledWith(
-      '  User:    /home/user/.config/hackersheet/cli.config.json'
-    );
-    expect(deps.logger.log).toHaveBeenCalledWith(
-      '  Project: /project/.hackersheet/cli.config.json'
-    );
+    expect(deps.logger.log).toHaveBeenCalledWith('  User:    /home/user/.config/hackersheet/cli.config.json');
+    expect(deps.logger.log).toHaveBeenCalledWith('  Project: /project/.hackersheet/cli.config.json');
   });
 
   it('displays "(not found)" when project config path is null', async () => {

@@ -19,12 +19,8 @@ describe('configPathAction', () => {
 
     await configPathAction({}, deps);
 
-    expect(deps.logger.log).toHaveBeenCalledWith(
-      'User:    /home/user/.config/hackersheet/cli.config.json'
-    );
-    expect(deps.logger.log).toHaveBeenCalledWith(
-      'Project: /project/.hackersheet/cli.config.json'
-    );
+    expect(deps.logger.log).toHaveBeenCalledWith('User:    /home/user/.config/hackersheet/cli.config.json');
+    expect(deps.logger.log).toHaveBeenCalledWith('Project: /project/.hackersheet/cli.config.json');
   });
 
   it('displays only user path with --global option', async () => {
@@ -33,9 +29,7 @@ describe('configPathAction', () => {
     await configPathAction({ global: true }, deps);
 
     expect(deps.logger.log).toHaveBeenCalledTimes(1);
-    expect(deps.logger.log).toHaveBeenCalledWith(
-      '/home/user/.config/hackersheet/cli.config.json'
-    );
+    expect(deps.logger.log).toHaveBeenCalledWith('/home/user/.config/hackersheet/cli.config.json');
   });
 
   it('displays only project path with --local option', async () => {
@@ -44,9 +38,7 @@ describe('configPathAction', () => {
     await configPathAction({ local: true }, deps);
 
     expect(deps.logger.log).toHaveBeenCalledTimes(1);
-    expect(deps.logger.log).toHaveBeenCalledWith(
-      '/project/.hackersheet/cli.config.json'
-    );
+    expect(deps.logger.log).toHaveBeenCalledWith('/project/.hackersheet/cli.config.json');
   });
 
   it('displays "(not found)" when project config path is null', async () => {

@@ -1,5 +1,6 @@
 import path from 'path';
 
+import { colors, symbols } from '../../utils/colors';
 import { getUserConfigPath, getProjectConfigPath, loadConfigFromPath } from '../../utils/load-config';
 import { deleteConfigKey } from '../../utils/save-config';
 
@@ -103,17 +104,21 @@ export async function configDeleteAction(
 
   const existingConfig = loadFromPath(configPath);
   if (!existingConfig) {
-    logger.error(`Configuration file not found: ${configPath}`);
+    logger.error(`${symbols.error()} ${colors.error('Configuration file not found:')} ${colors.path(configPath)}`);
     return;
   }
 
   const currentValue = getNestedValue(existingConfig as Record<string, unknown>, key);
   if (currentValue === undefined) {
-    logger.error(`Key not found in ${configType} configuration: ${key}`);
+    logger.error(
+      `${symbols.error()} ${colors.error('Key not found in')} ${configType} configuration: ${colors.emphasis(key)}`
+    );
     return;
   }
 
   await deleteKey(configPath, key);
 
-  logger.log(`Deleted ${key} from ${configType} configuration (${configPath})`);
+  logger.log(
+    `${symbols.success()} ${colors.success('Deleted')} ${colors.emphasis(key)} from ${configType} configuration ${colors.dim(`(${configPath})`)}`
+  );
 }

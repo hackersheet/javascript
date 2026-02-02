@@ -104,7 +104,7 @@ describe('setupAction', () => {
 
     await setupAction(deps);
 
-    expect(deps.logger.log).toHaveBeenCalledWith('Setup cancelled.');
+    expect(deps.logger.log).toHaveBeenCalledWith(expect.stringContaining('Setup cancelled'));
     expect(deps.fsApi.writeFile).not.toHaveBeenCalled();
   });
 
