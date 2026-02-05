@@ -7,10 +7,10 @@ description: Test code creation, refactoring, and debugging with Vitest. Support
 
 ## Project-Specific Test Types
 
-| Test Type        | File Pattern         | Environment           | Target                          |
-| ---------------- | -------------------- | --------------------- | ------------------------------- |
+| Test Type        | File Pattern         | Environment           | Target                             |
+| ---------------- | -------------------- | --------------------- | ---------------------------------- |
 | **Unit Test**    | `*.unit.test.ts`     | Node.js               | Pure functions in `utils/`, `lib/` |
-| **Browser Test** | `*.browser.test.tsx` | Playwright (Chromium) | React components, hooks         |
+| **Browser Test** | `*.browser.test.tsx` | Playwright (Chromium) | React components, hooks            |
 
 See [file-layout.md](references/file-layout.md) for placement rules.
 

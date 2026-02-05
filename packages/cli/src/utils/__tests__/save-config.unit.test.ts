@@ -51,11 +51,7 @@ describe('saveConfig', () => {
 
     await saveConfig('/project/.hackersheet/cli.config.json', {}, deps);
 
-    expect(deps.fsApi.writeFile).toHaveBeenCalledWith(
-      '/project/.hackersheet/cli.config.json',
-      '{}',
-      'utf8'
-    );
+    expect(deps.fsApi.writeFile).toHaveBeenCalledWith('/project/.hackersheet/cli.config.json', '{}', 'utf8');
   });
 });
 

@@ -20,10 +20,10 @@ vi.mock('next/navigation', () => ({
   useSelectedLayoutSegment: vi.fn(),
   useRouter: vi.fn(() => ({ push: vi.fn() })),
   usePathname: vi.fn(() => '/'),
-}))
+}));
 
 // In test
-vi.mocked(useSelectedLayoutSegment).mockReturnValue('docs')
+vi.mocked(useSelectedLayoutSegment).mockReturnValue('docs');
 ```
 
 ### next-themes
@@ -31,11 +31,11 @@ vi.mocked(useSelectedLayoutSegment).mockReturnValue('docs')
 ```typescript
 vi.mock('next-themes', () => ({
   useTheme: vi.fn(() => ({ theme: 'light', setTheme: vi.fn() })),
-}))
+}));
 ```
 
 ## Reset Pattern
 
 ```typescript
-beforeEach(() => vi.clearAllMocks())
+beforeEach(() => vi.clearAllMocks());
 ```

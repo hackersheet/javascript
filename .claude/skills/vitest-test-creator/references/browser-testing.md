@@ -33,11 +33,11 @@ describe('Component', () => {
 ## Hooks Testing
 
 ```typescript
-import { renderHook, act } from '@testing-library/react'
+import { renderHook, act } from '@testing-library/react';
 
 it('toggles state', () => {
-  const { result } = renderHook(() => useToggle())
-  act(() => result.current.toggle())
-  expect(result.current.value).toBe(true)
-})
+  const { result } = renderHook(() => useToggle());
+  act(() => result.current.toggle());
+  expect(result.current.value).toBe(true);
+});
 ```

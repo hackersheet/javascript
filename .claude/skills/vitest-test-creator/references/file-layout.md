@@ -23,10 +23,10 @@ src/
 
 ## File Naming
 
-| Location                    | Extension            |
-| --------------------------- | -------------------- |
-| `utils/`, `lib/`            | `.unit.test.ts`      |
-| `components/`, `hooks/`     | `.browser.test.tsx`  |
+| Location                | Extension           |
+| ----------------------- | ------------------- |
+| `utils/`, `lib/`        | `.unit.test.ts`     |
+| `components/`, `hooks/` | `.browser.test.tsx` |
 
 ## Vitest Auto-Detection
 
