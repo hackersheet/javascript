@@ -12,6 +12,7 @@ Add pan/zoom and fullscreen functionality to Mermaid diagrams
 - Improve pan speed for smoother navigation
 
 Refactored components following React best practices:
+
 - Split into smaller single-responsibility components
 - Add memoization to prevent unnecessary re-renders
 - Extract reusable hooks (`useBodyScrollLock`, `useEscapeKey`)

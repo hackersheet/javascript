@@ -3,7 +3,10 @@ import path from 'path';
 
 import { input, confirm } from '@inquirer/prompts';
 
-import { type Config } from '../utils/load-config';
+import { runConfigWizard, type ConfigInitActionDeps } from './config';
+import { colors, symbols } from '../utils/colors';
+import { loadConfigFromPath } from '../utils/load-config';
+import { saveConfig } from '../utils/save-config';
 
 /**
  * Minimal filesystem interface for dependency injection.
@@ -38,6 +41,7 @@ export type SetupActionDeps = {
   prompts: Prompts;
   logger: Logger;
   cwd: () => string;
+  configInitDeps?: Partial<ConfigInitActionDeps>;
 };
 
 const defaultDeps: SetupActionDeps = {
@@ -45,16 +49,6 @@ const defaultDeps: SetupActionDeps = {
   prompts: { input, confirm },
   logger: { log: console.log, error: console.error },
   cwd: () => process.cwd(),
-};
-
-/**
- * Default configuration template.
- */
-const DEFAULT_CONFIG: Config = {
-  workspaceSlug: '',
-  workspaceAccessKey: '',
-  newFilenameTemplate: '{{yyyy}}-{{mm}}-{{dd}}-{{title}}.md',
-  docsDirs: ['docs'],
 };
 
 /**
@@ -67,87 +61,43 @@ const DEFAULT_CONFIG: Config = {
  * @param deps - Optional dependencies for testing.
  */
 export async function setupAction(deps: Partial<SetupActionDeps> = {}): Promise<void> {
-  const { fsApi, prompts, logger, cwd } = { ...defaultDeps, ...deps };
+  const { fsApi, prompts, logger, cwd, configInitDeps } = { ...defaultDeps, ...deps };
 
   const projectRoot = cwd();
   const hackersheetDir = path.join(projectRoot, '.hackersheet');
   const configPath = path.join(hackersheetDir, 'cli.config.json');
   const treesDir = path.join(hackersheetDir, 'trees');
 
-  // Check if already initialized
-  const configExists = await fileExists(configPath, fsApi);
-  if (configExists) {
-    const overwrite = await prompts.confirm({
-      message: 'Hacker Sheet is already initialized. Overwrite configuration?',
-      default: false,
-    });
-    if (!overwrite) {
-      logger.log('Setup cancelled.');
-      return;
-    }
-  }
-
-  // Gather configuration
-  logger.log('\n📝 Hacker Sheet CLI Setup\n');
-
-  const workspaceSlug = await prompts.input({
-    message: 'Workspace slug (optional, for API access)',
-    default: '',
-  });
-
-  const workspaceAccessKey = await prompts.input({
-    message: 'Workspace access key (optional, for API access)',
-    default: '',
-  });
-
-  const newFilenameTemplate = await prompts.input({
-    message: 'New document filename template',
-    default: DEFAULT_CONFIG.newFilenameTemplate,
-  });
-
-  const docsDirsInput = await prompts.input({
-    message: 'Document directories (comma-separated)',
-    default: 'docs',
-  });
-
-  const docsDirs = docsDirsInput
-    .split(',')
-    .map((d) => d.trim())
-    .filter((d) => d.length > 0);
-
-  // Build configuration
-  const config: Config = {
-    workspaceSlug: workspaceSlug || '',
-    workspaceAccessKey: workspaceAccessKey || '',
-    newFilenameTemplate: newFilenameTemplate || DEFAULT_CONFIG.newFilenameTemplate,
-    docsDirs: docsDirs.length > 0 ? docsDirs : DEFAULT_CONFIG.docsDirs,
+  const wizardDeps: Partial<ConfigInitActionDeps> = {
+    fsApi: { mkdir: fsApi.mkdir, access: fsApi.access },
+    prompts,
+    logger,
+    loadConfigFromPath,
+    saveConfig,
+    ...configInitDeps,
   };
+
+  const wizardOptions = {
+    confirmMessage: 'Hacker Sheet is already initialized. Overwrite configuration?',
+    headerMessage: '\nHacker Sheet CLI Setup\n',
+  };
+
+  const result = await runConfigWizard(configPath, wizardDeps, wizardOptions);
+
+  if (result.cancelled) {
+    logger.log(`${symbols.warning()} ${colors.warning('Setup cancelled.')}`);
+    return;
+  }
 
   // Create directories
   await fsApi.mkdir(hackersheetDir, { recursive: true });
   await fsApi.mkdir(treesDir, { recursive: true });
 
   // Write configuration
-  const configJson = JSON.stringify(config, null, 2);
+  const configJson = JSON.stringify(result.config, null, 2);
   await fsApi.writeFile(configPath, configJson, 'utf8');
 
-  logger.log(`\n✨ Setup completed!`);
-  logger.log(`   Created: ${hackersheetDir}`);
-  logger.log(`   Config:  ${configPath}`);
-}
-
-/**
- * Checks if a file exists.
- *
- * @param filePath - Path to check.
- * @param fsApi - Filesystem interface.
- * @returns True if file exists.
- */
-async function fileExists(filePath: string, fsApi: FsLike): Promise<boolean> {
-  try {
-    await fsApi.access(filePath);
-    return true;
-  } catch {
-    return false;
-  }
+  logger.log(`\n${symbols.success()} ${colors.success('Setup completed!')}`);
+  logger.log(`   Created: ${colors.path(hackersheetDir)}`);
+  logger.log(`   Config:  ${colors.path(configPath)}`);
 }

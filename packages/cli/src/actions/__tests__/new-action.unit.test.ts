@@ -17,8 +17,7 @@ describe('newAction', () => {
     },
     logger: { log: vi.fn(), error: vi.fn() },
     loadConfigFn: vi.fn().mockReturnValue({
-      workspaceSlug: '',
-      workspaceAccessKey: '',
+      workspaces: {},
       newFilenameTemplate: '{{yyyy}}-{{mm}}-{{dd}}-{{title}}.md',
       newFileTemplatePath: 'templates/doc.mustache',
       docsDirs: ['docs', 'guides'],
@@ -142,8 +141,7 @@ describe('newAction', () => {
   it('uses default directory when docsDirs is empty', async () => {
     const deps = createMockDeps({
       loadConfigFn: vi.fn().mockReturnValue({
-        workspaceSlug: '',
-        workspaceAccessKey: '',
+        workspaces: {},
         newFilenameTemplate: '{{title}}.md',
         docsDirs: [],
       }),
@@ -165,8 +163,7 @@ describe('newAction', () => {
         select: vi.fn().mockResolvedValue('docs'),
       },
       loadConfigFn: vi.fn().mockReturnValue({
-        workspaceSlug: '',
-        workspaceAccessKey: '',
+        workspaces: {},
         newFilenameTemplate: '{{title}}.md',
         newFileTemplatePath: undefined,
         docsDirs: ['docs'],
@@ -185,8 +182,7 @@ describe('newAction', () => {
         select: vi.fn().mockResolvedValue('docs'),
       },
       loadConfigFn: vi.fn().mockReturnValue({
-        workspaceSlug: '',
-        workspaceAccessKey: '',
+        workspaces: {},
         newFilenameTemplate: '{{title}}.md',
         newFileTemplatePath: undefined,
         docsDirs: ['docs'],

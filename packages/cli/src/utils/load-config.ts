@@ -1,16 +1,25 @@
 import fs from 'fs';
+import os from 'os';
 import path from 'path';
 
 import { findUpSync } from 'find-up';
 
 /**
+ * Configuration object for a single workspace.
+ */
+export type WorkspaceConfig = {
+  /** The access key for authenticating with the workspace API. */
+  accessKey: string;
+};
+
+/**
  * Configuration object for the Hacker Sheet CLI.
  */
 export type Config = {
-  /** The workspace slug for API access. */
-  workspaceSlug: string;
-  /** The access key for authenticating with the workspace API. */
-  workspaceAccessKey: string;
+  /** Registered workspaces keyed by slug. */
+  workspaces: Record<string, WorkspaceConfig>;
+  /** The default workspace slug to use when not specified. */
+  defaultWorkspace?: string;
   /** Mustache template for generating new document filenames. */
   newFilenameTemplate: string;
   /** Optional path (relative to project root) to a mustache template used for new file content. */
@@ -35,72 +44,98 @@ export class ConfigError extends Error {
 /**
  * Default empty configuration.
  */
-const EMPTY_CONFIG: Config = {
-  workspaceSlug: '',
-  workspaceAccessKey: '',
+export const EMPTY_CONFIG: Config = {
+  workspaces: {},
   newFilenameTemplate: '',
   docsDirs: [],
 };
 
 /**
- * Validates the configuration object structure.
+ * Returns the user config file path following XDG Base Directory Specification.
+ *
+ * Uses `$XDG_CONFIG_HOME/hackersheet/cli.config.json` if set,
+ * otherwise falls back to `~/.config/hackersheet/cli.config.json`.
+ *
+ * @returns The path to the user configuration file.
+ */
+export function getUserConfigPath(): string {
+  const configDir = process.env.XDG_CONFIG_HOME || path.join(os.homedir(), '.config');
+  return path.join(configDir, 'hackersheet', 'cli.config.json');
+}
+
+/**
+ * Validates and extracts partial configuration from an unknown value.
  *
  * @param value - The value to validate.
  * @param configPath - Path to the config file for error messages.
- * @returns The validated configuration.
+ * @returns The validated partial configuration.
  * @throws {ConfigError} If validation fails.
  */
-function validateConfig(value: unknown, configPath: string): Config {
+/**
+ * Validates and extracts a workspaces object from an unknown value.
+ *
+ * @param value - The value to validate.
+ * @returns The validated workspaces record, or undefined if invalid.
+ */
+function validateWorkspaces(value: unknown): Record<string, WorkspaceConfig> | undefined {
+  if (typeof value !== 'object' || value === null) {
+    return undefined;
+  }
+
+  const obj = value as Record<string, unknown>;
+  const result: Record<string, WorkspaceConfig> = {};
+
+  for (const [key, workspace] of Object.entries(obj)) {
+    if (typeof workspace === 'object' && workspace !== null) {
+      const ws = workspace as Record<string, unknown>;
+      if (typeof ws.accessKey === 'string') {
+        result[key] = { accessKey: ws.accessKey };
+      }
+    }
+  }
+
+  return Object.keys(result).length > 0 ? result : undefined;
+}
+
+function validatePartialConfig(value: unknown, configPath: string): Partial<Config> {
   if (typeof value !== 'object' || value === null) {
     throw new ConfigError(`Invalid configuration: expected object, got ${typeof value}`, configPath);
   }
 
   const obj = value as Record<string, unknown>;
+  const result: Partial<Config> = {};
 
-  // Validate required string fields with defaults
-  const workspaceSlug = typeof obj.workspaceSlug === 'string' ? obj.workspaceSlug : '';
-  const workspaceAccessKey = typeof obj.workspaceAccessKey === 'string' ? obj.workspaceAccessKey : '';
-  const newFilenameTemplate = typeof obj.newFilenameTemplate === 'string' ? obj.newFilenameTemplate : '';
-
-  // Validate optional string field
-  const newFileTemplatePath =
-    obj.newFileTemplatePath === undefined
-      ? undefined
-      : typeof obj.newFileTemplatePath === 'string'
-        ? obj.newFileTemplatePath
-        : undefined;
-
-  // Validate docsDirs array
-  let docsDirs: string[] = [];
+  const workspaces = validateWorkspaces(obj.workspaces);
+  if (workspaces !== undefined) {
+    result.workspaces = workspaces;
+  }
+  if (typeof obj.defaultWorkspace === 'string') {
+    result.defaultWorkspace = obj.defaultWorkspace;
+  }
+  if (typeof obj.newFilenameTemplate === 'string') {
+    result.newFilenameTemplate = obj.newFilenameTemplate;
+  }
+  if (typeof obj.newFileTemplatePath === 'string') {
+    result.newFileTemplatePath = obj.newFileTemplatePath;
+  }
   if (Array.isArray(obj.docsDirs)) {
-    docsDirs = obj.docsDirs.filter((d): d is string => typeof d === 'string');
+    result.docsDirs = obj.docsDirs.filter((d): d is string => typeof d === 'string');
   }
 
-  return {
-    workspaceSlug,
-    workspaceAccessKey,
-    newFilenameTemplate,
-    newFileTemplatePath,
-    docsDirs,
-  };
+  return result;
 }
 
 /**
- * Loads the CLI configuration from `.hackersheet/cli.config.json`.
+ * Loads configuration from a specific file path.
  *
- * Searches for the `.hackersheet` directory starting from the current
- * working directory and traversing up. If found, reads and parses the
- * `cli.config.json` file.
- *
- * @returns The parsed configuration object, or an empty config if not found.
- * @throws {ConfigError} If the configuration file exists but is invalid JSON or has an invalid structure.
+ * @param configPath - The path to the configuration file.
+ * @returns The parsed partial configuration, or null if the file does not exist.
+ * @throws {ConfigError} If the file exists but cannot be read or parsed.
  */
-export function loadConfig(): Config {
-  const dir = findUpSync('.hackersheet', { cwd: process.cwd(), type: 'directory' });
-  if (!dir) return EMPTY_CONFIG;
-
-  const configPath = path.join(dir, 'cli.config.json');
-  if (!fs.existsSync(configPath)) return EMPTY_CONFIG;
+export function loadConfigFromPath(configPath: string): Partial<Config> | null {
+  if (!fs.existsSync(configPath)) {
+    return null;
+  }
 
   let content: string;
   try {
@@ -116,5 +151,69 @@ export function loadConfig(): Config {
     throw new ConfigError(`Invalid JSON in configuration file: ${String(err)}`, configPath);
   }
 
-  return validateConfig(parsed, configPath);
+  return validatePartialConfig(parsed, configPath);
+}
+
+/**
+ * Loads the user configuration from the user config directory.
+ *
+ * @returns The parsed partial configuration, or an empty object if not found.
+ * @throws {ConfigError} If the file exists but is invalid.
+ */
+export function loadUserConfig(): Partial<Config> {
+  const configPath = getUserConfigPath();
+  return loadConfigFromPath(configPath) ?? {};
+}
+
+/**
+ * Returns the project config file path.
+ *
+ * Searches for `.hackersheet/cli.config.json` starting from the current
+ * directory and traversing up.
+ *
+ * @returns The path to the project configuration file, or null if not found.
+ */
+export function getProjectConfigPath(): string | null {
+  const dir = findUpSync('.hackersheet', { cwd: process.cwd(), type: 'directory' });
+  if (!dir) {
+    return null;
+  }
+  return path.join(dir, 'cli.config.json');
+}
+
+/**
+ * Loads the project configuration from `.hackersheet/cli.config.json`.
+ *
+ * @returns The parsed partial configuration, or an empty object if not found.
+ * @throws {ConfigError} If the file exists but is invalid.
+ */
+export function loadProjectConfig(): Partial<Config> {
+  const configPath = getProjectConfigPath();
+  if (!configPath) {
+    return {};
+  }
+  return loadConfigFromPath(configPath) ?? {};
+}
+
+/**
+ * Loads the CLI configuration by merging user and project configurations.
+ *
+ * Configuration is loaded from two sources:
+ * 1. User config: `~/.config/hackersheet/cli.config.json` (base)
+ * 2. Project config: `.hackersheet/cli.config.json` (overrides)
+ *
+ * Project configuration takes precedence over user configuration (shallow merge).
+ *
+ * @returns The merged configuration object.
+ * @throws {ConfigError} If a configuration file exists but is invalid JSON or has an invalid structure.
+ */
+export function loadConfig(): Config {
+  const userConfig = loadUserConfig();
+  const projectConfig = loadProjectConfig();
+
+  return {
+    ...EMPTY_CONFIG,
+    ...userConfig,
+    ...projectConfig,
+  };
 }

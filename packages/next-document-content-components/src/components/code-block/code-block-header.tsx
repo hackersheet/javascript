@@ -6,7 +6,6 @@ import CodeBlockCopyButton from './code-block-copy-button';
 
 import type { ReactNode } from 'react';
 
-
 /**
  * Props for the CodeBlockHeader component.
  */

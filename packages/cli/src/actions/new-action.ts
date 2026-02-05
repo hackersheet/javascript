@@ -4,6 +4,7 @@ import path from 'path';
 import { input, select } from '@inquirer/prompts';
 import mustache from 'mustache';
 
+import { colors, symbols } from '../utils/colors';
 import { getDateComponents } from '../utils/date-format';
 import { findProjectRootPath } from '../utils/find-project-root-path';
 import { loadConfig, type Config } from '../utils/load-config';
@@ -107,12 +108,12 @@ export async function newAction(deps: Partial<NewActionDeps> = {}): Promise<void
 
   try {
     await fsApi.writeFile(filepath, rendered.content, { encoding: 'utf8', flag: 'wx' });
-    const templateInfo = rendered.templatePath ? ` (from ${rendered.templatePath})` : '';
-    logger.log(`Created file: ${filepath}${templateInfo}`);
+    const templateInfo = rendered.templatePath ? colors.dim(` (from ${rendered.templatePath})`) : '';
+    logger.log(`${symbols.success()} ${colors.success('Created file:')} ${colors.path(filepath)}${templateInfo}`);
   } catch (err: unknown) {
     const code = (err as { code?: string } | undefined)?.code;
     if (code === 'EEXIST') {
-      logger.error(`File already exists: ${filepath}`);
+      logger.error(`${symbols.error()} ${colors.error('File already exists:')} ${colors.path(filepath)}`);
     } else {
       throw err;
     }
