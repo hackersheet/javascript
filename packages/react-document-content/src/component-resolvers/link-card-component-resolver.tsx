@@ -37,7 +37,8 @@ export default function LinkCardComponentResolver({
     return <p>{children}</p>;
   }
 
-  const website = document.websites.find((website) => website.url === href);
+  const hrefWithoutHash = typeof href === 'string' ? href.split('#')[0] : href;
+  const website = document.websites.find((website) => website.url === hrefWithoutHash);
 
   if (!website) {
     return <p>{children}</p>;
@@ -45,7 +46,7 @@ export default function LinkCardComponentResolver({
 
   return (
     <LinkCardComponent
-      url={website.url}
+      url={String(href)}
       title={website.ogTitle || website.title || website.url}
       description={website.ogDescription || website.description}
       domain={website.domain}
