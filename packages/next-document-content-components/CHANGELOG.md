@@ -1,5 +1,13 @@
 # @hackersheet/next-document-content-components
 
+## 0.1.0-alpha.37
+
+### Patch Changes
+
+- e0f984f: Add Ruby language support to Shiki syntax highlighter
+- Updated dependencies [b016c7e]
+  - @hackersheet/react-document-content@0.1.0-alpha.18
+
 ## 0.1.0-alpha.36
 
 ### Patch Changes

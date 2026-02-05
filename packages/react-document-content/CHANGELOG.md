@@ -1,5 +1,11 @@
 # @hackersheet/react-document-content
 
+## 0.1.0-alpha.18
+
+### Patch Changes
+
+- b016c7e: Fix LinkCardComponentResolver to handle URLs with anchor fragments
+
 ## 0.1.0-alpha.17
 
 ### Patch Changes
