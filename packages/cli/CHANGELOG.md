@@ -1,5 +1,15 @@
 # @hackersheet/cli
 
+## 0.1.0-alpha.7
+
+### Patch Changes
+
+- 175d7dd: Add config command for managing CLI configuration
+  - Add `config` command with subcommands: `get`, `set`, `list`, `init`, `delete`, `path`
+  - Support multi-workspace configuration with fallback and merge functionality
+  - Use XDG Base Directory Specification for user config path
+  - Add terminal output colorization for better readability
+
 ## 0.1.0-alpha.6
 
 ### Patch Changes
