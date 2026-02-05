@@ -38,7 +38,7 @@ export async function highlighteCode(code: string, language: string) {
  * Additional languages not included in the web bundle.
  * These are loaded dynamically to keep the initial bundle size small.
  */
-const additionalLanguages = [import('shiki/langs/mermaid.mjs')];
+const additionalLanguages = [import('shiki/langs/mermaid.mjs'), import('shiki/langs/ruby.mjs')];
 
 const getShikiHighlighter = cache(async () => {
   return getSingletonHighlighterCore({
