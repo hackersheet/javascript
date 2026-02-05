@@ -1,93 +1,45 @@
-# コミットメッセージルール
+# Commit Message Rules
 
-このプロジェクトでは Conventional Commits 形式を使用しています。
+## Project-Specific Conventions
 
-## フォーマット
+### Type Selection
+
+- Use `test` for test code modifications/refactoring (not `refactor`)
+
+### Scope
+
+- Use kebab-case (e.g., `commit-skill`, `user-profile`, `api-client`)
+- Apply meaningful scope names, not file paths or file names
+- Use only one scope. Split commits if multiple are needed
+
+### Body
+
+- **Include body by default**
+- Use list format with `-` prefix
+- Describe changed files and specific changes
+- Include technical details and implementation approach
+
+**Body can be omitted only when:**
+
+- The summary completely explains the changes
+- Additional details would duplicate the summary (e.g., simple typo fix)
+
+## Examples
+
+Example with file-specific changes:
 
 ```text
-<type>(<scope>): <説明>
+feat(auth): add remember me feature to login
+
+- src/components/LoginForm.tsx: Add remember me checkbox
+- src/hooks/useAuth.ts: Implement token persistence logic
+- src/lib/storage.ts: Add localStorage operation utilities
+- Save token to localStorage when remember me is enabled
+- Set expiration to 30 days
 ```
 
-## タイプ (type)
-
-- `feat`: 新機能の追加
-- `fix`: バグ修正
-- `refactor`: リファクタリング（機能追加やバグ修正を含まない）
-- `style`: スタイルの変更（CSS、フォーマットなど）
-- `chore`: ビルドプロセスや補助ツールの変更
-- `docs`: ドキュメントのみの変更
-- `test`: テストの追加・修正
-
-### タイプ選択の注意
-
-- テストコードの修正・リファクタリングは `test` を使用する（`refactor` ではない）
-
-## スコープ (scope)
-
-- オプショナル
-- 何について変更したのかを表す内容を指定
-- ハイフン区切り（kebab-case）の英単語で記述（例: `commit-skill`, `user-profile`, `api-client`）
-- ファイルパスやファイル名ではなく、意味のあるスコープ名を適用する
-- スコープは可能な限り一つとする。複数必要な場合はコミットを分ける
-
-## 説明
-
-- 日本語で記述
-- 簡潔に1行で完結させる
-- 何を変更したかを明確に記述
-
-## 詳細な説明（本文）
-
-- **原則として本文を含める** - 1行目のサマリーの後に空行を挟んで本文を追加
-- 可能な限りリスト形式（箇条書き）で記述する
-- 各項目は `-` で始める
-- 変更の理由や影響範囲を明確にする
-- 変更したファイルと具体的な変更内容を記述する
-- 技術的な詳細や実装のアプローチも含める
-
-### 本文の省略条件
-
-以下の場合のみ本文を省略可能:
-
-- 1行目のサマリーで変更内容が完全に説明できている
-- 追加の詳細情報がサマリーの重複になる（例: 単純な誤字修正）
-
-## 例
-
-基本的なコミットメッセージ:
+Example where body can be omitted:
 
 ```text
-feat(tools): rem / px 変換ツールを追加
-fix(avatar): 画像のパスを修正
-refactor(hooks): useClientOnly フックを追加
-style(document-content): h2-h6 のリンク前にマージンを追加
-chore: update dependencies
-```
-
-詳細な説明を含む例:
-
-```text
-refactor(auth): 認証ロジックをリファクタリング
-
-- セッション管理を独立したモジュールに分離
-- トークン検証のエラーハンドリングを改善
-- 不要な依存関係を削除
-```
-
-ファイルごとの変更を含む例:
-
-```text
-feat(auth): ログイン機能にリメンバーミー機能を追加
-
-- src/components/LoginForm.tsx: リメンバーミーチェックボックスを追加
-- src/hooks/useAuth.ts: トークン永続化ロジックを実装
-- src/lib/storage.ts: ローカルストレージ操作のユーティリティを追加
-- リメンバーミーが有効な場合、トークンをlocalStorageに保存
-- 有効期限は30日間に設定
-```
-
-本文省略可能な例:
-
-```text
-fix(typo): README.mdの誤字を修正
+fix(typo): fix typo in README.md
 ```
