@@ -8,7 +8,8 @@ import {
   getCachePath,
   isCacheValid,
   type CacheDeps,
-  type SlugsCacheEntry,
+  type DocumentsCacheEntry,
+  type DocumentCacheItem,
 } from '../cache';
 
 describe('cache utilities', () => {
@@ -65,8 +66,8 @@ describe('cache utilities', () => {
 
   describe('isCacheValid', () => {
     it('returns true if cache is within TTL', () => {
-      const entry: SlugsCacheEntry = {
-        slugs: ['doc1'],
+      const entry: DocumentsCacheEntry = {
+        documents: [{ slug: 'doc1', title: 'Doc 1' }],
         timestamp: 1000,
         workspace: 'test-workspace',
       };
@@ -79,8 +80,8 @@ describe('cache utilities', () => {
     });
 
     it('returns false if cache is expired', () => {
-      const entry: SlugsCacheEntry = {
-        slugs: ['doc1'],
+      const entry: DocumentsCacheEntry = {
+        documents: [{ slug: 'doc1', title: 'Doc 1' }],
         timestamp: 1000,
         workspace: 'test-workspace',
       };
@@ -93,8 +94,8 @@ describe('cache utilities', () => {
     });
 
     it('returns true if cache timestamp equals now - ttl', () => {
-      const entry: SlugsCacheEntry = {
-        slugs: ['doc1'],
+      const entry: DocumentsCacheEntry = {
+        documents: [{ slug: 'doc1', title: 'Doc 1' }],
         timestamp: 0,
         workspace: 'test-workspace',
       };
@@ -128,7 +129,10 @@ describe('cache utilities', () => {
       const oldTimestamp = 1000;
       const cacheContent = JSON.stringify({
         'test-workspace': {
-          slugs: ['doc1', 'doc2'],
+          documents: [
+            { slug: 'doc1', title: 'Doc 1' },
+            { slug: 'doc2', title: 'Doc 2' },
+          ],
           timestamp: oldTimestamp,
           workspace: 'test-workspace',
         },
@@ -148,11 +152,16 @@ describe('cache utilities', () => {
       expect(result).toBeNull();
     });
 
-    it('returns cached slugs when cache is valid', () => {
+    it('returns cached documents when cache is valid', () => {
       const timestamp = 1000000;
+      const documents: DocumentCacheItem[] = [
+        { slug: 'doc1', title: 'Doc 1' },
+        { slug: 'doc2', title: 'Doc 2' },
+        { slug: 'doc3', title: 'Doc 3' },
+      ];
       const cacheContent = JSON.stringify({
         'test-workspace': {
-          slugs: ['doc1', 'doc2', 'doc3'],
+          documents,
           timestamp,
           workspace: 'test-workspace',
         },
@@ -169,13 +178,13 @@ describe('cache utilities', () => {
 
       const result = loadCache('test-workspace', deps);
 
-      expect(result).toEqual(['doc1', 'doc2', 'doc3']);
+      expect(result).toEqual(documents);
     });
 
     it('returns null when workspace is not in cache', () => {
       const cacheContent = JSON.stringify({
         'other-workspace': {
-          slugs: ['doc1'],
+          documents: [{ slug: 'doc1', title: 'Doc 1' }],
           timestamp: 1000000,
           workspace: 'other-workspace',
         },
@@ -209,10 +218,38 @@ describe('cache utilities', () => {
 
       expect(result).toBeNull();
     });
+
+    it('returns null when cache is in old format (backward compatibility)', () => {
+      const cacheContent = JSON.stringify({
+        'test-workspace': {
+          slugs: ['doc1', 'doc2'],
+          timestamp: 1000000,
+          workspace: 'test-workspace',
+        },
+      });
+
+      const deps: Partial<CacheDeps> = {
+        fsApi: {
+          ...mockFsApi,
+          readFile: vi.fn(() => cacheContent),
+          access: vi.fn(),
+        },
+        now: mockNow,
+      };
+
+      const result = loadCache('test-workspace', deps);
+
+      expect(result).toBeNull();
+    });
   });
 
   describe('saveCache', () => {
     it('creates cache directory if it does not exist', async () => {
+      const documents: DocumentCacheItem[] = [
+        { slug: 'doc1', title: 'Doc 1' },
+        { slug: 'doc2', title: 'Doc 2' },
+      ];
+
       const deps: Partial<CacheDeps> = {
         fsApi: {
           ...mockFsApi,
@@ -228,7 +265,7 @@ describe('cache utilities', () => {
         now: mockNow,
       };
 
-      await saveCache('test-workspace', ['doc1', 'doc2'], deps);
+      await saveCache('test-workspace', documents, deps);
 
       expect(deps.fsApi!.mkdir).toHaveBeenCalledWith(expect.stringContaining('hackersheet'), {
         recursive: true,
@@ -237,6 +274,11 @@ describe('cache utilities', () => {
 
     it('writes cache file with correct structure', async () => {
       let writtenContent = '';
+
+      const documents: DocumentCacheItem[] = [
+        { slug: 'doc1', title: 'Doc 1' },
+        { slug: 'doc2', title: 'Doc 2' },
+      ];
 
       const deps: Partial<CacheDeps> = {
         fsApi: {
@@ -255,25 +297,27 @@ describe('cache utilities', () => {
         now: vi.fn(() => 2000000),
       };
 
-      await saveCache('test-workspace', ['doc1', 'doc2'], deps);
+      await saveCache('test-workspace', documents, deps);
 
       const parsed = JSON.parse(writtenContent);
       expect(parsed['test-workspace']).toEqual({
-        slugs: ['doc1', 'doc2'],
+        documents,
         timestamp: 2000000,
         workspace: 'test-workspace',
       });
     });
 
     it('preserves existing cache entries for other workspaces', async () => {
+      const existingDocs: DocumentCacheItem[] = [{ slug: 'existing-doc', title: 'Existing Doc' }];
       const existingCache = JSON.stringify({
         'other-workspace': {
-          slugs: ['existing-doc'],
+          documents: existingDocs,
           timestamp: 1000,
           workspace: 'other-workspace',
         },
       });
 
+      const newDocs: DocumentCacheItem[] = [{ slug: 'new-doc', title: 'New Doc' }];
       let writtenContent = '';
 
       const deps: Partial<CacheDeps> = {
@@ -289,16 +333,16 @@ describe('cache utilities', () => {
         now: vi.fn(() => 2000000),
       };
 
-      await saveCache('test-workspace', ['new-doc'], deps);
+      await saveCache('test-workspace', newDocs, deps);
 
       const parsed = JSON.parse(writtenContent);
       expect(parsed['other-workspace']).toEqual({
-        slugs: ['existing-doc'],
+        documents: existingDocs,
         timestamp: 1000,
         workspace: 'other-workspace',
       });
       expect(parsed['test-workspace']).toEqual({
-        slugs: ['new-doc'],
+        documents: newDocs,
         timestamp: 2000000,
         workspace: 'test-workspace',
       });

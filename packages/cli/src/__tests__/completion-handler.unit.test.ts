@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { completionHandler, type CompletionHandlerDeps } from '../completion-handler';
 
+import type { DocumentCacheItem } from '../utils/cache';
 import type { Config } from '../utils/load-config';
 
 // Mock tabtab module
@@ -98,6 +99,11 @@ describe('completionHandler', () => {
     const mockLoadCache = vi.fn(() => null);
     const mockSaveCache = vi.fn().mockResolvedValue(undefined);
 
+    const mockDocuments: DocumentCacheItem[] = [
+      { slug: 'doc1', title: 'Doc 1' },
+      { slug: 'doc2', title: 'Doc 2' },
+    ];
+
     const mockClient: MockClient = {
       getDocuments: vi.fn().mockResolvedValue({
         documents: [
@@ -118,11 +124,16 @@ describe('completionHandler', () => {
       createClientFn: mockCreateClient,
     });
 
-    expect(vi.mocked(tabtab.log)).toHaveBeenCalledWith(['doc1', 'doc2']);
-    expect(mockSaveCache).toHaveBeenCalledWith('workspace-1', ['doc1', 'doc2']);
+    expect(vi.mocked(tabtab.log)).toHaveBeenCalledWith(
+      expect.arrayContaining([
+        { name: 'doc1', description: 'Doc 1' },
+        { name: 'doc2', description: 'Doc 2' },
+      ])
+    );
+    expect(mockSaveCache).toHaveBeenCalledWith('workspace-1', mockDocuments);
   });
 
-  it('uses cached slugs when available', async () => {
+  it('uses cached documents when available', async () => {
     const mockParseEnv = vi.fn(() => ({
       complete: true,
       line: 'hscli docs',
@@ -130,7 +141,12 @@ describe('completionHandler', () => {
     }));
     vi.mocked(tabtab.parseEnv).mockImplementation(mockParseEnv);
 
-    const mockLoadCache = vi.fn(() => ['cached-doc1', 'cached-doc2']);
+    const cachedDocuments: DocumentCacheItem[] = [
+      { slug: 'cached-doc1', title: 'Cached Doc 1' },
+      { slug: 'cached-doc2', title: 'Cached Doc 2' },
+    ];
+
+    const mockLoadCache = vi.fn(() => cachedDocuments);
     const mockSaveCache = vi.fn();
     const mockCreateClient = vi.fn();
 
@@ -141,7 +157,12 @@ describe('completionHandler', () => {
       createClientFn: mockCreateClient,
     });
 
-    expect(vi.mocked(tabtab.log)).toHaveBeenCalledWith(['cached-doc1', 'cached-doc2']);
+    expect(vi.mocked(tabtab.log)).toHaveBeenCalledWith(
+      expect.arrayContaining([
+        { name: 'cached-doc1', description: 'Cached Doc 1' },
+        { name: 'cached-doc2', description: 'Cached Doc 2' },
+      ])
+    );
     expect(mockCreateClient).not.toHaveBeenCalled();
   });
 
@@ -155,6 +176,8 @@ describe('completionHandler', () => {
 
     const mockLoadCache = vi.fn(() => null);
     const mockSaveCache = vi.fn().mockResolvedValue(undefined);
+
+    const mockDocuments: DocumentCacheItem[] = [{ slug: 'doc3', title: 'Doc 3' }];
 
     const mockClient: MockClient = {
       getDocuments: vi.fn().mockResolvedValue({
@@ -172,8 +195,10 @@ describe('completionHandler', () => {
       createClientFn: mockCreateClient,
     } as unknown as Partial<CompletionHandlerDeps>);
 
-    expect(vi.mocked(tabtab.log)).toHaveBeenCalledWith(['doc3']);
-    expect(mockSaveCache).toHaveBeenCalledWith('workspace-2', ['doc3']);
+    expect(vi.mocked(tabtab.log)).toHaveBeenCalledWith(
+      expect.arrayContaining([{ name: 'doc3', description: 'Doc 3' }])
+    );
+    expect(mockSaveCache).toHaveBeenCalledWith('workspace-2', mockDocuments);
   });
 
   it('returns empty array when API call fails', async () => {

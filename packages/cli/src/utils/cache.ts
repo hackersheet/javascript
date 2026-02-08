@@ -5,10 +5,20 @@ import path from 'path';
 const DEFAULT_TTL = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
 
 /**
+ * A single document entry in the cache.
+ */
+export type DocumentCacheItem = {
+  /** Document slug. */
+  slug: string;
+  /** Document title. */
+  title: string;
+};
+
+/**
  * Represents a single cache entry for a workspace.
  */
-export type SlugsCacheEntry = {
-  slugs: string[];
+export type DocumentsCacheEntry = {
+  documents: DocumentCacheItem[];
   timestamp: number;
   workspace: string;
 };
@@ -16,7 +26,7 @@ export type SlugsCacheEntry = {
 /**
  * Represents the entire cache structure.
  */
-export type SlugsCache = Record<string, SlugsCacheEntry>;
+export type DocumentsCache = Record<string, DocumentsCacheEntry>;
 
 /**
  * Dependencies for cache operations (for testing).
@@ -66,24 +76,23 @@ export function getCachePath(): string {
  * @param now - Current timestamp in milliseconds.
  * @returns True if the cache entry is still valid.
  */
-export function isCacheValid(entry: SlugsCacheEntry, ttl: number, now: number): boolean {
+export function isCacheValid(entry: DocumentsCacheEntry, ttl: number, now: number): boolean {
   return now - entry.timestamp < ttl;
 }
 
 /**
- * Load slugs from cache for a specific workspace.
- * Returns null if cache is missing, expired, or invalid.
+ * Load documents from cache for a specific workspace.
+ * Returns null if cache is missing, expired, invalid, or in old format.
  *
  * @param workspace - The workspace slug.
  * @param deps - Optional dependencies for testing.
- * @returns Array of slugs if cache is valid, null otherwise.
+ * @returns Array of documents if cache is valid, null otherwise.
  */
-export function loadCache(workspace: string, deps?: Partial<CacheDeps>): string[] | null {
+export function loadCache(workspace: string, deps?: Partial<CacheDeps>): DocumentCacheItem[] | null {
   const cachePath = getCachePath();
   const { fsApi, now } = {
     fsApi: {
-      readFile: (filePath: string, encoding: string) =>
-        fs.readFileSync(filePath, encoding as BufferEncoding),
+      readFile: (filePath: string, encoding: string) => fs.readFileSync(filePath, encoding as BufferEncoding),
       writeFile: (filePath: string, data: string) => fs.writeFileSync(filePath, data, 'utf8'),
       mkdir: (filePath: string, options?: { recursive?: boolean }) => fs.mkdirSync(filePath, options),
       unlink: (filePath: string) => fs.unlinkSync(filePath),
@@ -101,10 +110,15 @@ export function loadCache(workspace: string, deps?: Partial<CacheDeps>): string[
 
   try {
     const content = fsApi.readFile(cachePath, 'utf8');
-    const cache: SlugsCache = JSON.parse(content);
+    const cache: DocumentsCache = JSON.parse(content);
 
     const entry = cache[workspace];
     if (!entry) {
+      return null;
+    }
+
+    // Backward compatibility: old cache format had "slugs" field instead of "documents"
+    if ('slugs' in (entry as unknown as Record<string, unknown>) && !('documents' in entry)) {
       return null;
     }
 
@@ -112,26 +126,29 @@ export function loadCache(workspace: string, deps?: Partial<CacheDeps>): string[
       return null;
     }
 
-    return entry.slugs;
+    return entry.documents;
   } catch {
     return null;
   }
 }
 
 /**
- * Save slugs to cache for a specific workspace.
+ * Save documents to cache for a specific workspace.
  *
  * @param workspace - The workspace slug.
- * @param slugs - Array of document slugs to cache.
+ * @param documents - Array of documents to cache.
  * @param deps - Optional dependencies for testing.
  */
-export async function saveCache(workspace: string, slugs: string[], deps?: Partial<CacheDeps>): Promise<void> {
+export async function saveCache(
+  workspace: string,
+  documents: DocumentCacheItem[],
+  deps?: Partial<CacheDeps>
+): Promise<void> {
   const cachePath = getCachePath();
   const cacheDir = getCacheDir();
   const { fsApi, now } = {
     fsApi: {
-      readFile: (filePath: string, encoding: string) =>
-        fs.readFileSync(filePath, encoding as BufferEncoding),
+      readFile: (filePath: string, encoding: string) => fs.readFileSync(filePath, encoding as BufferEncoding),
       writeFile: (filePath: string, data: string) => fs.writeFileSync(filePath, data, 'utf8'),
       mkdir: (filePath: string, options?: { recursive?: boolean }) => fs.mkdirSync(filePath, options),
       unlink: (filePath: string) => fs.unlinkSync(filePath),
@@ -149,7 +166,7 @@ export async function saveCache(workspace: string, slugs: string[], deps?: Parti
   }
 
   try {
-    let cache: SlugsCache = {};
+    let cache: DocumentsCache = {};
 
     try {
       fsApi.access(cachePath);
@@ -161,12 +178,12 @@ export async function saveCache(workspace: string, slugs: string[], deps?: Parti
     }
 
     cache[workspace] = {
-      slugs,
+      documents,
       timestamp: now(),
       workspace,
     };
 
-    fsApi.writeFile(cachePath, JSON.stringify(cache));
+    fsApi.writeFile(cachePath, JSON.stringify(cache, null, 2));
   } catch {
     // Silently fail if we can't write to cache
   }
@@ -181,8 +198,7 @@ export async function clearCache(deps?: Partial<CacheDeps>): Promise<void> {
   const cachePath = getCachePath();
   const { fsApi } = {
     fsApi: {
-      readFile: (filePath: string, encoding: string) =>
-        fs.readFileSync(filePath, encoding as BufferEncoding),
+      readFile: (filePath: string, encoding: string) => fs.readFileSync(filePath, encoding as BufferEncoding),
       writeFile: (filePath: string, data: string) => fs.writeFileSync(filePath, data, 'utf8'),
       mkdir: (filePath: string, options?: { recursive?: boolean }) => fs.mkdirSync(filePath, options),
       unlink: (filePath: string) => fs.unlinkSync(filePath),

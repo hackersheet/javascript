@@ -1,7 +1,7 @@
 import { createClient } from '@hackersheet/core';
 import tabtab from '@pnpm/tabtab';
 
-import { loadCache, saveCache } from './utils/cache';
+import { loadCache, saveCache, type DocumentCacheItem } from './utils/cache';
 import { loadConfig, type Config } from './utils/load-config';
 
 /**
@@ -18,8 +18,8 @@ type ResolvedWorkspace = {
 export type CompletionHandlerDeps = {
   loadConfigFn: () => Config;
   createClientFn: typeof createClient;
-  loadCacheFn: (workspace: string) => string[] | null;
-  saveCacheFn: (workspace: string, slugs: string[]) => Promise<void>;
+  loadCacheFn: (workspace: string) => DocumentCacheItem[] | null;
+  saveCacheFn: (workspace: string, documents: DocumentCacheItem[]) => Promise<void>;
 };
 
 const defaultDeps: CompletionHandlerDeps = {
@@ -91,13 +91,16 @@ function extractWorkspaceFromLine(line: string): string | undefined {
 }
 
 /**
- * Fetches document slugs from cache or API.
+ * Fetches documents from cache or API.
  *
  * @param workspace - The resolved workspace.
  * @param deps - Partial dependencies for testing.
- * @returns Array of document slugs.
+ * @returns Array of documents with slug and title.
  */
-async function getDocumentSlugs(workspace: ResolvedWorkspace, deps: Partial<CompletionHandlerDeps>): Promise<string[]> {
+async function getDocuments(
+  workspace: ResolvedWorkspace,
+  deps: Partial<CompletionHandlerDeps>
+): Promise<DocumentCacheItem[]> {
   const { createClientFn, loadCacheFn, saveCacheFn } = {
     ...defaultDeps,
     ...deps,
@@ -125,14 +128,17 @@ async function getDocumentSlugs(workspace: ResolvedWorkspace, deps: Partial<Comp
       return [];
     }
 
-    const slugs = documents.map((doc) => doc.slug);
+    const documentsData: DocumentCacheItem[] = documents.map((doc) => ({
+      slug: doc.slug,
+      title: doc.title,
+    }));
 
     // 3. Save to cache (fire and forget)
-    saveCacheFn(workspace.slug, slugs).catch(() => {
+    saveCacheFn(workspace.slug, documentsData).catch(() => {
       // Silently ignore cache errors
     });
 
-    return slugs;
+    return documentsData;
   } catch {
     return [];
   }
@@ -174,8 +180,12 @@ export async function completionHandler(deps: Partial<CompletionHandlerDeps> = {
       const workspace = resolveWorkspace(config, workspaceOption);
 
       if (workspace) {
-        const slugs = await getDocumentSlugs(workspace, deps);
-        return tabtab.log(slugs);
+        const documents = await getDocuments(workspace, deps);
+        const completionItems = documents.map((doc) => ({
+          name: doc.slug,
+          description: doc.title,
+        }));
+        return tabtab.log(completionItems);
       }
     }
 
