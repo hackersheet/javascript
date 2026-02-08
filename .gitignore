@@ -10,3 +10,4 @@ package-lock.json
 /.hackersheet
 /.claude/settings.local.json
 __screenshots__
+docs/tmp
