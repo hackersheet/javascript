@@ -195,8 +195,8 @@ export async function completionHandler(deps: Partial<CompletionHandlerDeps> = {
       return tabtab.log(workspaceSlugs);
     }
 
-    // docs command slug completion: hscli docs <TAB>
-    if (env.line.includes('docs') && config) {
+    // docs show command slug completion: hscli docs show <TAB>
+    if (env.line.includes('docs show') && config) {
       const workspaceOption = extractWorkspaceFromLine(env.line);
       const workspace = resolveWorkspace(config, workspaceOption);
 

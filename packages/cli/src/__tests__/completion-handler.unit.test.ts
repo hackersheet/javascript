@@ -91,8 +91,8 @@ describe('completionHandler', () => {
   it('suggests document slugs for docs command', async () => {
     const mockParseEnv = vi.fn(() => ({
       complete: true,
-      line: 'hscli docs',
-      prev: 'docs',
+      line: 'hscli docs show',
+      prev: 'show',
     }));
     vi.mocked(tabtab.parseEnv).mockImplementation(mockParseEnv);
 
@@ -136,8 +136,8 @@ describe('completionHandler', () => {
   it('uses cached documents when available', async () => {
     const mockParseEnv = vi.fn(() => ({
       complete: true,
-      line: 'hscli docs',
-      prev: 'docs',
+      line: 'hscli docs show',
+      prev: 'show',
     }));
     vi.mocked(tabtab.parseEnv).mockImplementation(mockParseEnv);
 
@@ -169,7 +169,7 @@ describe('completionHandler', () => {
   it('uses specified workspace for docs completion', async () => {
     const mockParseEnv = vi.fn(() => ({
       complete: true,
-      line: 'hscli docs -w workspace-2',
+      line: 'hscli docs show -w workspace-2',
       prev: '',
     }));
     vi.mocked(tabtab.parseEnv).mockImplementation(mockParseEnv);
@@ -204,8 +204,8 @@ describe('completionHandler', () => {
   it('returns empty array when API call fails', async () => {
     const mockParseEnv = vi.fn(() => ({
       complete: true,
-      line: 'hscli docs',
-      prev: 'docs',
+      line: 'hscli docs show',
+      prev: 'show',
     }));
     vi.mocked(tabtab.parseEnv).mockImplementation(mockParseEnv);
 
