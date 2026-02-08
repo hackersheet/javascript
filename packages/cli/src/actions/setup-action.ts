@@ -100,4 +100,7 @@ export async function setupAction(deps: Partial<SetupActionDeps> = {}): Promise<
   logger.log(`\n${symbols.success()} ${colors.success('Setup completed!')}`);
   logger.log(`   Created: ${colors.path(hackersheetDir)}`);
   logger.log(`   Config:  ${colors.path(configPath)}`);
+  logger.log(
+    `\n${symbols.info()} ${colors.hint('Tip: Enable tab completion with')} ${colors.emphasis('hscli completion install')}`
+  );
 }

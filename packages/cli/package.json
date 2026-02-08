@@ -30,6 +30,7 @@
   "dependencies": {
     "@hackersheet/core": "workspace:*",
     "@inquirer/prompts": "^8.2.0",
+    "@pnpm/tabtab": "^0.1.0",
     "commander": "^14.0.3",
     "find-up": "^8.0.0",
     "gray-matter": "^4.0.3",

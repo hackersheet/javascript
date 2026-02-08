@@ -4,6 +4,8 @@ import { fileURLToPath } from 'url';
 
 import { Command } from 'commander';
 
+import { cacheClearAction } from './actions/cache/cache-clear-action';
+import { completionInstallAction } from './actions/completion/completion-install-action';
 import {
   configListAction,
   configGetAction,
@@ -16,6 +18,7 @@ import { docsAction } from './actions/docs-action';
 import { genTreeAction } from './actions/gen-tree-action';
 import { newAction } from './actions/new-action';
 import { setupAction } from './actions/setup-action';
+import { completionHandler } from './completion-handler';
 import { setNoColor, colors, symbols } from './utils/colors';
 
 /**
@@ -116,4 +119,29 @@ configCommand
   .option('-l, --local', 'Show only project configuration path')
   .action((options) => configPathAction(options));
 
-program.parse();
+const completionCommand = program.command('completion').description('Manage shell completion.');
+
+completionCommand
+  .command('install')
+  .description('Install shell completion.')
+  .action(() => completionInstallAction());
+
+const cacheCommand = program.command('cache').description('Manage CLI cache.');
+
+cacheCommand
+  .command('clear')
+  .description('Clear slugs cache.')
+  .action(() => cacheClearAction());
+
+// Handle shell tab completion
+if (process.env.COMP_CWORD !== undefined || process.env.COMP_LINE !== undefined) {
+  (async () => {
+    await completionHandler();
+    process.exit(0);
+  })().catch((error) => {
+    console.error(error);
+    process.exit(1);
+  });
+} else {
+  program.parse();
+}
