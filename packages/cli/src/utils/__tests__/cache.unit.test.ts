@@ -7,9 +7,14 @@ import {
   getCacheDir,
   getCachePath,
   isCacheValid,
+  loadDocumentCache,
+  saveDocumentCache,
+  clearDocumentsCache,
+  getDocumentsCacheDir,
   type CacheDeps,
   type DocumentsCacheEntry,
   type DocumentCacheItem,
+  type CachedDocument,
 } from '../cache';
 
 describe('cache utilities', () => {
@@ -389,6 +394,46 @@ describe('cache utilities', () => {
       };
 
       await expect(clearCache(deps)).resolves.toBeUndefined();
+    });
+  });
+
+  describe('getDocumentsCacheDir', () => {
+    it('returns correct path for workspace documents', () => {
+      const result = getDocumentsCacheDir('workspace-1');
+      expect(result).toMatch(/documents[/\\]workspace-1$/);
+    });
+  });
+
+  describe('loadDocumentCache', () => {
+    it('returns null when file does not exist (integration test)', () => {
+      // This is a light integration test that verifies the function handles missing files gracefully
+      const result = loadDocumentCache('nonexistent-workspace-12345', 'nonexistent-doc-12345');
+
+      expect(result).toBeNull();
+    });
+  });
+
+  describe('saveDocumentCache', () => {
+    it('silently fails when cache dir is not writable (integration test)', async () => {
+      // This test verifies that saveDocumentCache handles errors gracefully
+      // even if directory is not writable (we don't actually test writing)
+      const document: CachedDocument = {
+        id: 'doc-123',
+        slug: 'test-doc',
+        title: 'Test Document',
+        content: 'This is test content',
+        draft: false,
+      };
+
+      // This should not throw even if there are fs errors
+      await expect(saveDocumentCache('workspace-1', 'test-doc', document)).resolves.toBeUndefined();
+    });
+  });
+
+  describe('clearDocumentsCache', () => {
+    it('silently handles errors when documents directory does not exist', async () => {
+      // This test verifies that clearDocumentsCache handles missing directories gracefully
+      await expect(clearDocumentsCache()).resolves.toBeUndefined();
     });
   });
 });

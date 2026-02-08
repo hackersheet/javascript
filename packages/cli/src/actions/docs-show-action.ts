@@ -1,5 +1,6 @@
 import { createClient } from '@hackersheet/core';
 
+import { loadDocumentCache, saveDocumentCache, type CachedDocument } from '../utils/cache';
 import { colors, symbols } from '../utils/colors';
 import { loadConfig, type Config, ConfigError } from '../utils/load-config';
 
@@ -26,6 +27,8 @@ export type DocsShowActionDeps = {
   exitHandler: ExitHandler;
   loadConfigFn: () => Config;
   createClientFn: typeof createClient;
+  loadDocumentCacheFn: typeof loadDocumentCache;
+  saveDocumentCacheFn: typeof saveDocumentCache;
 };
 
 const defaultDeps: DocsShowActionDeps = {
@@ -33,6 +36,8 @@ const defaultDeps: DocsShowActionDeps = {
   exitHandler: { exit: (code) => process.exit(code) },
   loadConfigFn: loadConfig,
   createClientFn: createClient,
+  loadDocumentCacheFn: loadDocumentCache,
+  saveDocumentCacheFn: saveDocumentCache,
 };
 
 /**
@@ -89,6 +94,8 @@ function resolveWorkspace(config: Config, workspaceOption?: string): ResolvedWor
 export type DocsShowActionOptions = {
   /** Workspace slug to use (overrides default). */
   workspace?: string;
+  /** Bypass cache and fetch from API, then update cache. */
+  refresh?: boolean;
 };
 
 /**
@@ -107,7 +114,10 @@ export async function docsShowAction(
   options: DocsShowActionOptions = {},
   deps: Partial<DocsShowActionDeps> = {}
 ): Promise<void> {
-  const { logger, exitHandler, loadConfigFn, createClientFn } = { ...defaultDeps, ...deps };
+  const { logger, exitHandler, loadConfigFn, createClientFn, loadDocumentCacheFn, saveDocumentCacheFn } = {
+    ...defaultDeps,
+    ...deps,
+  };
 
   if (!slug) {
     logger.error(`${symbols.error()} ${colors.error('Missing required argument')} ${colors.emphasis('<slug>')}`);
@@ -151,6 +161,16 @@ export async function docsShowAction(
     return;
   }
 
+  // Try to load from cache first (unless refresh is requested)
+  if (!options.refresh) {
+    const cached = loadDocumentCacheFn(resolved.slug, slug);
+    if (cached) {
+      logger.log(cached.content);
+      return;
+    }
+  }
+
+  // Cache miss or refresh requested: fetch from API
   const url = `https://api.hackersheet.com/${resolved.slug}/v1/graphql`;
   const client = createClientFn({
     url,
@@ -179,6 +199,18 @@ export async function docsShowAction(
     exitHandler.exit(1);
     return;
   }
+
+  // Save to cache (fire and forget)
+  const documentToCache: CachedDocument = {
+    id: result.document.id,
+    slug: result.document.slug,
+    title: result.document.title,
+    content: result.document.content,
+    draft: result.document.draft,
+  };
+  saveDocumentCacheFn(resolved.slug, slug, documentToCache).catch(() => {
+    // Silently ignore cache errors
+  });
 
   logger.log(result.document.content);
 }

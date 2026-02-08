@@ -83,6 +83,7 @@ docsCommand
   .command('show <slug>')
   .description('Fetch and display document content by slug.')
   .option('-w, --workspace <slug>', 'Workspace to use')
+  .option('--refresh', 'Bypass cache and fetch from API')
   .action((slug, options) => docsShowAction(slug, options));
 
 program.command('new').description('Create a new document.').action(newAction);

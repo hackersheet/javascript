@@ -214,3 +214,80 @@ export async function clearCache(deps?: Partial<CacheDeps>): Promise<void> {
     // File doesn't exist or can't be deleted, ignore
   }
 }
+
+/**
+ * Represents a cached document with full content.
+ */
+export type CachedDocument = {
+  id: string;
+  slug: string;
+  title: string;
+  content: string;
+  draft: boolean;
+  [key: string]: unknown;
+};
+
+/**
+ * Get the directory path for cached documents.
+ *
+ * @param workspace - The workspace slug.
+ * @returns The documents cache directory path.
+ */
+export function getDocumentsCacheDir(workspace: string): string {
+  return path.join(getCacheDir(), 'documents', workspace);
+}
+
+/**
+ * Load a document from cache by slug.
+ *
+ * @param workspace - The workspace slug.
+ * @param slug - The document slug.
+ * @returns The cached document if found, null otherwise.
+ */
+export function loadDocumentCache(workspace: string, slug: string): CachedDocument | null {
+  const cacheDir = getDocumentsCacheDir(workspace);
+  const cacheFile = path.join(cacheDir, `${slug}.json`);
+
+  try {
+    const content = fs.readFileSync(cacheFile, 'utf8');
+    return JSON.parse(content) as CachedDocument;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Save a document to cache by slug.
+ *
+ * @param workspace - The workspace slug.
+ * @param slug - The document slug.
+ * @param document - The document to cache.
+ */
+export async function saveDocumentCache(workspace: string, slug: string, document: CachedDocument): Promise<void> {
+  const cacheDir = getDocumentsCacheDir(workspace);
+
+  try {
+    await fs.promises.mkdir(cacheDir, { recursive: true });
+    const cacheFile = path.join(cacheDir, `${slug}.json`);
+    await fs.promises.writeFile(cacheFile, JSON.stringify(document, null, 2), 'utf8');
+  } catch {
+    // Silently fail if we can't write to cache
+  }
+}
+
+/**
+ * Clear the documents cache directory for all workspaces.
+ */
+export async function clearDocumentsCache(): Promise<void> {
+  const cacheDir = getCacheDir();
+  const documentsDir = path.join(cacheDir, 'documents');
+
+  try {
+    // Recursively remove the entire documents directory
+    if (fs.existsSync(documentsDir)) {
+      fs.rmSync(documentsDir, { recursive: true, force: true });
+    }
+  } catch {
+    // Directory doesn't exist or can't be deleted, ignore
+  }
+}
