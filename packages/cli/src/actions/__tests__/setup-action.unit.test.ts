@@ -13,8 +13,6 @@ describe('setupAction', () => {
       input: vi.fn().mockImplementation(({ message }) => {
         if (message.includes('slug')) return Promise.resolve('my-workspace');
         if (message.includes('access key')) return Promise.resolve('secret-key');
-        if (message.includes('template')) return Promise.resolve('{{yyyy}}-{{title}}.md');
-        if (message.includes('directories')) return Promise.resolve('docs, guides');
         return Promise.resolve('');
       }),
       confirm: vi.fn().mockResolvedValue(true),
@@ -28,16 +26,17 @@ describe('setupAction', () => {
     vi.clearAllMocks();
   });
 
-  it('creates .hackersheet directory and trees subdirectory', async () => {
+  it('creates global config directory', async () => {
     const deps = createMockDeps();
 
     await setupAction(deps);
 
-    expect(deps.fsApi.mkdir).toHaveBeenCalledWith('/project/.hackersheet', { recursive: true });
-    expect(deps.fsApi.mkdir).toHaveBeenCalledWith('/project/.hackersheet/trees', { recursive: true });
+    expect(deps.fsApi.mkdir).toHaveBeenCalledWith(expect.stringContaining('.config/hackersheet'), {
+      recursive: true,
+    });
   });
 
-  it('writes configuration file with user input', async () => {
+  it('writes configuration file with workspace settings', async () => {
     const deps = createMockDeps();
 
     await setupAction(deps);
@@ -51,7 +50,7 @@ describe('setupAction', () => {
     expect(config.defaultWorkspace).toBe('my-workspace');
   });
 
-  it('parses comma-separated docsDirs', async () => {
+  it('does not write template or docsDirs in setup', async () => {
     const deps = createMockDeps();
 
     await setupAction(deps);
@@ -59,16 +58,27 @@ describe('setupAction', () => {
     const writeCall = vi.mocked(deps.fsApi.writeFile).mock.calls[0];
     const config = JSON.parse(writeCall[1] as string);
 
-    expect(config.docsDirs).toEqual(['docs', 'guides']);
+    expect(config.newFilenameTemplate).toBeUndefined();
+    expect(config.docsDirs).toBeUndefined();
   });
 
-  it('logs success message', async () => {
+  it('logs success message with global config path', async () => {
     const deps = createMockDeps();
 
     await setupAction(deps);
 
     expect(deps.logger.log).toHaveBeenCalledWith(expect.stringContaining('Setup completed'));
-    expect(deps.logger.log).toHaveBeenCalledWith(expect.stringContaining('/project/.hackersheet'));
+    expect(deps.logger.log).toHaveBeenCalledWith(
+      expect.stringContaining('.config/hackersheet/cli.config.json')
+    );
+  });
+
+  it('suggests running hscli init next', async () => {
+    const deps = createMockDeps();
+
+    await setupAction(deps);
+
+    expect(deps.logger.log).toHaveBeenCalledWith(expect.stringContaining('hscli init'));
   });
 
   it('prompts for overwrite when config already exists', async () => {
@@ -84,7 +94,7 @@ describe('setupAction', () => {
 
     expect(deps.prompts.confirm).toHaveBeenCalledWith(
       expect.objectContaining({
-        message: expect.stringContaining('already initialized'),
+        message: expect.stringContaining('already set up'),
       })
     );
   });
@@ -108,7 +118,7 @@ describe('setupAction', () => {
     expect(deps.fsApi.writeFile).not.toHaveBeenCalled();
   });
 
-  it('uses default template when user provides empty input', async () => {
+  it('handles empty workspace input', async () => {
     const deps = createMockDeps({
       prompts: {
         input: vi.fn().mockResolvedValue(''),
@@ -121,29 +131,8 @@ describe('setupAction', () => {
     const writeCall = vi.mocked(deps.fsApi.writeFile).mock.calls[0];
     const config = JSON.parse(writeCall[1] as string);
 
-    expect(config.newFilenameTemplate).toBe('{{yyyy}}-{{mm}}-{{dd}}-{{title}}.md');
-    expect(config.docsDirs).toEqual(['docs']);
     expect(config.workspaces).toEqual({});
     expect(config.defaultWorkspace).toBeUndefined();
-  });
-
-  it('handles empty docsDirs input', async () => {
-    const deps = createMockDeps({
-      prompts: {
-        input: vi.fn().mockImplementation(({ message }) => {
-          if (message.includes('directories')) return Promise.resolve('  ,  ,  ');
-          return Promise.resolve('');
-        }),
-        confirm: vi.fn().mockResolvedValue(true),
-      },
-    });
-
-    await setupAction(deps);
-
-    const writeCall = vi.mocked(deps.fsApi.writeFile).mock.calls[0];
-    const config = JSON.parse(writeCall[1] as string);
-
-    expect(config.docsDirs).toEqual(['docs']);
   });
 
   it('does not set workspace when only slug is provided', async () => {
@@ -152,8 +141,6 @@ describe('setupAction', () => {
         input: vi.fn().mockImplementation(({ message }) => {
           if (message.includes('slug')) return Promise.resolve('my-workspace');
           if (message.includes('access key')) return Promise.resolve('');
-          if (message.includes('template')) return Promise.resolve('');
-          if (message.includes('directories')) return Promise.resolve('docs');
           return Promise.resolve('');
         }),
         confirm: vi.fn().mockResolvedValue(true),
@@ -175,8 +162,6 @@ describe('setupAction', () => {
         input: vi.fn().mockImplementation(({ message }) => {
           if (message.includes('slug')) return Promise.resolve('');
           if (message.includes('access key')) return Promise.resolve('secret-key');
-          if (message.includes('template')) return Promise.resolve('');
-          if (message.includes('directories')) return Promise.resolve('docs');
           return Promise.resolve('');
         }),
         confirm: vi.fn().mockResolvedValue(true),
@@ -192,23 +177,24 @@ describe('setupAction', () => {
     expect(config.defaultWorkspace).toBeUndefined();
   });
 
-  it('prompts for all configuration fields', async () => {
+  it('prompts for workspace configuration fields only', async () => {
     const deps = createMockDeps();
 
     await setupAction(deps);
 
+    // Should prompt for workspace fields
     expect(deps.prompts.input).toHaveBeenCalledWith(
       expect.objectContaining({ message: expect.stringContaining('Workspace slug') })
     );
     expect(deps.prompts.input).toHaveBeenCalledWith(
       expect.objectContaining({ message: expect.stringContaining('access key') })
     );
-    expect(deps.prompts.input).toHaveBeenCalledWith(
-      expect.objectContaining({ message: expect.stringContaining('filename template') })
-    );
-    expect(deps.prompts.input).toHaveBeenCalledWith(
-      expect.objectContaining({ message: expect.stringContaining('directories') })
-    );
+
+    // Should NOT prompt for project fields
+    const inputCalls = vi.mocked(deps.prompts.input).mock.calls;
+    const allMessages = inputCalls.map((call) => (call[0] as { message: string }).message);
+    expect(allMessages.some((msg) => msg.includes('filename template'))).toBe(false);
+    expect(allMessages.some((msg) => msg.includes('Document directories'))).toBe(false);
   });
 
   it('logs setup header message', async () => {

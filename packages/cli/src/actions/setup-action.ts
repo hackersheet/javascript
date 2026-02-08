@@ -5,7 +5,7 @@ import { input, confirm } from '@inquirer/prompts';
 
 import { runConfigWizard, type ConfigInitActionDeps } from './config';
 import { colors, symbols } from '../utils/colors';
-import { loadConfigFromPath } from '../utils/load-config';
+import { getUserConfigPath, loadConfigFromPath } from '../utils/load-config';
 import { saveConfig } from '../utils/save-config';
 
 /**
@@ -52,21 +52,18 @@ const defaultDeps: SetupActionDeps = {
 };
 
 /**
- * Initializes Hacker Sheet in the current project.
+ * Initializes global configuration for Hacker Sheet.
  *
  * This is the action handler for the `setup` command.
- * Creates the `.hackersheet` directory and `cli.config.json` configuration
- * file with user-provided settings.
+ * Creates the user config directory and `cli.config.json` configuration
+ * file with workspace settings.
  *
  * @param deps - Optional dependencies for testing.
  */
 export async function setupAction(deps: Partial<SetupActionDeps> = {}): Promise<void> {
-  const { fsApi, prompts, logger, cwd, configInitDeps } = { ...defaultDeps, ...deps };
+  const { fsApi, prompts, logger, configInitDeps } = { ...defaultDeps, ...deps };
 
-  const projectRoot = cwd();
-  const hackersheetDir = path.join(projectRoot, '.hackersheet');
-  const configPath = path.join(hackersheetDir, 'cli.config.json');
-  const treesDir = path.join(hackersheetDir, 'trees');
+  const configPath = getUserConfigPath();
 
   const wizardDeps: Partial<ConfigInitActionDeps> = {
     fsApi: { mkdir: fsApi.mkdir, access: fsApi.access },
@@ -78,29 +75,28 @@ export async function setupAction(deps: Partial<SetupActionDeps> = {}): Promise<
   };
 
   const wizardOptions = {
-    confirmMessage: 'Hacker Sheet is already initialized. Overwrite configuration?',
+    confirmMessage: 'Hacker Sheet is already set up. Overwrite configuration?',
     headerMessage: '\nHacker Sheet CLI Setup\n',
   };
 
-  const result = await runConfigWizard(configPath, wizardDeps, wizardOptions);
+  const result = await runConfigWizard(configPath, 'global', wizardDeps, wizardOptions);
 
   if (result.cancelled) {
     logger.log(`${symbols.warning()} ${colors.warning('Setup cancelled.')}`);
     return;
   }
 
-  // Create directories
-  await fsApi.mkdir(hackersheetDir, { recursive: true });
-  await fsApi.mkdir(treesDir, { recursive: true });
+  // Create config directory
+  const configDir = path.dirname(configPath);
+  await fsApi.mkdir(configDir, { recursive: true });
 
   // Write configuration
   const configJson = JSON.stringify(result.config, null, 2);
   await fsApi.writeFile(configPath, configJson, 'utf8');
 
   logger.log(`\n${symbols.success()} ${colors.success('Setup completed!')}`);
-  logger.log(`   Created: ${colors.path(hackersheetDir)}`);
-  logger.log(`   Config:  ${colors.path(configPath)}`);
+  logger.log(`   Config: ${colors.path(configPath)}`);
   logger.log(
-    `\n${symbols.info()} ${colors.hint('Tip: Enable tab completion with')} ${colors.emphasis('hscli completion install')}`
+    `\n${symbols.info()} ${colors.hint('Next: Run')} ${colors.emphasis('hscli init')} ${colors.hint('in your project')}`
   );
 }

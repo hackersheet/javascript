@@ -30,7 +30,7 @@ describe('runConfigWizard', () => {
   it('returns configuration from user input', async () => {
     const deps = createMockDeps();
 
-    const result = await runConfigWizard('/project/.hackersheet/cli.config.json', deps);
+    const result = await runConfigWizard('/project/.hackersheet/cli.config.json', 'all', deps);
 
     expect(result.cancelled).toBe(false);
     expect(result.config.defaultWorkspace).toBe('my-workspace');
@@ -49,7 +49,7 @@ describe('runConfigWizard', () => {
       },
     });
 
-    await runConfigWizard('/project/.hackersheet/cli.config.json', deps);
+    await runConfigWizard('/project/.hackersheet/cli.config.json', 'all', deps);
 
     expect(deps.prompts!.confirm).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -70,7 +70,7 @@ describe('runConfigWizard', () => {
       },
     });
 
-    const result = await runConfigWizard('/project/.hackersheet/cli.config.json', deps);
+    const result = await runConfigWizard('/project/.hackersheet/cli.config.json', 'all', deps);
 
     expect(result.cancelled).toBe(true);
     expect(deps.prompts!.input).not.toHaveBeenCalled();
@@ -87,7 +87,7 @@ describe('runConfigWizard', () => {
       loadConfigFromPath: vi.fn().mockReturnValue(existingConfig),
     });
 
-    await runConfigWizard('/project/.hackersheet/cli.config.json', deps);
+    await runConfigWizard('/project/.hackersheet/cli.config.json', 'all', deps);
 
     expect(deps.prompts!.input).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -105,7 +105,7 @@ describe('runConfigWizard', () => {
       },
     });
 
-    await runConfigWizard('/project/.hackersheet/cli.config.json', deps, {
+    await runConfigWizard('/project/.hackersheet/cli.config.json', 'all', deps, {
       confirmMessage: 'Custom confirm message',
     });
 
@@ -119,7 +119,7 @@ describe('runConfigWizard', () => {
   it('uses custom header message when provided', async () => {
     const deps = createMockDeps();
 
-    await runConfigWizard('/project/.hackersheet/cli.config.json', deps, {
+    await runConfigWizard('/project/.hackersheet/cli.config.json', 'all', deps, {
       headerMessage: 'Custom header',
     });
 
@@ -140,7 +140,7 @@ describe('runConfigWizard', () => {
       },
     });
 
-    const result = await runConfigWizard('/project/.hackersheet/cli.config.json', deps);
+    const result = await runConfigWizard('/project/.hackersheet/cli.config.json', 'all', deps);
 
     expect(result.config.workspaces).toEqual({});
     expect(result.config.defaultWorkspace).toBeUndefined();
@@ -154,7 +154,7 @@ describe('runConfigWizard', () => {
       },
     });
 
-    const result = await runConfigWizard('/project/.hackersheet/cli.config.json', deps);
+    const result = await runConfigWizard('/project/.hackersheet/cli.config.json', 'all', deps);
 
     expect(result.config.newFilenameTemplate).toBe('{{yyyy}}-{{mm}}-{{dd}}-{{title}}.md');
     expect(result.config.docsDirs).toEqual(['docs']);

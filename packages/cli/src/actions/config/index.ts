@@ -7,5 +7,6 @@ export {
   configInitAction,
   runConfigWizard,
   type ConfigInitActionDeps,
+  type ConfigWizardMode,
   type ConfigWizardOptions,
 } from './config-init-action';

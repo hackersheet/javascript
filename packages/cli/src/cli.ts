@@ -17,6 +17,7 @@ import {
 import { docsListAction } from './actions/docs-list-action';
 import { docsShowAction } from './actions/docs-show-action';
 import { genTreeAction } from './actions/gen-tree-action';
+import { initAction } from './actions/init-action';
 import { newAction } from './actions/new-action';
 import { setupAction } from './actions/setup-action';
 import { completionHandler } from './completion-handler';
@@ -66,7 +67,9 @@ program
   .version(getVersion())
   .option('--no-color', 'Disable colored output');
 
-program.command('setup').description('Setup Hacker Sheet in the current project.').action(setupAction);
+program.command('setup').description('Setup global Hacker Sheet configuration.').action(setupAction);
+
+program.command('init').description('Initialize Hacker Sheet in the current project.').action(initAction);
 
 const docsCommand = program.command('docs').description('Manage documents.');
 
