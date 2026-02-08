@@ -748,6 +748,13 @@ export type DocumentsQuery = {
   documents?: {
     __typename?: 'DocumentConnection';
     totalCount: number;
+    pageInfo: {
+      __typename?: 'PageInfo';
+      hasNextPage: boolean;
+      hasPreviousPage: boolean;
+      startCursor?: string | null;
+      endCursor?: string | null;
+    };
     edges?: Array<{
       __typename?: 'DocumentEdge';
       node?: {
@@ -1510,6 +1517,19 @@ export const DocumentsDocument = {
               kind: 'SelectionSet',
               selections: [
                 { kind: 'Field', name: { kind: 'Name', value: 'totalCount' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'pageInfo' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'hasNextPage' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'hasPreviousPage' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'startCursor' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'endCursor' } },
+                    ],
+                  },
+                },
                 {
                   kind: 'Field',
                   name: { kind: 'Name', value: 'edges' },

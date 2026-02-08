@@ -68,9 +68,7 @@ describe('setupAction', () => {
     await setupAction(deps);
 
     expect(deps.logger.log).toHaveBeenCalledWith(expect.stringContaining('Setup completed'));
-    expect(deps.logger.log).toHaveBeenCalledWith(
-      expect.stringContaining('.config/hackersheet/cli.config.json')
-    );
+    expect(deps.logger.log).toHaveBeenCalledWith(expect.stringContaining('.config/hackersheet/cli.config.json'));
   });
 
   it('suggests running hscli init next', async () => {

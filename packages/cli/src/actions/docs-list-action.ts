@@ -117,9 +117,9 @@ async function fetchAllDocuments(
     let after: string | undefined = undefined;
     const pageSize = 100; // Fetch 100 documents per request
 
-    // Iterate through all pages
+    // Iterate through all pages using cursor-based pagination
     while (true) {
-      const { documents, error } = await client.getDocuments({
+      const { documents, pageInfo, error } = await client.getDocuments({
         filter: { draft: false },
         first: pageSize,
         after,
@@ -137,14 +137,13 @@ async function fetchAllDocuments(
 
       allDocuments.push(...batch);
 
-      // If we got fewer documents than the page size, we've reached the end
-      if (documents.length < pageSize) {
+      // Check if there are more pages
+      if (!pageInfo?.hasNextPage) {
         break;
       }
 
-      // Prepare for the next page: use the last document's ID as the cursor
-      const lastDoc = documents[documents.length - 1];
-      after = lastDoc.id;
+      // Prepare for the next page: use the endCursor as the after parameter
+      after = pageInfo.endCursor ?? undefined;
     }
 
     // 3. Save to cache (fire and forget)

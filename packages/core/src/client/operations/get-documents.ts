@@ -16,6 +16,12 @@ graphql(`
   ) {
     documents(after: $after, before: $before, first: $first, last: $last, filter: $filter, sort: $sort) {
       totalCount
+      pageInfo {
+        hasNextPage
+        hasPreviousPage
+        startCursor
+        endCursor
+      }
       edges {
         node {
           id
@@ -49,7 +55,7 @@ graphql(`
 
 export function makeGetDocumentsResponse(result: OperationResult<DocumentsQuery, QueryDocumentsArgs>) {
   if (!result.data || !result.data.documents) {
-    return { documents: [], totalCount: 0, isEmpty: true, error: result.error };
+    return { documents: [], totalCount: 0, isEmpty: true, pageInfo: null, error: result.error };
   }
 
   const tmpDocs = result.data.documents;
@@ -60,6 +66,7 @@ export function makeGetDocumentsResponse(result: OperationResult<DocumentsQuery,
   const totalCount = result.data?.documents?.totalCount || 0;
   const isEmpty = totalCount === 0;
   const error = result.error;
+  const pageInfo = result.data?.documents?.pageInfo || null;
 
-  return { documents, totalCount, isEmpty, error } as const;
+  return { documents, totalCount, isEmpty, pageInfo, error } as const;
 }

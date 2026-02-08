@@ -52,11 +52,15 @@ describe('docsShowAction', () => {
       throw new Error('Config error');
     });
 
-    await docsShowAction('test-doc', {}, {
-      logger: mockLogger,
-      exitHandler: mockExitHandler,
-      loadConfigFn: mockLoadConfig,
-    });
+    await docsShowAction(
+      'test-doc',
+      {},
+      {
+        logger: mockLogger,
+        exitHandler: mockExitHandler,
+        loadConfigFn: mockLoadConfig,
+      }
+    );
 
     expect(mockLogger.error).toHaveBeenCalledWith(expect.stringContaining('Failed to load configuration'));
     expect(mockExitHandler.exit).toHaveBeenCalledWith(1);
@@ -67,11 +71,15 @@ describe('docsShowAction', () => {
     const mockExitHandler = { exit: vi.fn() };
     const mockLoadConfig = vi.fn().mockReturnValue({ workspaces: {}, docsDirs: [] });
 
-    await docsShowAction('test-doc', {}, {
-      logger: mockLogger,
-      exitHandler: mockExitHandler,
-      loadConfigFn: mockLoadConfig,
-    });
+    await docsShowAction(
+      'test-doc',
+      {},
+      {
+        logger: mockLogger,
+        exitHandler: mockExitHandler,
+        loadConfigFn: mockLoadConfig,
+      }
+    );
 
     expect(mockLogger.error).toHaveBeenCalledWith(expect.stringContaining('No workspaces configured'));
     expect(mockExitHandler.exit).toHaveBeenCalledWith(1);
@@ -81,11 +89,15 @@ describe('docsShowAction', () => {
     const mockLogger = { log: vi.fn(), error: vi.fn() };
     const mockExitHandler = { exit: vi.fn() };
 
-    await docsShowAction('test-doc', { workspace: 'nonexistent' }, {
-      logger: mockLogger,
-      exitHandler: mockExitHandler,
-      loadConfigFn: () => mockConfig,
-    });
+    await docsShowAction(
+      'test-doc',
+      { workspace: 'nonexistent' },
+      {
+        logger: mockLogger,
+        exitHandler: mockExitHandler,
+        loadConfigFn: () => mockConfig,
+      }
+    );
 
     expect(mockLogger.error).toHaveBeenCalledWith(expect.stringContaining('is not configured'));
     expect(mockExitHandler.exit).toHaveBeenCalledWith(1);
@@ -99,14 +111,18 @@ describe('docsShowAction', () => {
     }));
     const mockLoadDocumentCache = vi.fn().mockReturnValue(null);
 
-    await docsShowAction('test-doc', {}, {
-      logger: mockLogger,
-      exitHandler: mockExitHandler,
-      loadConfigFn: () => mockConfig,
-      // @ts-expect-error - Mock client for testing
-      createClientFn: mockCreateClient,
-      loadDocumentCacheFn: mockLoadDocumentCache,
-    });
+    await docsShowAction(
+      'test-doc',
+      {},
+      {
+        logger: mockLogger,
+        exitHandler: mockExitHandler,
+        loadConfigFn: () => mockConfig,
+        // @ts-expect-error - Mock client for testing
+        createClientFn: mockCreateClient,
+        loadDocumentCacheFn: mockLoadDocumentCache,
+      }
+    );
 
     expect(mockLogger.error).toHaveBeenCalledWith(expect.stringContaining('Failed to connect to the API'));
     expect(mockExitHandler.exit).toHaveBeenCalledWith(1);
@@ -123,14 +139,18 @@ describe('docsShowAction', () => {
     }));
     const mockLoadDocumentCache = vi.fn().mockReturnValue(null);
 
-    await docsShowAction('test-doc', {}, {
-      logger: mockLogger,
-      exitHandler: mockExitHandler,
-      loadConfigFn: () => mockConfig,
-      // @ts-expect-error - Mock client for testing
-      createClientFn: mockCreateClient,
-      loadDocumentCacheFn: mockLoadDocumentCache,
-    });
+    await docsShowAction(
+      'test-doc',
+      {},
+      {
+        logger: mockLogger,
+        exitHandler: mockExitHandler,
+        loadConfigFn: () => mockConfig,
+        // @ts-expect-error - Mock client for testing
+        createClientFn: mockCreateClient,
+        loadDocumentCacheFn: mockLoadDocumentCache,
+      }
+    );
 
     expect(mockLogger.error).toHaveBeenCalledWith(expect.stringContaining('API returned an error'));
     expect(mockExitHandler.exit).toHaveBeenCalledWith(1);
@@ -147,14 +167,18 @@ describe('docsShowAction', () => {
     }));
     const mockLoadDocumentCache = vi.fn().mockReturnValue(null);
 
-    await docsShowAction('test-doc', {}, {
-      logger: mockLogger,
-      exitHandler: mockExitHandler,
-      loadConfigFn: () => mockConfig,
-      // @ts-expect-error - Mock client for testing
-      createClientFn: mockCreateClient,
-      loadDocumentCacheFn: mockLoadDocumentCache,
-    });
+    await docsShowAction(
+      'test-doc',
+      {},
+      {
+        logger: mockLogger,
+        exitHandler: mockExitHandler,
+        loadConfigFn: () => mockConfig,
+        // @ts-expect-error - Mock client for testing
+        createClientFn: mockCreateClient,
+        loadDocumentCacheFn: mockLoadDocumentCache,
+      }
+    );
 
     expect(mockLogger.error).toHaveBeenCalledWith(expect.stringContaining('Document not found'));
     expect(mockExitHandler.exit).toHaveBeenCalledWith(1);
@@ -167,14 +191,18 @@ describe('docsShowAction', () => {
     const mockCreateClient = vi.fn();
     const mockSaveDocumentCache = vi.fn();
 
-    await docsShowAction('test-doc', {}, {
-      logger: mockLogger,
-      exitHandler: mockExitHandler,
-      loadConfigFn: () => mockConfig,
-      createClientFn: mockCreateClient,
-      loadDocumentCacheFn: mockLoadDocumentCache,
-      saveDocumentCacheFn: mockSaveDocumentCache,
-    });
+    await docsShowAction(
+      'test-doc',
+      {},
+      {
+        logger: mockLogger,
+        exitHandler: mockExitHandler,
+        loadConfigFn: () => mockConfig,
+        createClientFn: mockCreateClient,
+        loadDocumentCacheFn: mockLoadDocumentCache,
+        saveDocumentCacheFn: mockSaveDocumentCache,
+      }
+    );
 
     expect(mockLoadDocumentCache).toHaveBeenCalledWith('workspace-1', 'test-doc');
     expect(mockCreateClient).not.toHaveBeenCalled();
@@ -188,19 +216,27 @@ describe('docsShowAction', () => {
     const mockCreateClient = vi.fn(() => createMockClient());
     const mockSaveDocumentCache = vi.fn().mockResolvedValue(undefined);
 
-    await docsShowAction('test-doc', {}, {
-      logger: mockLogger,
-      exitHandler: mockExitHandler,
-      loadConfigFn: () => mockConfig,
-      // @ts-expect-error - Mock client for testing
-      createClientFn: mockCreateClient,
-      loadDocumentCacheFn: mockLoadDocumentCache,
-      saveDocumentCacheFn: mockSaveDocumentCache,
-    });
+    await docsShowAction(
+      'test-doc',
+      {},
+      {
+        logger: mockLogger,
+        exitHandler: mockExitHandler,
+        loadConfigFn: () => mockConfig,
+        // @ts-expect-error - Mock client for testing
+        createClientFn: mockCreateClient,
+        loadDocumentCacheFn: mockLoadDocumentCache,
+        saveDocumentCacheFn: mockSaveDocumentCache,
+      }
+    );
 
     expect(mockLoadDocumentCache).toHaveBeenCalledWith('workspace-1', 'test-doc');
     expect(mockCreateClient).toHaveBeenCalled();
-    expect(mockSaveDocumentCache).toHaveBeenCalledWith('workspace-1', 'test-doc', expect.objectContaining(mockDocument));
+    expect(mockSaveDocumentCache).toHaveBeenCalledWith(
+      'workspace-1',
+      'test-doc',
+      expect.objectContaining(mockDocument)
+    );
     expect(mockLogger.log).toHaveBeenCalledWith(mockDocument.content);
   });
 
@@ -211,15 +247,19 @@ describe('docsShowAction', () => {
     const mockCreateClient = vi.fn(() => createMockClient());
     const mockSaveDocumentCache = vi.fn().mockResolvedValue(undefined);
 
-    await docsShowAction('test-doc', { refresh: true }, {
-      logger: mockLogger,
-      exitHandler: mockExitHandler,
-      loadConfigFn: () => mockConfig,
-      // @ts-expect-error - Mock client for testing
-      createClientFn: mockCreateClient,
-      loadDocumentCacheFn: mockLoadDocumentCache,
-      saveDocumentCacheFn: mockSaveDocumentCache,
-    });
+    await docsShowAction(
+      'test-doc',
+      { refresh: true },
+      {
+        logger: mockLogger,
+        exitHandler: mockExitHandler,
+        loadConfigFn: () => mockConfig,
+        // @ts-expect-error - Mock client for testing
+        createClientFn: mockCreateClient,
+        loadDocumentCacheFn: mockLoadDocumentCache,
+        saveDocumentCacheFn: mockSaveDocumentCache,
+      }
+    );
 
     expect(mockLoadDocumentCache).not.toHaveBeenCalled();
     expect(mockCreateClient).toHaveBeenCalled();
@@ -234,15 +274,19 @@ describe('docsShowAction', () => {
     const mockCreateClient = vi.fn(() => createMockClient());
     const mockSaveDocumentCache = vi.fn().mockResolvedValue(undefined);
 
-    await docsShowAction('test-doc', {}, {
-      logger: mockLogger,
-      exitHandler: mockExitHandler,
-      loadConfigFn: () => mockConfig,
-      // @ts-expect-error - Mock client for testing
-      createClientFn: mockCreateClient,
-      loadDocumentCacheFn: mockLoadDocumentCache,
-      saveDocumentCacheFn: mockSaveDocumentCache,
-    });
+    await docsShowAction(
+      'test-doc',
+      {},
+      {
+        logger: mockLogger,
+        exitHandler: mockExitHandler,
+        loadConfigFn: () => mockConfig,
+        // @ts-expect-error - Mock client for testing
+        createClientFn: mockCreateClient,
+        loadDocumentCacheFn: mockLoadDocumentCache,
+        saveDocumentCacheFn: mockSaveDocumentCache,
+      }
+    );
 
     expect(mockCreateClient).toHaveBeenCalledWith({
       url: 'https://api.hackersheet.com/workspace-1/v1/graphql',
@@ -264,15 +308,19 @@ describe('docsShowAction', () => {
       },
     };
 
-    await docsShowAction('test-doc', { workspace: 'workspace-2' }, {
-      logger: mockLogger,
-      exitHandler: mockExitHandler,
-      loadConfigFn: () => multiWorkspaceConfig,
-      // @ts-expect-error - Mock client for testing
-      createClientFn: mockCreateClient,
-      loadDocumentCacheFn: mockLoadDocumentCache,
-      saveDocumentCacheFn: mockSaveDocumentCache,
-    });
+    await docsShowAction(
+      'test-doc',
+      { workspace: 'workspace-2' },
+      {
+        logger: mockLogger,
+        exitHandler: mockExitHandler,
+        loadConfigFn: () => multiWorkspaceConfig,
+        // @ts-expect-error - Mock client for testing
+        createClientFn: mockCreateClient,
+        loadDocumentCacheFn: mockLoadDocumentCache,
+        saveDocumentCacheFn: mockSaveDocumentCache,
+      }
+    );
 
     expect(mockCreateClient).toHaveBeenCalledWith({
       url: 'https://api.hackersheet.com/workspace-2/v1/graphql',
@@ -287,15 +335,19 @@ describe('docsShowAction', () => {
     const mockCreateClient = vi.fn(() => createMockClient());
     const mockSaveDocumentCache = vi.fn().mockResolvedValue(undefined);
 
-    await docsShowAction('test-doc', {}, {
-      logger: mockLogger,
-      exitHandler: mockExitHandler,
-      loadConfigFn: () => mockConfig,
-      // @ts-expect-error - Mock client for testing
-      createClientFn: mockCreateClient,
-      loadDocumentCacheFn: mockLoadDocumentCache,
-      saveDocumentCacheFn: mockSaveDocumentCache,
-    });
+    await docsShowAction(
+      'test-doc',
+      {},
+      {
+        logger: mockLogger,
+        exitHandler: mockExitHandler,
+        loadConfigFn: () => mockConfig,
+        // @ts-expect-error - Mock client for testing
+        createClientFn: mockCreateClient,
+        loadDocumentCacheFn: mockLoadDocumentCache,
+        saveDocumentCacheFn: mockSaveDocumentCache,
+      }
+    );
 
     expect(mockCreateClient).toHaveBeenCalledWith({
       url: 'https://api.hackersheet.com/workspace-1/v1/graphql',
@@ -314,15 +366,19 @@ describe('docsShowAction', () => {
       defaultWorkspace: undefined,
     };
 
-    await docsShowAction('test-doc', {}, {
-      logger: mockLogger,
-      exitHandler: mockExitHandler,
-      loadConfigFn: () => singleWorkspaceConfig,
-      // @ts-expect-error - Mock client for testing
-      createClientFn: mockCreateClient,
-      loadDocumentCacheFn: mockLoadDocumentCache,
-      saveDocumentCacheFn: mockSaveDocumentCache,
-    });
+    await docsShowAction(
+      'test-doc',
+      {},
+      {
+        logger: mockLogger,
+        exitHandler: mockExitHandler,
+        loadConfigFn: () => singleWorkspaceConfig,
+        // @ts-expect-error - Mock client for testing
+        createClientFn: mockCreateClient,
+        loadDocumentCacheFn: mockLoadDocumentCache,
+        saveDocumentCacheFn: mockSaveDocumentCache,
+      }
+    );
 
     expect(mockCreateClient).toHaveBeenCalledWith({
       url: 'https://api.hackersheet.com/workspace-1/v1/graphql',
