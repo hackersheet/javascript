@@ -14,7 +14,8 @@ import {
   configPathAction,
   configInitAction,
 } from './actions/config';
-import { docsAction } from './actions/docs-action';
+import { docsListAction } from './actions/docs-list-action';
+import { docsShowAction } from './actions/docs-show-action';
 import { genTreeAction } from './actions/gen-tree-action';
 import { newAction } from './actions/new-action';
 import { setupAction } from './actions/setup-action';
@@ -66,11 +67,21 @@ program
   .option('--no-color', 'Disable colored output');
 
 program.command('setup').description('Setup Hacker Sheet in the current project.').action(setupAction);
-program
-  .command('docs <slug>')
-  .description('Fetch document content by slug.')
+
+const docsCommand = program.command('docs').description('Manage documents.');
+
+docsCommand
+  .command('list')
+  .description('List all available documents with their slugs and titles.')
   .option('-w, --workspace <slug>', 'Workspace to use')
-  .action((slug, options) => docsAction(slug, options));
+  .action((options) => docsListAction(options));
+
+docsCommand
+  .command('show <slug>')
+  .description('Fetch and display document content by slug.')
+  .option('-w, --workspace <slug>', 'Workspace to use')
+  .action((slug, options) => docsShowAction(slug, options));
+
 program.command('new').description('Create a new document.').action(newAction);
 program
   .command('gen:tree')
