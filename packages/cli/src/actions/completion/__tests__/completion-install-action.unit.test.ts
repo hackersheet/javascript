@@ -1,9 +1,8 @@
 import { describe, it, expect, vi } from 'vitest';
 
-import {
-  completionInstallAction,
-  type Logger,
-} from '../completion-install-action';
+import { completionInstallAction } from '../completion-install-action';
+
+import type { Logger } from '../../../types/logger';
 
 describe('completionInstallAction', () => {
   it('installs completion and logs success message', async () => {
@@ -19,9 +18,7 @@ describe('completionInstallAction', () => {
     });
 
     expect(mockTabtabInstall).toHaveBeenCalled();
-    expect(mockLogger.log).toHaveBeenCalledWith(
-      expect.stringContaining('Shell completion installed'),
-    );
+    expect(mockLogger.log).toHaveBeenCalledWith(expect.stringContaining('Shell completion installed'));
   });
 
   it('logs restart instruction after installation', async () => {
@@ -36,9 +33,7 @@ describe('completionInstallAction', () => {
       tabtabInstall: mockTabtabInstall,
     });
 
-    expect(mockLogger.log).toHaveBeenCalledWith(
-      expect.stringContaining('Restart your shell'),
-    );
+    expect(mockLogger.log).toHaveBeenCalledWith(expect.stringContaining('Restart your shell'));
   });
 
   it('logs manual setup instructions when installation fails', async () => {
@@ -46,9 +41,7 @@ describe('completionInstallAction', () => {
       log: vi.fn(),
       error: vi.fn(),
     };
-    const mockTabtabInstall = vi.fn().mockRejectedValue(
-      new Error('Installation failed'),
-    );
+    const mockTabtabInstall = vi.fn().mockRejectedValue(new Error('Installation failed'));
 
     await completionInstallAction({
       logger: mockLogger,
@@ -56,12 +49,8 @@ describe('completionInstallAction', () => {
     });
 
     expect(mockLogger.log).toHaveBeenCalledWith(
-      expect.stringContaining(
-        'Tabtab installation could not auto-setup completion',
-      ),
+      expect.stringContaining('Tabtab installation could not auto-setup completion')
     );
-    expect(mockLogger.log).toHaveBeenCalledWith(
-      expect.stringContaining('Manual setup'),
-    );
+    expect(mockLogger.log).toHaveBeenCalledWith(expect.stringContaining('Manual setup'));
   });
 });

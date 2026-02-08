@@ -1,13 +1,7 @@
 import { clearCache } from '../../utils/cache';
 import { colors, symbols } from '../../utils/colors';
 
-/**
- * Logger interface for output, enabling dependency injection in tests.
- */
-export type Logger = {
-  log: (...args: unknown[]) => void;
-  error: (...args: unknown[]) => void;
-};
+import type { Logger } from '../../types/logger';
 
 /**
  * Dependencies for the cacheClearAction function.

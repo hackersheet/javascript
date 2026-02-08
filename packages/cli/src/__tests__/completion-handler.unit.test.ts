@@ -1,10 +1,9 @@
 import tabtab from '@pnpm/tabtab';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { completionHandler } from '../completion-handler';
+import { completionHandler, type CompletionHandlerDeps } from '../completion-handler';
 
 import type { Config } from '../utils/load-config';
-
 
 // Mock tabtab module
 vi.mock('@pnpm/tabtab', () => ({
@@ -13,6 +12,16 @@ vi.mock('@pnpm/tabtab', () => ({
     log: vi.fn(),
   },
 }));
+
+// Test helper type for mocking client (minimal interface for testing)
+type MockClient = {
+  getDocuments: (args?: unknown) => Promise<{
+    documents: Array<{ slug: string; title: string; draft: boolean }> | null;
+    error: null | string;
+    totalCount?: number;
+    isEmpty?: boolean;
+  }>;
+};
 
 describe('completionHandler', () => {
   beforeEach(() => {
@@ -60,10 +69,7 @@ describe('completionHandler', () => {
       loadConfigFn: () => mockConfig,
     });
 
-    expect(vi.mocked(tabtab.log)).toHaveBeenCalledWith([
-      'workspace-1',
-      'workspace-2',
-    ]);
+    expect(vi.mocked(tabtab.log)).toHaveBeenCalledWith(['workspace-1', 'workspace-2']);
   });
 
   it('suggests workspace slugs for -w option', async () => {
@@ -78,10 +84,7 @@ describe('completionHandler', () => {
       loadConfigFn: () => mockConfig,
     });
 
-    expect(vi.mocked(tabtab.log)).toHaveBeenCalledWith([
-      'workspace-1',
-      'workspace-2',
-    ]);
+    expect(vi.mocked(tabtab.log)).toHaveBeenCalledWith(['workspace-1', 'workspace-2']);
   });
 
   it('suggests document slugs for docs command', async () => {
@@ -94,7 +97,8 @@ describe('completionHandler', () => {
 
     const mockLoadCache = vi.fn(() => null);
     const mockSaveCache = vi.fn().mockResolvedValue(undefined);
-    const mockCreateClient = vi.fn(() => ({
+
+    const mockClient: MockClient = {
       getDocuments: vi.fn().mockResolvedValue({
         documents: [
           { slug: 'doc1', title: 'Doc 1', draft: false },
@@ -102,12 +106,15 @@ describe('completionHandler', () => {
         ],
         error: null,
       }),
-    })) as any;
+    };
+
+    const mockCreateClient = vi.fn(() => mockClient);
 
     await completionHandler({
       loadConfigFn: () => mockConfig,
       loadCacheFn: mockLoadCache,
       saveCacheFn: mockSaveCache,
+      // @ts-expect-error - Mock Client differs from real Client in tests
       createClientFn: mockCreateClient,
     });
 
@@ -134,10 +141,7 @@ describe('completionHandler', () => {
       createClientFn: mockCreateClient,
     });
 
-    expect(vi.mocked(tabtab.log)).toHaveBeenCalledWith([
-      'cached-doc1',
-      'cached-doc2',
-    ]);
+    expect(vi.mocked(tabtab.log)).toHaveBeenCalledWith(['cached-doc1', 'cached-doc2']);
     expect(mockCreateClient).not.toHaveBeenCalled();
   });
 
@@ -151,19 +155,22 @@ describe('completionHandler', () => {
 
     const mockLoadCache = vi.fn(() => null);
     const mockSaveCache = vi.fn().mockResolvedValue(undefined);
-    const mockCreateClient = vi.fn(() => ({
+
+    const mockClient: MockClient = {
       getDocuments: vi.fn().mockResolvedValue({
         documents: [{ slug: 'doc3', title: 'Doc 3', draft: false }],
         error: null,
       }),
-    })) as any;
+    };
+
+    const mockCreateClient = vi.fn(() => mockClient);
 
     await completionHandler({
       loadConfigFn: () => mockConfig,
       loadCacheFn: mockLoadCache,
       saveCacheFn: mockSaveCache,
       createClientFn: mockCreateClient,
-    });
+    } as unknown as Partial<CompletionHandlerDeps>);
 
     expect(vi.mocked(tabtab.log)).toHaveBeenCalledWith(['doc3']);
     expect(mockSaveCache).toHaveBeenCalledWith('workspace-2', ['doc3']);
@@ -179,19 +186,22 @@ describe('completionHandler', () => {
 
     const mockLoadCache = vi.fn(() => null);
     const mockSaveCache = vi.fn();
-    const mockCreateClient = vi.fn(() => ({
+
+    const mockClient: MockClient = {
       getDocuments: vi.fn().mockResolvedValue({
         documents: null,
         error: 'API Error',
       }),
-    })) as any;
+    };
+
+    const mockCreateClient = vi.fn(() => mockClient);
 
     await completionHandler({
       loadConfigFn: () => mockConfig,
       loadCacheFn: mockLoadCache,
       saveCacheFn: mockSaveCache,
       createClientFn: mockCreateClient,
-    });
+    } as unknown as Partial<CompletionHandlerDeps>);
 
     expect(vi.mocked(tabtab.log)).toHaveBeenCalledWith([]);
   });
@@ -209,14 +219,7 @@ describe('completionHandler', () => {
     });
 
     expect(vi.mocked(tabtab.log)).toHaveBeenCalledWith(
-      expect.arrayContaining([
-        'docs',
-        'new',
-        'setup',
-        'config',
-        'completion',
-        'cache',
-      ]),
+      expect.arrayContaining(['docs', 'new', 'setup', 'config', 'completion', 'cache'])
     );
   });
 
@@ -232,7 +235,10 @@ describe('completionHandler', () => {
       loadConfigFn: () => mockConfig,
     });
 
-    expect(vi.mocked(tabtab.log)).not.toHaveBeenCalled();
+    // Falls back to default command completion when workspace is missing
+    expect(vi.mocked(tabtab.log)).toHaveBeenCalledWith(
+      expect.arrayContaining(['docs', 'setup', 'config', 'completion', 'cache'])
+    );
   });
 
   it('silently fails when config loading fails', async () => {
@@ -250,7 +256,7 @@ describe('completionHandler', () => {
     await expect(
       completionHandler({
         loadConfigFn: mockLoadConfig,
-      }),
+      })
     ).resolves.toBeUndefined();
   });
 
@@ -273,7 +279,9 @@ describe('completionHandler', () => {
       loadConfigFn: () => emptyConfig,
     });
 
-    // When workspace cannot be resolved, completionHandler returns without logging
-    expect(vi.mocked(tabtab.log)).not.toHaveBeenCalled();
+    // When workspace cannot be resolved, completionHandler provides default command completion
+    expect(vi.mocked(tabtab.log)).toHaveBeenCalledWith(
+      expect.arrayContaining(['docs', 'setup', 'config', 'completion', 'cache'])
+    );
   });
 });

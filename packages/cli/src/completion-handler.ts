@@ -157,16 +157,13 @@ export async function completionHandler(deps: Partial<CompletionHandlerDeps> = {
   try {
     let config: Config | null = null;
     try {
-      config = (deps.loadConfigFn || defaultDeps.loadConfigFn)();
+      config = (deps.loadConfigFn ?? defaultDeps.loadConfigFn)();
     } catch {
       // Config not available, proceed with basic completion
     }
 
     // Workspace option completion: hscli docs -w <TAB> or hscli --workspace <TAB>
-    if (
-      (env.prev === '--workspace' || env.prev === '-w') &&
-      config
-    ) {
+    if ((env.prev === '--workspace' || env.prev === '-w') && config) {
       const workspaceSlugs = Object.keys(config.workspaces);
       return tabtab.log(workspaceSlugs);
     }
@@ -183,16 +180,7 @@ export async function completionHandler(deps: Partial<CompletionHandlerDeps> = {
     }
 
     // Default command completion
-    const commands = [
-      'docs',
-      'new',
-      'setup',
-      'config',
-      'completion',
-      'cache',
-      '--help',
-      '--version',
-    ];
+    const commands = ['docs', 'new', 'setup', 'config', 'completion', 'cache', '--help', '--version'];
     return tabtab.log(commands);
   } catch {
     // Silently fail on errors to avoid breaking the shell

@@ -2,13 +2,7 @@ import tabtab from '@pnpm/tabtab';
 
 import { colors, symbols } from '../../utils/colors';
 
-/**
- * Logger interface for output, enabling dependency injection in tests.
- */
-export type Logger = {
-  log: (...args: unknown[]) => void;
-  error: (...args: unknown[]) => void;
-};
+import type { Logger } from '../../types/logger';
 
 /**
  * Dependencies for the completionInstallAction function.

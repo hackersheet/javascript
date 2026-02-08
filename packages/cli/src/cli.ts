@@ -134,14 +134,16 @@ cacheCommand
   .action(() => cacheClearAction());
 
 // Handle shell tab completion
-if (process.env.COMP_CWORD !== undefined || process.env.COMP_LINE !== undefined) {
-  (async () => {
+const isCompletionMode = process.env.COMP_CWORD !== undefined || process.env.COMP_LINE !== undefined;
+
+if (isCompletionMode) {
+  try {
     await completionHandler();
     process.exit(0);
-  })().catch((error) => {
+  } catch (error) {
     console.error(error);
     process.exit(1);
-  });
+  }
 } else {
   program.parse();
 }

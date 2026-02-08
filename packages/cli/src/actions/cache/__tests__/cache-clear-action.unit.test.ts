@@ -1,6 +1,8 @@
 import { describe, it, expect, vi } from 'vitest';
 
-import { cacheClearAction, type Logger } from '../cache-clear-action';
+import { cacheClearAction } from '../cache-clear-action';
+
+import type { Logger } from '../../../types/logger';
 
 describe('cacheClearAction', () => {
   it('clears cache and logs success message', async () => {
@@ -16,9 +18,7 @@ describe('cacheClearAction', () => {
     });
 
     expect(mockClearCache).toHaveBeenCalled();
-    expect(mockLogger.log).toHaveBeenCalledWith(
-      expect.stringContaining('Cache cleared successfully'),
-    );
+    expect(mockLogger.log).toHaveBeenCalledWith(expect.stringContaining('Cache cleared successfully'));
   });
 
   it('logs error when cache clear fails', async () => {
@@ -32,11 +32,9 @@ describe('cacheClearAction', () => {
       cacheClearAction({
         logger: mockLogger,
         clearCacheFunc: mockClearCache,
-      }),
+      })
     ).rejects.toThrow('Clear failed');
 
-    expect(mockLogger.error).toHaveBeenCalledWith(
-      expect.stringContaining('Failed to clear cache'),
-    );
+    expect(mockLogger.error).toHaveBeenCalledWith(expect.stringContaining('Failed to clear cache'));
   });
 });
