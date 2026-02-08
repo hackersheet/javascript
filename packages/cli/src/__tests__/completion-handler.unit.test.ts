@@ -232,6 +232,21 @@ describe('completionHandler', () => {
     expect(vi.mocked(tabtab.log)).toHaveBeenCalledWith([]);
   });
 
+  it('suggests docs subcommands when prev is docs', async () => {
+    const mockParseEnv = vi.fn(() => ({
+      complete: true,
+      line: 'hscli docs',
+      prev: 'docs',
+    }));
+    vi.mocked(tabtab.parseEnv).mockImplementation(mockParseEnv);
+
+    await completionHandler({
+      loadConfigFn: () => mockConfig,
+    });
+
+    expect(vi.mocked(tabtab.log)).toHaveBeenCalledWith(['show', 'list']);
+  });
+
   it('suggests default commands when no specific completion matches', async () => {
     const mockParseEnv = vi.fn(() => ({
       complete: true,
@@ -284,30 +299,5 @@ describe('completionHandler', () => {
         loadConfigFn: mockLoadConfig,
       })
     ).resolves.toBeUndefined();
-  });
-
-  it('calls default completion when workspace cannot be resolved for docs', async () => {
-    const mockParseEnv = vi.fn(() => ({
-      complete: true,
-      line: 'hscli docs',
-      prev: 'docs',
-    }));
-    vi.mocked(tabtab.parseEnv).mockImplementation(mockParseEnv);
-
-    const emptyConfig: Config = {
-      workspaces: {},
-      defaultWorkspace: undefined,
-      newFilenameTemplate: 'template',
-      docsDirs: [],
-    };
-
-    await completionHandler({
-      loadConfigFn: () => emptyConfig,
-    });
-
-    // When workspace cannot be resolved, completionHandler provides default command completion
-    expect(vi.mocked(tabtab.log)).toHaveBeenCalledWith(
-      expect.arrayContaining(['docs', 'setup', 'config', 'completion', 'cache'])
-    );
   });
 });
