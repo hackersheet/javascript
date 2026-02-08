@@ -13,6 +13,13 @@ type ResolvedWorkspace = {
 };
 
 /**
+ * Configuration for a command's subcommands.
+ */
+type CommandConfig = {
+  subcommands?: string[];
+};
+
+/**
  * Dependencies for the completionHandler function.
  */
 export type CompletionHandlerDeps = {
@@ -28,6 +35,24 @@ const defaultDeps: CompletionHandlerDeps = {
   loadCacheFn: loadCache,
   saveCacheFn: saveCache,
 };
+
+/**
+ * Mapping of top-level commands to their subcommands.
+ */
+const COMMAND_SUBCOMMANDS: Record<string, CommandConfig> = {
+  docs: { subcommands: ['show', 'list'] },
+  config: { subcommands: ['init', 'list', 'get', 'set', 'delete', 'path'] },
+  completion: { subcommands: ['install'] },
+  cache: { subcommands: ['clear'] },
+  setup: {},
+  init: {},
+  new: {},
+};
+
+/**
+ * All top-level commands available in the CLI.
+ */
+const ALL_COMMANDS = ['docs', 'new', 'setup', 'init', 'config', 'completion', 'cache', '--help', '--version'];
 
 /**
  * Resolves the workspace to use based on options and config.
@@ -166,6 +191,17 @@ async function getDocuments(
 }
 
 /**
+ * Completes subcommands for a given command.
+ *
+ * @param command - The command name.
+ * @returns Array of subcommand suggestions or empty array.
+ */
+function getSubcommandSuggestions(command: string): string[] {
+  const cmdConfig = COMMAND_SUBCOMMANDS[command];
+  return cmdConfig?.subcommands ?? [];
+}
+
+/**
  * Handles shell tab completion for the hscli command.
  *
  * This function is called by the shell completion system and provides
@@ -189,15 +225,16 @@ export async function completionHandler(deps: Partial<CompletionHandlerDeps> = {
       // Config not available, proceed with basic completion
     }
 
-    // Workspace option completion: hscli docs -w <TAB> or hscli --workspace <TAB>
+    // Workspace option completion: hscli <command> -w <TAB> or hscli <command> --workspace <TAB>
     if ((env.prev === '--workspace' || env.prev === '-w') && config) {
       const workspaceSlugs = Object.keys(config.workspaces);
       return tabtab.log(workspaceSlugs);
     }
 
-    // docs subcommand completion: hscli docs <TAB>
-    if (env.prev === 'docs') {
-      return tabtab.log(['show', 'list']);
+    // Subcommand completion for any command: hscli <command> <TAB>
+    const subcommands = getSubcommandSuggestions(env.prev);
+    if (subcommands.length > 0) {
+      return tabtab.log(subcommands);
     }
 
     // docs show command slug completion: hscli docs show <TAB>
@@ -216,8 +253,7 @@ export async function completionHandler(deps: Partial<CompletionHandlerDeps> = {
     }
 
     // Default command completion
-    const commands = ['docs', 'new', 'setup', 'config', 'completion', 'cache', '--help', '--version'];
-    return tabtab.log(commands);
+    return tabtab.log(ALL_COMMANDS);
   } catch {
     // Silently fail on errors to avoid breaking the shell
     return;

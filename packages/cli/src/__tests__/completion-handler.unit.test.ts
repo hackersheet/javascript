@@ -247,6 +247,53 @@ describe('completionHandler', () => {
     expect(vi.mocked(tabtab.log)).toHaveBeenCalledWith(['show', 'list']);
   });
 
+  it('suggests config subcommands when prev is config', async () => {
+    const mockParseEnv = vi.fn(() => ({
+      complete: true,
+      line: 'hscli config',
+      prev: 'config',
+    }));
+    vi.mocked(tabtab.parseEnv).mockImplementation(mockParseEnv);
+
+    await completionHandler({
+      loadConfigFn: () => mockConfig,
+    });
+
+    expect(vi.mocked(tabtab.log)).toHaveBeenCalledWith(
+      expect.arrayContaining(['init', 'list', 'get', 'set', 'delete', 'path'])
+    );
+  });
+
+  it('suggests completion subcommands when prev is completion', async () => {
+    const mockParseEnv = vi.fn(() => ({
+      complete: true,
+      line: 'hscli completion',
+      prev: 'completion',
+    }));
+    vi.mocked(tabtab.parseEnv).mockImplementation(mockParseEnv);
+
+    await completionHandler({
+      loadConfigFn: () => mockConfig,
+    });
+
+    expect(vi.mocked(tabtab.log)).toHaveBeenCalledWith(['install']);
+  });
+
+  it('suggests cache subcommands when prev is cache', async () => {
+    const mockParseEnv = vi.fn(() => ({
+      complete: true,
+      line: 'hscli cache',
+      prev: 'cache',
+    }));
+    vi.mocked(tabtab.parseEnv).mockImplementation(mockParseEnv);
+
+    await completionHandler({
+      loadConfigFn: () => mockConfig,
+    });
+
+    expect(vi.mocked(tabtab.log)).toHaveBeenCalledWith(['clear']);
+  });
+
   it('suggests default commands when no specific completion matches', async () => {
     const mockParseEnv = vi.fn(() => ({
       complete: true,
@@ -260,7 +307,7 @@ describe('completionHandler', () => {
     });
 
     expect(vi.mocked(tabtab.log)).toHaveBeenCalledWith(
-      expect.arrayContaining(['docs', 'new', 'setup', 'config', 'completion', 'cache'])
+      expect.arrayContaining(['docs', 'new', 'setup', 'init', 'config', 'completion', 'cache'])
     );
   });
 
@@ -278,7 +325,7 @@ describe('completionHandler', () => {
 
     // Falls back to default command completion when workspace is missing
     expect(vi.mocked(tabtab.log)).toHaveBeenCalledWith(
-      expect.arrayContaining(['docs', 'setup', 'config', 'completion', 'cache'])
+      expect.arrayContaining(['docs', 'setup', 'init', 'config', 'completion', 'cache'])
     );
   });
 
