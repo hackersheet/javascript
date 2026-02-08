@@ -29,17 +29,33 @@ export type DocumentsCacheEntry = {
 export type DocumentsCache = Record<string, DocumentsCacheEntry>;
 
 /**
+ * File system API interface for cache operations.
+ */
+type FsApi = {
+  readFile: (path: string, encoding: BufferEncoding) => string;
+  writeFile: (path: string, data: string) => void;
+  mkdir: (path: string, options?: { recursive?: boolean }) => void;
+  unlink: (path: string) => void;
+  access: (path: string) => void;
+};
+
+/**
  * Dependencies for cache operations (for testing).
  */
 export type CacheDeps = {
-  fsApi: {
-    readFile: (path: string, encoding: string) => string;
-    writeFile: (path: string, data: string) => void;
-    mkdir: (path: string, options?: { recursive?: boolean }) => void;
-    unlink: (path: string) => void;
-    access: (path: string) => void;
-  };
+  fsApi: FsApi;
   now: () => number;
+};
+
+/**
+ * Default file system API backed by Node.js fs module.
+ */
+const defaultFsApi: FsApi = {
+  readFile: (filePath, encoding) => fs.readFileSync(filePath, encoding),
+  writeFile: (filePath, data) => fs.writeFileSync(filePath, data, 'utf8'),
+  mkdir: (filePath, options) => fs.mkdirSync(filePath, options),
+  unlink: (filePath) => fs.unlinkSync(filePath),
+  access: (filePath) => fs.accessSync(filePath),
 };
 
 /**
@@ -90,17 +106,8 @@ export function isCacheValid(entry: DocumentsCacheEntry, ttl: number, now: numbe
  */
 export function loadCache(workspace: string, deps?: Partial<CacheDeps>): DocumentCacheItem[] | null {
   const cachePath = getCachePath();
-  const { fsApi, now } = {
-    fsApi: {
-      readFile: (filePath: string, encoding: string) => fs.readFileSync(filePath, encoding as BufferEncoding),
-      writeFile: (filePath: string, data: string) => fs.writeFileSync(filePath, data, 'utf8'),
-      mkdir: (filePath: string, options?: { recursive?: boolean }) => fs.mkdirSync(filePath, options),
-      unlink: (filePath: string) => fs.unlinkSync(filePath),
-      access: (filePath: string) => fs.accessSync(filePath),
-    },
-    now: () => Date.now(),
-    ...deps,
-  };
+  const fsApi = deps?.fsApi ?? defaultFsApi;
+  const now = deps?.now ?? Date.now;
 
   try {
     fsApi.access(cachePath);
@@ -110,17 +117,19 @@ export function loadCache(workspace: string, deps?: Partial<CacheDeps>): Documen
 
   try {
     const content = fsApi.readFile(cachePath, 'utf8');
-    const cache: DocumentsCache = JSON.parse(content);
+    const cache = JSON.parse(content) as Record<string, unknown>;
 
-    const entry = cache[workspace];
-    if (!entry) {
+    const rawEntry = cache[workspace];
+    if (!rawEntry || typeof rawEntry !== 'object') {
       return null;
     }
 
     // Backward compatibility: old cache format had "slugs" field instead of "documents"
-    if ('slugs' in (entry as unknown as Record<string, unknown>) && !('documents' in entry)) {
+    if ('slugs' in rawEntry && !('documents' in rawEntry)) {
       return null;
     }
+
+    const entry = rawEntry as DocumentsCacheEntry;
 
     if (!isCacheValid(entry, DEFAULT_TTL, now())) {
       return null;
@@ -146,17 +155,8 @@ export async function saveCache(
 ): Promise<void> {
   const cachePath = getCachePath();
   const cacheDir = getCacheDir();
-  const { fsApi, now } = {
-    fsApi: {
-      readFile: (filePath: string, encoding: string) => fs.readFileSync(filePath, encoding as BufferEncoding),
-      writeFile: (filePath: string, data: string) => fs.writeFileSync(filePath, data, 'utf8'),
-      mkdir: (filePath: string, options?: { recursive?: boolean }) => fs.mkdirSync(filePath, options),
-      unlink: (filePath: string) => fs.unlinkSync(filePath),
-      access: (filePath: string) => fs.accessSync(filePath),
-    },
-    now: () => Date.now(),
-    ...deps,
-  };
+  const fsApi = deps?.fsApi ?? defaultFsApi;
+  const now = deps?.now ?? Date.now;
 
   try {
     fsApi.mkdir(cacheDir, { recursive: true });
@@ -196,16 +196,7 @@ export async function saveCache(
  */
 export async function clearCache(deps?: Partial<CacheDeps>): Promise<void> {
   const cachePath = getCachePath();
-  const { fsApi } = {
-    fsApi: {
-      readFile: (filePath: string, encoding: string) => fs.readFileSync(filePath, encoding as BufferEncoding),
-      writeFile: (filePath: string, data: string) => fs.writeFileSync(filePath, data, 'utf8'),
-      mkdir: (filePath: string, options?: { recursive?: boolean }) => fs.mkdirSync(filePath, options),
-      unlink: (filePath: string) => fs.unlinkSync(filePath),
-      access: (filePath: string) => fs.accessSync(filePath),
-    },
-    ...deps,
-  };
+  const fsApi = deps?.fsApi ?? defaultFsApi;
 
   try {
     fsApi.access(cachePath);
@@ -224,7 +215,6 @@ export type CachedDocument = {
   title: string;
   content: string;
   draft: boolean;
-  [key: string]: unknown;
 };
 
 /**

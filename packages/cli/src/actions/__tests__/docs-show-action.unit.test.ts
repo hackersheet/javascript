@@ -118,7 +118,6 @@ describe('docsShowAction', () => {
         logger: mockLogger,
         exitHandler: mockExitHandler,
         loadConfigFn: () => mockConfig,
-        // @ts-expect-error - Mock client for testing
         createClientFn: mockCreateClient,
         loadDocumentCacheFn: mockLoadDocumentCache,
       }
@@ -146,7 +145,6 @@ describe('docsShowAction', () => {
         logger: mockLogger,
         exitHandler: mockExitHandler,
         loadConfigFn: () => mockConfig,
-        // @ts-expect-error - Mock client for testing
         createClientFn: mockCreateClient,
         loadDocumentCacheFn: mockLoadDocumentCache,
       }
@@ -174,7 +172,6 @@ describe('docsShowAction', () => {
         logger: mockLogger,
         exitHandler: mockExitHandler,
         loadConfigFn: () => mockConfig,
-        // @ts-expect-error - Mock client for testing
         createClientFn: mockCreateClient,
         loadDocumentCacheFn: mockLoadDocumentCache,
       }
@@ -223,7 +220,6 @@ describe('docsShowAction', () => {
         logger: mockLogger,
         exitHandler: mockExitHandler,
         loadConfigFn: () => mockConfig,
-        // @ts-expect-error - Mock client for testing
         createClientFn: mockCreateClient,
         loadDocumentCacheFn: mockLoadDocumentCache,
         saveDocumentCacheFn: mockSaveDocumentCache,
@@ -254,7 +250,6 @@ describe('docsShowAction', () => {
         logger: mockLogger,
         exitHandler: mockExitHandler,
         loadConfigFn: () => mockConfig,
-        // @ts-expect-error - Mock client for testing
         createClientFn: mockCreateClient,
         loadDocumentCacheFn: mockLoadDocumentCache,
         saveDocumentCacheFn: mockSaveDocumentCache,
@@ -281,7 +276,6 @@ describe('docsShowAction', () => {
         logger: mockLogger,
         exitHandler: mockExitHandler,
         loadConfigFn: () => mockConfig,
-        // @ts-expect-error - Mock client for testing
         createClientFn: mockCreateClient,
         loadDocumentCacheFn: mockLoadDocumentCache,
         saveDocumentCacheFn: mockSaveDocumentCache,
@@ -315,7 +309,6 @@ describe('docsShowAction', () => {
         logger: mockLogger,
         exitHandler: mockExitHandler,
         loadConfigFn: () => multiWorkspaceConfig,
-        // @ts-expect-error - Mock client for testing
         createClientFn: mockCreateClient,
         loadDocumentCacheFn: mockLoadDocumentCache,
         saveDocumentCacheFn: mockSaveDocumentCache,
@@ -342,7 +335,6 @@ describe('docsShowAction', () => {
         logger: mockLogger,
         exitHandler: mockExitHandler,
         loadConfigFn: () => mockConfig,
-        // @ts-expect-error - Mock client for testing
         createClientFn: mockCreateClient,
         loadDocumentCacheFn: mockLoadDocumentCache,
         saveDocumentCacheFn: mockSaveDocumentCache,
@@ -373,7 +365,6 @@ describe('docsShowAction', () => {
         logger: mockLogger,
         exitHandler: mockExitHandler,
         loadConfigFn: () => singleWorkspaceConfig,
-        // @ts-expect-error - Mock client for testing
         createClientFn: mockCreateClient,
         loadDocumentCacheFn: mockLoadDocumentCache,
         saveDocumentCacheFn: mockSaveDocumentCache,

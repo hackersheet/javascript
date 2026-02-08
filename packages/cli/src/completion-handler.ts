@@ -3,14 +3,7 @@ import tabtab from '@pnpm/tabtab';
 
 import { loadCache, saveCache, type DocumentCacheItem } from './utils/cache';
 import { loadConfig, type Config } from './utils/load-config';
-
-/**
- * Resolved workspace information.
- */
-type ResolvedWorkspace = {
-  slug: string;
-  accessKey: string;
-};
+import { resolveWorkspace, type ResolvedWorkspace } from './utils/resolve-workspace';
 
 /**
  * Configuration for a command's subcommands.
@@ -20,11 +13,16 @@ type CommandConfig = {
 };
 
 /**
+ * Minimal client interface required by completionHandler.
+ */
+type CompletionClient = Pick<ReturnType<typeof createClient>, 'getDocuments'>;
+
+/**
  * Dependencies for the completionHandler function.
  */
 export type CompletionHandlerDeps = {
   loadConfigFn: () => Config;
-  createClientFn: typeof createClient;
+  createClientFn: (options: { url: string; accessKey: string }) => CompletionClient;
   loadCacheFn: (workspace: string) => DocumentCacheItem[] | null;
   saveCacheFn: (workspace: string, documents: DocumentCacheItem[]) => Promise<void>;
 };
@@ -53,56 +51,6 @@ const COMMAND_SUBCOMMANDS: Record<string, CommandConfig> = {
  * All top-level commands available in the CLI.
  */
 const ALL_COMMANDS = ['docs', 'new', 'setup', 'init', 'config', 'completion', 'cache', '--help', '--version'];
-
-/**
- * Resolves the workspace to use based on options and config.
- *
- * Resolution order:
- * 1. --workspace option if specified
- * 2. defaultWorkspace if configured
- * 3. Single workspace if only one exists
- * 4. null if none of the above
- *
- * @param config - The loaded configuration.
- * @param workspaceOption - The workspace slug from CLI option.
- * @returns The resolved workspace or null.
- */
-function resolveWorkspace(config: Config, workspaceOption?: string): ResolvedWorkspace | null {
-  const workspaceSlugs = Object.keys(config.workspaces);
-
-  // 1. --workspace option specified
-  if (workspaceOption) {
-    const workspace = config.workspaces[workspaceOption];
-    if (!workspace) return null;
-    return {
-      slug: workspaceOption,
-      accessKey: workspace.accessKey,
-    };
-  }
-
-  // 2. defaultWorkspace configured
-  if (config.defaultWorkspace) {
-    const workspace = config.workspaces[config.defaultWorkspace];
-    if (!workspace) return null;
-    return {
-      slug: config.defaultWorkspace,
-      accessKey: workspace.accessKey,
-    };
-  }
-
-  // 3. Single workspace auto-select
-  if (workspaceSlugs.length === 1) {
-    const slug = workspaceSlugs[0];
-    const workspace = config.workspaces[slug];
-    return {
-      slug,
-      accessKey: workspace.accessKey,
-    };
-  }
-
-  // 4. Unable to resolve
-  return null;
-}
 
 /**
  * Extracts the workspace slug from the command line.

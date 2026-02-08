@@ -1,7 +1,7 @@
 import tabtab from '@pnpm/tabtab';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { completionHandler, type CompletionHandlerDeps } from '../completion-handler';
+import { completionHandler } from '../completion-handler';
 
 import type { DocumentCacheItem } from '../utils/cache';
 import type { Config } from '../utils/load-config';
@@ -13,16 +13,6 @@ vi.mock('@pnpm/tabtab', () => ({
     log: vi.fn(),
   },
 }));
-
-// Test helper type for mocking client (minimal interface for testing)
-type MockClient = {
-  getDocuments: (args?: unknown) => Promise<{
-    documents: Array<{ slug: string; title: string; draft: boolean; id: string }> | null;
-    error: null | string;
-    totalCount?: number;
-    isEmpty?: boolean;
-  }>;
-};
 
 describe('completionHandler', () => {
   beforeEach(() => {
@@ -104,7 +94,7 @@ describe('completionHandler', () => {
       { slug: 'doc2', title: 'Doc 2' },
     ];
 
-    const mockClient: MockClient = {
+    const mockClient = {
       getDocuments: vi.fn().mockResolvedValue({
         documents: [
           { slug: 'doc1', title: 'Doc 1', draft: false, id: 'doc1-id' },
@@ -120,7 +110,6 @@ describe('completionHandler', () => {
       loadConfigFn: () => mockConfig,
       loadCacheFn: mockLoadCache,
       saveCacheFn: mockSaveCache,
-      // @ts-expect-error - Mock Client differs from real Client in tests
       createClientFn: mockCreateClient,
     });
 
@@ -179,7 +168,7 @@ describe('completionHandler', () => {
 
     const mockDocuments: DocumentCacheItem[] = [{ slug: 'doc3', title: 'Doc 3' }];
 
-    const mockClient: MockClient = {
+    const mockClient = {
       getDocuments: vi.fn().mockResolvedValue({
         documents: [{ slug: 'doc3', title: 'Doc 3', draft: false, id: 'doc3-id' }],
         error: null,
@@ -193,7 +182,7 @@ describe('completionHandler', () => {
       loadCacheFn: mockLoadCache,
       saveCacheFn: mockSaveCache,
       createClientFn: mockCreateClient,
-    } as unknown as Partial<CompletionHandlerDeps>);
+    });
 
     expect(vi.mocked(tabtab.log)).toHaveBeenCalledWith(
       expect.arrayContaining([{ name: 'doc3', description: 'Doc 3' }])
@@ -212,7 +201,7 @@ describe('completionHandler', () => {
     const mockLoadCache = vi.fn(() => null);
     const mockSaveCache = vi.fn();
 
-    const mockClient: MockClient = {
+    const mockClient = {
       getDocuments: vi.fn().mockResolvedValue({
         documents: null,
         error: 'API Error',
@@ -226,7 +215,7 @@ describe('completionHandler', () => {
       loadCacheFn: mockLoadCache,
       saveCacheFn: mockSaveCache,
       createClientFn: mockCreateClient,
-    } as unknown as Partial<CompletionHandlerDeps>);
+    });
 
     // When API fails, returns empty array for completion items
     expect(vi.mocked(tabtab.log)).toHaveBeenCalledWith([]);
