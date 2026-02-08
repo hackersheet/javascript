@@ -31,6 +31,11 @@ export type Logger = {
 };
 
 /**
+ * Wizard mode: which fields to prompt for.
+ */
+export type ConfigWizardMode = 'global' | 'project' | 'all';
+
+/**
  * Options for the config init command.
  */
 export type ConfigInitOptions = {
@@ -110,12 +115,14 @@ export type ConfigInitResult = {
  * It can be used by both `config init` and `setup` commands.
  *
  * @param configPath - Path where the config will be saved.
+ * @param mode - Which fields to prompt for: 'global' (workspaces), 'project' (template/dirs), 'all'.
  * @param deps - Dependencies for testing.
  * @param options - Options for customizing wizard messages.
  * @returns The configuration result.
  */
 export async function runConfigWizard(
   configPath: string,
+  mode: ConfigWizardMode = 'all',
   deps: Partial<ConfigInitActionDeps> = {},
   options: ConfigWizardOptions = {}
 ): Promise<ConfigInitResult> {
@@ -139,31 +146,41 @@ export async function runConfigWizard(
 
   logger.log(headerMessage);
 
-  const workspaceSlug = await prompts.input({
-    message: 'Workspace slug (optional, for API access)',
-    default: existingConfig.defaultWorkspace ?? '',
-  });
+  // Global fields: workspace configuration
+  let workspaceSlug = '';
+  let accessKey = '';
+  if (mode === 'global' || mode === 'all') {
+    workspaceSlug = await prompts.input({
+      message: 'Workspace slug (optional, for API access)',
+      default: existingConfig.defaultWorkspace ?? '',
+    });
 
-  const existingAccessKey = workspaceSlug && existingConfig.workspaces?.[workspaceSlug]?.accessKey;
-  const accessKey = await prompts.input({
-    message: 'Workspace access key (optional, for API access)',
-    default: existingAccessKey ?? '',
-  });
+    const existingAccessKey = workspaceSlug && existingConfig.workspaces?.[workspaceSlug]?.accessKey;
+    accessKey = await prompts.input({
+      message: 'Workspace access key (optional, for API access)',
+      default: existingAccessKey ?? '',
+    });
+  }
 
-  const newFilenameTemplate = await prompts.input({
-    message: 'New document filename template',
-    default: existingConfig.newFilenameTemplate ?? DEFAULT_CONFIG.newFilenameTemplate,
-  });
+  // Project fields: template and directories
+  let newFilenameTemplate = '';
+  let docsDirs: string[] = [];
+  if (mode === 'project' || mode === 'all') {
+    newFilenameTemplate = await prompts.input({
+      message: 'New document filename template',
+      default: existingConfig.newFilenameTemplate ?? DEFAULT_CONFIG.newFilenameTemplate,
+    });
 
-  const docsDirsInput = await prompts.input({
-    message: 'Document directories (comma-separated)',
-    default: existingConfig.docsDirs?.join(', ') ?? 'docs',
-  });
+    const docsDirsInput = await prompts.input({
+      message: 'Document directories (comma-separated)',
+      default: existingConfig.docsDirs?.join(', ') ?? 'docs',
+    });
 
-  const docsDirs = docsDirsInput
-    .split(',')
-    .map((d) => d.trim())
-    .filter((d) => d.length > 0);
+    docsDirs = docsDirsInput
+      .split(',')
+      .map((d) => d.trim())
+      .filter((d) => d.length > 0);
+  }
 
   const workspaces: Config['workspaces'] = {};
   let defaultWorkspace: string | undefined;
@@ -173,12 +190,21 @@ export async function runConfigWizard(
     defaultWorkspace = workspaceSlug;
   }
 
-  const config: Partial<Config> = {
-    workspaces,
-    ...(defaultWorkspace && { defaultWorkspace }),
-    newFilenameTemplate: newFilenameTemplate || DEFAULT_CONFIG.newFilenameTemplate,
-    docsDirs: docsDirs.length > 0 ? docsDirs : DEFAULT_CONFIG.docsDirs,
-  };
+  const config: Partial<Config> = {};
+
+  // Add global fields if prompted
+  if (mode === 'global' || mode === 'all') {
+    config.workspaces = workspaces;
+    if (defaultWorkspace) {
+      config.defaultWorkspace = defaultWorkspace;
+    }
+  }
+
+  // Add project fields if prompted
+  if (mode === 'project' || mode === 'all') {
+    config.newFilenameTemplate = newFilenameTemplate || DEFAULT_CONFIG.newFilenameTemplate;
+    config.docsDirs = docsDirs.length > 0 ? docsDirs : DEFAULT_CONFIG.docsDirs;
+  }
 
   return { config, configPath, cancelled: false };
 }
@@ -207,10 +233,12 @@ export async function configInitAction(
 
   let configPath: string;
   let configType: string;
+  let mode: ConfigWizardMode;
 
   if (options.global) {
     configPath = getUserPath();
     configType = 'user';
+    mode = 'all'; // For `config init --global`, prompt all fields
   } else {
     const projectPath = getProjectPath();
     if (projectPath) {
@@ -219,9 +247,10 @@ export async function configInitAction(
       configPath = path.join(cwd(), '.hackersheet', 'cli.config.json');
     }
     configType = 'project';
+    mode = 'all'; // For `config init`, prompt all fields
   }
 
-  const result = await runConfigWizard(configPath, deps);
+  const result = await runConfigWizard(configPath, mode, deps);
 
   if (result.cancelled) {
     return;

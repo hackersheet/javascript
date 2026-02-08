@@ -138,7 +138,7 @@ describe('newAction', () => {
     );
   });
 
-  it('uses default directory when docsDirs is empty', async () => {
+  it('shows error when project is not initialized', async () => {
     const deps = createMockDeps({
       loadConfigFn: vi.fn().mockReturnValue({
         workspaces: {},
@@ -149,11 +149,9 @@ describe('newAction', () => {
 
     await newAction(deps);
 
-    expect(deps.prompts.select).toHaveBeenCalledWith(
-      expect.objectContaining({
-        choices: [{ name: 'docs', value: 'docs' }],
-      })
-    );
+    expect(deps.logger.error).toHaveBeenCalledWith(expect.stringContaining('Project not initialized'));
+    expect(deps.logger.error).toHaveBeenCalledWith(expect.stringContaining('hscli init'));
+    expect(deps.prompts.select).not.toHaveBeenCalled();
   });
 
   it('replaces spaces in title for filename', async () => {

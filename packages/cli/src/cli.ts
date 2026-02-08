@@ -4,6 +4,8 @@ import { fileURLToPath } from 'url';
 
 import { Command } from 'commander';
 
+import { cacheClearAction } from './actions/cache/cache-clear-action';
+import { completionInstallAction } from './actions/completion/completion-install-action';
 import {
   configListAction,
   configGetAction,
@@ -12,10 +14,13 @@ import {
   configPathAction,
   configInitAction,
 } from './actions/config';
-import { docsAction } from './actions/docs-action';
+import { docsListAction } from './actions/docs-list-action';
+import { docsShowAction } from './actions/docs-show-action';
 import { genTreeAction } from './actions/gen-tree-action';
+import { initAction } from './actions/init-action';
 import { newAction } from './actions/new-action';
 import { setupAction } from './actions/setup-action';
+import { completionHandler } from './completion-handler';
 import { setNoColor, colors, symbols } from './utils/colors';
 
 /**
@@ -62,12 +67,25 @@ program
   .version(getVersion())
   .option('--no-color', 'Disable colored output');
 
-program.command('setup').description('Setup Hacker Sheet in the current project.').action(setupAction);
-program
-  .command('docs <slug>')
-  .description('Fetch document content by slug.')
+program.command('setup').description('Setup global Hacker Sheet configuration.').action(setupAction);
+
+program.command('init').description('Initialize Hacker Sheet in the current project.').action(initAction);
+
+const docsCommand = program.command('docs').description('Manage documents.');
+
+docsCommand
+  .command('list')
+  .description('List all available documents with their slugs and titles.')
   .option('-w, --workspace <slug>', 'Workspace to use')
-  .action((slug, options) => docsAction(slug, options));
+  .action((options) => docsListAction(options));
+
+docsCommand
+  .command('show <slug>')
+  .description('Fetch and display document content by slug.')
+  .option('-w, --workspace <slug>', 'Workspace to use')
+  .option('--refresh', 'Bypass cache and fetch from API')
+  .action((slug, options) => docsShowAction(slug, options));
+
 program.command('new').description('Create a new document.').action(newAction);
 program
   .command('gen:tree')
@@ -111,9 +129,37 @@ configCommand
 
 configCommand
   .command('path')
-  .description('Show configuration file paths.')
+  .description('Show configuration file and cache directory paths.')
   .option('-g, --global', 'Show only user configuration path')
   .option('-l, --local', 'Show only project configuration path')
+  .option('-c, --cache', 'Show only cache directory path')
   .action((options) => configPathAction(options));
 
-program.parse();
+const completionCommand = program.command('completion').description('Manage shell completion.');
+
+completionCommand
+  .command('install')
+  .description('Install shell completion.')
+  .action(() => completionInstallAction());
+
+const cacheCommand = program.command('cache').description('Manage CLI cache.');
+
+cacheCommand
+  .command('clear')
+  .description('Clear slugs cache.')
+  .action(() => cacheClearAction());
+
+// Handle shell tab completion
+const isCompletionMode = process.env.COMP_CWORD !== undefined || process.env.COMP_LINE !== undefined;
+
+if (isCompletionMode) {
+  try {
+    await completionHandler();
+    process.exit(0);
+  } catch (error) {
+    console.error(error);
+    process.exit(1);
+  }
+} else {
+  program.parse();
+}

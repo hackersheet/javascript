@@ -69,6 +69,14 @@ export async function newAction(deps: Partial<NewActionDeps> = {}): Promise<void
   const { fsApi, prompts, logger, loadConfigFn, findRootFn, getDateFn } = { ...defaultDeps, ...deps };
 
   const config = loadConfigFn();
+
+  // Validate project initialization
+  if (!config.docsDirs || config.docsDirs.length === 0) {
+    logger.error(`${symbols.error()} ${colors.error('Project not initialized.')}`);
+    logger.error(`   ${colors.hint('Run')} ${colors.emphasis('hscli init')} ${colors.hint('first.')}`);
+    return;
+  }
+
   const projectRootPath = findRootFn() || process.cwd();
 
   const title = (await prompts.input({ message: 'Enter title' })) as string;
