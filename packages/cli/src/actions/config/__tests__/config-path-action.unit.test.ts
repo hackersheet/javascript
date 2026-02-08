@@ -7,6 +7,7 @@ describe('configPathAction', () => {
     logger: { log: vi.fn() },
     getUserConfigPath: vi.fn().mockReturnValue('/home/user/.config/hackersheet/cli.config.json'),
     getProjectConfigPath: vi.fn().mockReturnValue('/project/.hackersheet/cli.config.json'),
+    getCacheDir: vi.fn().mockReturnValue('/home/user/.cache/hackersheet'),
     ...overrides,
   });
 
@@ -14,13 +15,14 @@ describe('configPathAction', () => {
     vi.clearAllMocks();
   });
 
-  it('displays both paths by default', async () => {
+  it('displays all paths by default', async () => {
     const deps = createMockDeps();
 
     await configPathAction({}, deps);
 
     expect(deps.logger.log).toHaveBeenCalledWith('User:    /home/user/.config/hackersheet/cli.config.json');
     expect(deps.logger.log).toHaveBeenCalledWith('Project: /project/.hackersheet/cli.config.json');
+    expect(deps.logger.log).toHaveBeenCalledWith('Cache:   /home/user/.cache/hackersheet');
   });
 
   it('displays only user path with --global option', async () => {
@@ -59,5 +61,14 @@ describe('configPathAction', () => {
     await configPathAction({ local: true }, deps);
 
     expect(deps.logger.log).toHaveBeenCalledWith('(not found)');
+  });
+
+  it('displays only cache path with --cache option', async () => {
+    const deps = createMockDeps();
+
+    await configPathAction({ cache: true }, deps);
+
+    expect(deps.logger.log).toHaveBeenCalledTimes(1);
+    expect(deps.logger.log).toHaveBeenCalledWith('/home/user/.cache/hackersheet');
   });
 });

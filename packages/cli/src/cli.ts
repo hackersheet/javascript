@@ -128,9 +128,10 @@ configCommand
 
 configCommand
   .command('path')
-  .description('Show configuration file paths.')
+  .description('Show configuration file and cache directory paths.')
   .option('-g, --global', 'Show only user configuration path')
   .option('-l, --local', 'Show only project configuration path')
+  .option('-c, --cache', 'Show only cache directory path')
   .action((options) => configPathAction(options));
 
 const completionCommand = program.command('completion').description('Manage shell completion.');
