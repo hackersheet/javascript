@@ -91,7 +91,7 @@ function extractWorkspaceFromLine(line: string): string | undefined {
 }
 
 /**
- * Fetches documents from cache or API.
+ * Fetches all documents from cache or API using cursor-based pagination.
  *
  * @param workspace - The resolved workspace.
  * @param deps - Partial dependencies for testing.
@@ -112,7 +112,7 @@ async function getDocuments(
     return cached;
   }
 
-  // 2. Fetch from API
+  // 2. Fetch from API with cursor-based pagination to get all documents
   try {
     const url = `https://api.hackersheet.com/${workspace.slug}/v1/graphql`;
     const client = createClientFn({
@@ -120,25 +120,46 @@ async function getDocuments(
       accessKey: workspace.accessKey,
     });
 
-    const { documents, error } = await client.getDocuments({
-      filter: { draft: false },
-    });
+    const allDocuments: DocumentCacheItem[] = [];
+    let after: string | undefined = undefined;
+    const pageSize = 100; // Fetch 100 documents per request
 
-    if (error || !documents) {
-      return [];
+    // Iterate through all pages
+    while (true) {
+      const { documents, error } = await client.getDocuments({
+        filter: { draft: false },
+        first: pageSize,
+        after,
+      });
+
+      if (error || !documents || documents.length === 0) {
+        break;
+      }
+
+      // Extract slug and title from each document
+      const batch: DocumentCacheItem[] = documents.map((doc) => ({
+        slug: doc.slug,
+        title: doc.title,
+      }));
+
+      allDocuments.push(...batch);
+
+      // If we got fewer documents than the page size, we've reached the end
+      if (documents.length < pageSize) {
+        break;
+      }
+
+      // Prepare for the next page: use the last document's ID as the cursor
+      const lastDoc = documents[documents.length - 1];
+      after = lastDoc.id; // Use document ID as cursor for next page
     }
 
-    const documentsData: DocumentCacheItem[] = documents.map((doc) => ({
-      slug: doc.slug,
-      title: doc.title,
-    }));
-
     // 3. Save to cache (fire and forget)
-    saveCacheFn(workspace.slug, documentsData).catch(() => {
+    saveCacheFn(workspace.slug, allDocuments).catch(() => {
       // Silently ignore cache errors
     });
 
-    return documentsData;
+    return allDocuments;
   } catch {
     return [];
   }

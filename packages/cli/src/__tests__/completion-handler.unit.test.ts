@@ -17,7 +17,7 @@ vi.mock('@pnpm/tabtab', () => ({
 // Test helper type for mocking client (minimal interface for testing)
 type MockClient = {
   getDocuments: (args?: unknown) => Promise<{
-    documents: Array<{ slug: string; title: string; draft: boolean }> | null;
+    documents: Array<{ slug: string; title: string; draft: boolean; id: string }> | null;
     error: null | string;
     totalCount?: number;
     isEmpty?: boolean;
@@ -107,8 +107,8 @@ describe('completionHandler', () => {
     const mockClient: MockClient = {
       getDocuments: vi.fn().mockResolvedValue({
         documents: [
-          { slug: 'doc1', title: 'Doc 1', draft: false },
-          { slug: 'doc2', title: 'Doc 2', draft: false },
+          { slug: 'doc1', title: 'Doc 1', draft: false, id: 'doc1-id' },
+          { slug: 'doc2', title: 'Doc 2', draft: false, id: 'doc2-id' },
         ],
         error: null,
       }),
@@ -181,7 +181,7 @@ describe('completionHandler', () => {
 
     const mockClient: MockClient = {
       getDocuments: vi.fn().mockResolvedValue({
-        documents: [{ slug: 'doc3', title: 'Doc 3', draft: false }],
+        documents: [{ slug: 'doc3', title: 'Doc 3', draft: false, id: 'doc3-id' }],
         error: null,
       }),
     };
@@ -228,6 +228,7 @@ describe('completionHandler', () => {
       createClientFn: mockCreateClient,
     } as unknown as Partial<CompletionHandlerDeps>);
 
+    // When API fails, returns empty array for completion items
     expect(vi.mocked(tabtab.log)).toHaveBeenCalledWith([]);
   });
 
