@@ -1,5 +1,12 @@
 # @hackersheet/react-document-content
 
+## 0.1.0-alpha.19
+
+### Patch Changes
+
+- Updated dependencies [170171e]
+  - @hackersheet/core@0.1.0-alpha.14
+
 ## 0.1.0-alpha.18
 
 ### Patch Changes
