@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-import { initAction, type InitActionDeps } from '../init-action';
+import { initAction, type InitActionDeps, type FsLike } from '../init-action';
 
 // Mock loadUserConfig to always return setup completed
 vi.mock('../../utils/load-config', async (importOriginal) => {
@@ -12,6 +12,18 @@ vi.mock('../../utils/load-config', async (importOriginal) => {
     }),
   };
 });
+
+/**
+ * Finds a writeFile call whose first argument contains the given path substring.
+ */
+function findWriteCall(
+  writeFile: FsLike['writeFile'],
+  pathSubstring: string
+): [string, string, string] | undefined {
+  return (vi.mocked(writeFile).mock.calls as unknown as [string, string, string][]).find((call) =>
+    call[0].includes(pathSubstring)
+  );
+}
 
 describe('initAction', () => {
   const createMockDeps = (overrides: Partial<InitActionDeps> = {}): InitActionDeps => ({
@@ -40,13 +52,25 @@ describe('initAction', () => {
     vi.clearAllMocks();
   });
 
-  it('creates .hackersheet directory and trees subdirectory', async () => {
+  it('creates .hackersheet directory and subdirectories', async () => {
     const deps = createMockDeps();
 
     await initAction(deps);
 
     expect(deps.fsApi.mkdir).toHaveBeenCalledWith('/project/.hackersheet', { recursive: true });
     expect(deps.fsApi.mkdir).toHaveBeenCalledWith('/project/.hackersheet/trees', { recursive: true });
+    expect(deps.fsApi.mkdir).toHaveBeenCalledWith('/project/.hackersheet/templates', { recursive: true });
+  });
+
+  it('creates .keep file in trees directory', async () => {
+    const deps = createMockDeps();
+
+    await initAction(deps);
+
+    const writeCall = findWriteCall(deps.fsApi.writeFile, 'trees/.keep');
+    expect(writeCall).toBeDefined();
+    expect(writeCall![0]).toBe('/project/.hackersheet/trees/.keep');
+    expect(writeCall![1]).toBe('');
   });
 
   it('writes configuration file with project settings', async () => {
@@ -54,9 +78,10 @@ describe('initAction', () => {
 
     await initAction(deps);
 
-    const writeCall = vi.mocked(deps.fsApi.writeFile).mock.calls[0];
-    const config = JSON.parse(writeCall[1] as string);
+    const writeCall = findWriteCall(deps.fsApi.writeFile, 'cli.config.json');
+    expect(writeCall).toBeDefined();
 
+    const config = JSON.parse(writeCall![1]);
     expect(config.newFilenameTemplate).toBe('{{yyyy}}-{{mm}}-{{dd}}-{{title}}.md');
     expect(config.docsDirs).toEqual(['docs', 'guides']);
   });
@@ -66,9 +91,10 @@ describe('initAction', () => {
 
     await initAction(deps);
 
-    const writeCall = vi.mocked(deps.fsApi.writeFile).mock.calls[0];
-    const config = JSON.parse(writeCall[1] as string);
+    const writeCall = findWriteCall(deps.fsApi.writeFile, 'cli.config.json');
+    expect(writeCall).toBeDefined();
 
+    const config = JSON.parse(writeCall![1]);
     expect(config.workspaces).toBeUndefined();
     expect(config.defaultWorkspace).toBeUndefined();
   });
@@ -79,7 +105,6 @@ describe('initAction', () => {
     await initAction(deps);
 
     expect(deps.logger.log).toHaveBeenCalledWith(expect.stringContaining('Project initialization completed'));
-    expect(deps.logger.log).toHaveBeenCalledWith(expect.stringContaining('.hackersheet'));
   });
 
   it('prompts for overwrite when config already exists', async () => {
@@ -132,9 +157,10 @@ describe('initAction', () => {
 
     await initAction(deps);
 
-    const writeCall = vi.mocked(deps.fsApi.writeFile).mock.calls[0];
-    const config = JSON.parse(writeCall[1] as string);
+    const writeCall = findWriteCall(deps.fsApi.writeFile, 'cli.config.json');
+    expect(writeCall).toBeDefined();
 
+    const config = JSON.parse(writeCall![1]);
     expect(config.docsDirs).toEqual(['docs']);
   });
 
@@ -164,5 +190,139 @@ describe('initAction', () => {
     await initAction(deps);
 
     expect(deps.logger.log).toHaveBeenCalledWith(expect.stringContaining('Hacker Sheet Project Initialization'));
+  });
+
+  it('writes default template file with frontmatter content', async () => {
+    const deps = createMockDeps();
+
+    await initAction(deps);
+
+    const writeCall = findWriteCall(deps.fsApi.writeFile, 'default-new-file.md');
+    expect(writeCall).toBeDefined();
+    expect(writeCall![0]).toBe('/project/.hackersheet/templates/default-new-file.md');
+    expect(writeCall![1]).toContain('draft: true');
+    expect(writeCall![1]).toContain('title: {{title}}');
+    expect(writeCall![1]).toContain('published_at: {{datetime}}');
+  });
+
+  it('auto-sets newFileTemplatePath in config', async () => {
+    const deps = createMockDeps();
+
+    await initAction(deps);
+
+    const writeCall = findWriteCall(deps.fsApi.writeFile, 'cli.config.json');
+    expect(writeCall).toBeDefined();
+
+    const config = JSON.parse(writeCall![1]);
+    expect(config.newFileTemplatePath).toBe('.hackersheet/templates/default-new-file.md');
+  });
+
+  it('creates docsDirs directories', async () => {
+    const deps = createMockDeps();
+
+    await initAction(deps);
+
+    expect(deps.fsApi.mkdir).toHaveBeenCalledWith('/project/docs', { recursive: true });
+    expect(deps.fsApi.mkdir).toHaveBeenCalledWith('/project/guides', { recursive: true });
+  });
+
+  it('logs step-by-step progress messages', async () => {
+    const deps = createMockDeps();
+
+    await initAction(deps);
+
+    const logCalls = vi.mocked(deps.logger.log).mock.calls.map((call) => call[0] as string);
+
+    expect(logCalls.some((msg) => msg.includes('Setting up project structure'))).toBe(true);
+    expect(logCalls.some((msg) => msg.includes('Created') && msg.includes('.hackersheet/'))).toBe(true);
+    expect(logCalls.some((msg) => msg.includes('Created') && msg.includes('trees/'))).toBe(true);
+    expect(logCalls.some((msg) => msg.includes('Created') && msg.includes('templates/'))).toBe(true);
+    expect(logCalls.some((msg) => msg.includes('Created') && msg.includes('default-new-file.md'))).toBe(true);
+    expect(logCalls.some((msg) => msg.includes('Created') && msg.includes('assets/'))).toBe(true);
+    expect(logCalls.some((msg) => msg.includes('Created') && msg.includes('cli.config.json'))).toBe(true);
+    expect(logCalls.some((msg) => msg.includes('Created') && msg.includes('README.md'))).toBe(true);
+    expect(logCalls.some((msg) => msg.includes('Created') && msg.includes('.gitignore'))).toBe(true);
+    expect(logCalls.some((msg) => msg.includes('Created') && msg.includes('.hsignore'))).toBe(true);
+  });
+
+  it('logs next step guidance message', async () => {
+    const deps = createMockDeps();
+
+    await initAction(deps);
+
+    expect(deps.logger.log).toHaveBeenCalledWith(expect.stringContaining('hscli new'));
+  });
+
+  it('creates README.md with getting started content', async () => {
+    const deps = createMockDeps();
+
+    await initAction(deps);
+
+    const writeCall = findWriteCall(deps.fsApi.writeFile, 'README.md');
+    expect(writeCall).toBeDefined();
+    expect(writeCall![0]).toBe('/project/README.md');
+    expect(writeCall![1]).toContain('# Hacker Sheet');
+    expect(writeCall![1]).toContain('hscli new');
+    expect(writeCall![1]).toContain('git init');
+  });
+
+  it('creates empty .gitignore', async () => {
+    const deps = createMockDeps();
+
+    await initAction(deps);
+
+    const writeCall = findWriteCall(deps.fsApi.writeFile, '.gitignore');
+    expect(writeCall).toBeDefined();
+    expect(writeCall![0]).toBe('/project/.gitignore');
+    expect(writeCall![1]).toBe('');
+  });
+
+  it('creates .hsignore with whitelist rules based on docsDirs', async () => {
+    const deps = createMockDeps();
+
+    await initAction(deps);
+
+    const writeCall = findWriteCall(deps.fsApi.writeFile, '.hsignore');
+    expect(writeCall).toBeDefined();
+    expect(writeCall![0]).toBe('/project/.hsignore');
+
+    const content = writeCall![1];
+    // Markdown whitelist
+    expect(content).toContain('*.md');
+    expect(content).toContain('!docs/**/*.md');
+    expect(content).toContain('!guides/**/*.md');
+    // Image whitelist
+    expect(content).toContain('*.png');
+    expect(content).toContain('*.jpg');
+    expect(content).toContain('!assets/**');
+  });
+
+  it('creates assets directory with .keep file', async () => {
+    const deps = createMockDeps();
+
+    await initAction(deps);
+
+    expect(deps.fsApi.mkdir).toHaveBeenCalledWith('/project/assets', { recursive: true });
+
+    const writeCall = findWriteCall(deps.fsApi.writeFile, 'assets/.keep');
+    expect(writeCall).toBeDefined();
+    expect(writeCall![0]).toBe('/project/assets/.keep');
+    expect(writeCall![1]).toBe('');
+  });
+
+  it('creates default docs directory when docsDirs is empty', async () => {
+    const deps = createMockDeps({
+      prompts: {
+        input: vi.fn().mockImplementation(({ message }) => {
+          if (message.includes('directories')) return Promise.resolve('');
+          return Promise.resolve('');
+        }),
+        confirm: vi.fn().mockResolvedValue(true),
+      },
+    });
+
+    await initAction(deps);
+
+    expect(deps.fsApi.mkdir).toHaveBeenCalledWith('/project/docs', { recursive: true });
   });
 });

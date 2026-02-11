@@ -44,6 +44,45 @@ const defaultDeps: ConfigSetActionDeps = {
 const ARRAY_KEYS = new Set(['docsDirs']);
 
 /**
+ * Key prefixes that must only be stored in user (global) configuration.
+ * These contain sensitive credentials and should never be written to project config.
+ */
+const GLOBAL_ONLY_KEY_PREFIXES = ['workspaces', 'defaultWorkspace'] as const;
+
+/**
+ * Checks whether a configuration key belongs to global-only settings.
+ *
+ * @param key - The configuration key to check.
+ * @returns True if the key is restricted to user (global) configuration.
+ */
+function isGlobalOnlyKey(key: string): boolean {
+  return GLOBAL_ONLY_KEY_PREFIXES.some((prefix) => key === prefix || key.startsWith(`${prefix}.`));
+}
+
+/**
+ * Resolves the target configuration path and type based on options.
+ *
+ * @param options - Command options.
+ * @param getUserPath - Function to get user config path.
+ * @param getProjectPath - Function to get project config path.
+ * @param cwd - Function to get current working directory.
+ * @returns The resolved config path and type.
+ */
+function resolveConfigTarget(
+  options: ConfigSetOptions,
+  getUserPath: typeof getUserConfigPath,
+  getProjectPath: typeof getProjectConfigPath,
+  cwd: () => string
+): { configPath: string; configType: string } {
+  if (options.global) {
+    return { configPath: getUserPath(), configType: 'user' };
+  }
+  const projectPath = getProjectPath();
+  const configPath = projectPath ?? path.join(cwd(), '.hackersheet', 'cli.config.json');
+  return { configPath, configType: 'project' };
+}
+
+/**
  * Parses a value string based on the key type.
  *
  * @param key - The configuration key.
@@ -89,20 +128,12 @@ export async function configSetAction(
     cwd,
   } = { ...defaultDeps, ...deps };
 
-  let configPath: string;
-  let configType: string;
+  const { configPath, configType } = resolveConfigTarget(options, getUserPath, getProjectPath, cwd);
 
-  if (options.global) {
-    configPath = getUserPath();
-    configType = 'user';
-  } else {
-    const projectPath = getProjectPath();
-    if (projectPath) {
-      configPath = projectPath;
-    } else {
-      configPath = path.join(cwd(), '.hackersheet', 'cli.config.json');
-    }
-    configType = 'project';
+  if (!options.global && isGlobalOnlyKey(key)) {
+    logger.error(`${symbols.error()} ${colors.error(`"${key}" can only be set in user configuration.`)}`);
+    logger.error(`   ${colors.hint('Use')} ${colors.emphasis('--global')} ${colors.hint('flag.')}`);
+    return;
   }
 
   const parsedValue = parseValue(key, value);

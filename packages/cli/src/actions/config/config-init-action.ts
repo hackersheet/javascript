@@ -210,6 +210,29 @@ export async function runConfigWizard(
 }
 
 /**
+ * Resolves the target configuration path, type, and wizard mode based on options.
+ *
+ * @param options - Command options.
+ * @param getUserPath - Function to get user config path.
+ * @param getProjectPath - Function to get project config path.
+ * @param cwd - Function to get current working directory.
+ * @returns The resolved config path, type, and wizard mode.
+ */
+function resolveConfigTarget(
+  options: ConfigInitOptions,
+  getUserPath: typeof getUserConfigPath,
+  getProjectPath: typeof getProjectConfigPath,
+  cwd: () => string
+): { configPath: string; configType: string; mode: ConfigWizardMode } {
+  if (options.global) {
+    return { configPath: getUserPath(), configType: 'user', mode: 'all' };
+  }
+  const projectPath = getProjectPath();
+  const configPath = projectPath ?? path.join(cwd(), '.hackersheet', 'cli.config.json');
+  return { configPath, configType: 'project', mode: 'project' };
+}
+
+/**
  * Initializes configuration interactively.
  *
  * This is the action handler for the `config init` command.
@@ -231,24 +254,7 @@ export async function configInitAction(
     cwd,
   } = { ...defaultDeps, ...deps };
 
-  let configPath: string;
-  let configType: string;
-  let mode: ConfigWizardMode;
-
-  if (options.global) {
-    configPath = getUserPath();
-    configType = 'user';
-    mode = 'all'; // For `config init --global`, prompt all fields
-  } else {
-    const projectPath = getProjectPath();
-    if (projectPath) {
-      configPath = projectPath;
-    } else {
-      configPath = path.join(cwd(), '.hackersheet', 'cli.config.json');
-    }
-    configType = 'project';
-    mode = 'all'; // For `config init`, prompt all fields
-  }
+  const { configPath, configType, mode } = resolveConfigTarget(options, getUserPath, getProjectPath, cwd);
 
   const result = await runConfigWizard(configPath, mode, deps);
 
@@ -256,8 +262,7 @@ export async function configInitAction(
     return;
   }
 
-  const dir = path.dirname(configPath);
-  await fsApi.mkdir(dir, { recursive: true });
+  await fsApi.mkdir(path.dirname(configPath), { recursive: true });
 
   await save(configPath, result.config);
 

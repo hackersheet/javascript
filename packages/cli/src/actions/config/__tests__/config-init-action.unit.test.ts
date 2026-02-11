@@ -241,4 +241,15 @@ describe('configInitAction', () => {
 
     expect(deps.fsApi!.mkdir).toHaveBeenCalledWith('/project/.hackersheet', { recursive: true });
   });
+
+  it('does not prompt for workspace fields in project config init', async () => {
+    const deps = createMockDeps();
+
+    await configInitAction({}, deps);
+
+    const inputCalls = vi.mocked(deps.prompts!.input).mock.calls;
+    const allMessages = inputCalls.map((call) => (call[0] as { message: string }).message);
+    expect(allMessages.some((msg) => msg.includes('slug'))).toBe(false);
+    expect(allMessages.some((msg) => msg.includes('access key'))).toBe(false);
+  });
 });
